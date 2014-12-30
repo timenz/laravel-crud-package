@@ -29,6 +29,14 @@ class CrudServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		//
+		$this->app['crud'] = $this->app->share(function($app){
+			return new Crud;
+		});
+
+		$this->app->booting(function(){
+			$loader = \Illuminate\Foundation\AliasLoader::getInstance();
+			$loader->alias('Crud', 'Timenz\Crud\Facades\Crud');
+		});
 	}
 
 	/**
@@ -38,7 +46,7 @@ class CrudServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array();
+		return array('crud');
 	}
 
 }
