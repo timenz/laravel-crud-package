@@ -18,4 +18,8 @@ trus run
 
     composer update
 
+add to $app['providers']
+
+		'Timenz\Crud\CrudServiceProvider',
+
 to be continued ...

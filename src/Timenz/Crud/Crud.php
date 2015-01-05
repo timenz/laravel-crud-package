@@ -50,6 +50,7 @@ class Crud{
     protected $editBtnText = 'ubah';
     protected $backBtnText = 'kembali';
     protected $columnDisplay = array();
+    protected $masterData;
 
 
     protected function init($table){
@@ -613,7 +614,9 @@ class Crud{
                 break;
         }
 
-        $this->response = $response;
+        $this->masterData['crud'] = $response;
+
+        $this->response = $this->masterData;
 
         //DebugBar::info($this->response);
 
@@ -654,6 +657,10 @@ class Crud{
         }
 
         $this->postUpdateData = $result;
+    }
+
+    protected function setMasterData($masterData){
+        $this->masterData = $masterData;
     }
 
 
