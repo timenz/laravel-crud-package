@@ -12,3 +12,8 @@ Route::put('crud_update/{model}/{method}/{id}', array('uses' => 'CrudCtl@update'
 Route::delete('crud_delete/{model}/{method}/{id}', array('uses' => 'CrudCtl@delete', 'before' => 'csrf', function() {
     return 'You gave a valid CSRF token!';
 }));
+
+
+Blade::extend(function($value){
+    return preg_replace('/(\s*)@(break|continue)(\s*)/', '$1<?php $2; ?>$3', $value);
+});

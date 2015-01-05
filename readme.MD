@@ -20,6 +20,12 @@ trus run
 
 add to $app['providers']
 
-		'Timenz\Crud\CrudServiceProvider',
+	'Timenz\Crud\CrudServiceProvider',
+
+publish view
+	php artisan view:publish timenz/crud
+
+publish view on-dev
+	php artisan view:publish --path="workbench/timenz/crud/src/views" timenz/crud
 
 to be continued ...
