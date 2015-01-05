@@ -1,8 +1,8 @@
 
-@extends($master_blade)
+@extends($crud['master_blade'])
 
 <?php
-$x = $lists['from'];
+$x = $crud['lists']['from'];
 ?>
 
 @section('konten')
@@ -12,33 +12,33 @@ $x = $lists['from'];
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ $title }}</h3>
+                    <h3 class="panel-title">{{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
-                    @if($message)
+                    @if($crud['message'])
                         <div class="alert alert-success fade in">
                             <a href="#" class="close" data-dismiss="alert">&times;</a>
-                            <strong>Selamat!</strong> {{ $message }}
+                            <strong>Selamat!</strong> {{ $crud['message'] }}
                         </div>
                     @endif
 
                     <div>
-                        @if($allow_create)
-                            <a href="{{ url('crud_create/'.$model_name.'/'.$method_name) }}" class="btn btn-success">{{ $list_create_text }}</a>
+                        @if($crud['allow_create'])
+                            <a href="{{ url('crud_create/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-success">{{ $crud['list_create_text'] }}</a>
                         @endif
 
-                        @if($allow_mass_delete)
-                            <a href="{{ url('crud_mass_delete/'.$model_name.'/'.$method_name) }}" class="btn btn-danger sel-many" style="display: none;">{{ $list_mass_delete_text }}</a>
+                        @if($crud['allow_mass_delete'])
+                            <a href="{{ url('crud_mass_delete/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-danger sel-many" style="display: none;">{{ $crud['list_mass_delete_text'] }}</a>
                         @endif
 
-                        @if($allow_read)
-                            <a href="#" id="list-btn-read" class="btn btn-default sel-one" style="display: none;">{{ $list_read_text }}</a>
+                        @if($crud['allow_read'])
+                            <a href="#" id="list-btn-read" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_read_text'] }}</a>
                         @endif
-                        @if($allow_edit)
-                            <a href="#" id="list-btn-edit" class="btn btn-primary sel-one" style="display: none;">{{ $list_edit_text }}</a>
+                        @if($crud['allow_edit'])
+                            <a href="#" id="list-btn-edit" class="btn btn-primary sel-one" style="display: none;">{{ $crud['list_edit_text'] }}</a>
                         @endif
-                        @if($allow_delete)
-                            <a href="#" id="list-btn-delete" class="btn btn-warning sel-one" style="display: none;">{{ $list_delete_text }}</a>
+                        @if($crud['allow_delete'])
+                            <a href="#" id="list-btn-delete" class="btn btn-warning sel-one" style="display: none;">{{ $crud['list_delete_text'] }}</a>
                         @endif
                     </div>
 
@@ -48,8 +48,8 @@ $x = $lists['from'];
 
                             <tr>
                                 <th><input type="checkbox" class="" name="cb-all" id="cb-all"></th>
-                                @foreach($columns as $item)
-                                    <th>{{ $data_type[$item]['column_text'] }}</th>
+                                @foreach($crud['columns'] as $item)
+                                    <th>{{ $crud['data_type'][$item]['column_text'] }}</th>
                                 @endforeach
 
 
@@ -59,7 +59,7 @@ $x = $lists['from'];
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($lists['data'] as $item)
+                            @foreach($crud['lists']['data'] as $item)
 
                                 <?php $item = (array)$item;  ?>
                                 <tr>
@@ -67,29 +67,20 @@ $x = $lists['from'];
                                     <?php $x++; ?>
                                     @foreach($item as $key=>$subitem)
 
-                                        @if(!in_array($key, $columns))
+                                        @if(!in_array($key, $crud['columns']))
                                             @continue
                                         @endif
 
-                                        @if($data_type[$key]['input_type'] == 'money')
+                                        @if($crud['data_type'][$key]['input_type'] == 'money')
                                             <td class="align-right">{{ number_format((float)$subitem, 2) }}</td>
-                                        @elseif($data_type[$key]['input_type'] == 'join')
-                                            <td>{{ $item[$data_type[$key]['related_field']] }}</td>
+                                        @elseif($crud['data_type'][$key]['input_type'] == 'join')
+                                            <td>{{ $item[$crud['data_type'][$key]['related_field']] }}</td>
                                         @else
                                             <td>{{ $subitem }}</td>
                                         @endif
                                     @endforeach
 
-                                    {{--@if($allow_read or $allow_edit or $allow_delete)--}}
-                                        {{--<td>--}}
-                                            {{--@if($allow_read)--}}
-                                                {{--<a href="{{ url('crud_read/'.$model_name.'/'.$item['id']) }}" class="btn btn-default btn-xs">{{ $list_read_text }}</a>--}}
-                                            {{--@endif--}}
-                                            {{--@if($allow_edit)--}}
-                                                {{--<a href="{{ url('crud_edit/'.$model_name.'/'.$item['id']) }}" class="btn btn-primary btn-xs">{{ $list_edit_text }}</a>--}}
-                                            {{--@endif--}}
-                                        {{--</td>--}}
-                                    {{--@endif--}}
+
                                 </tr>
                             @endforeach
 
@@ -97,7 +88,7 @@ $x = $lists['from'];
                         </table>
                     </div>
 
-                    <div>{{ $paging_links }}</div>
+                    <div>{{ $crud['paging_links'] }}</div>
 
                 </div>
             </div>
@@ -180,9 +171,9 @@ $x = $lists['from'];
 
             if(checked.length == 1){
                 $('.sel-one').show();
-                $('#list-btn-read').attr('href', '{{ url('crud_read/'.$model_name.'/'.$method_name) }}/' + id);
-                $('#list-btn-edit').attr('href', '{{ url('crud_edit/'.$model_name.'/'.$method_name) }}/' + id);
-                $('#form-delete').attr('action', '{{ url('crud_delete/'.$model_name.'/'.$method_name) }}/' + id);
+                $('#list-btn-read').attr('href', '{{ url('crud_read/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
+                $('#list-btn-edit').attr('href', '{{ url('crud_edit/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
+                $('#form-delete').attr('action', '{{ url('crud_delete/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
             }else{
                 $('.sel-one').hide();
                 $('#list-btn-read').attr('href', '#');

@@ -40,7 +40,7 @@ class CrudCtl extends Controller{
 
     public function index($model, $method){
         $this->setModel($model, $method, 'index');
-        $data = $this->model->getResponse();
+        $data['crud'] = $this->model->getResponse();
 
         return View::make($this->view_path.'index', $data);
     }
@@ -48,7 +48,7 @@ class CrudCtl extends Controller{
     public function create($model, $method){
 
         $this->setModel($model, $method, 'create');
-        $data = $this->model->getResponse();
+        $data['crud'] = $this->model->getResponse();
 
 
         return View::make($this->view_path.'create', $data);
@@ -80,7 +80,7 @@ class CrudCtl extends Controller{
 
     public function edit($model, $method, $id){
         $this->setModel($model, $method, 'edit', $id);
-        $data = $this->model->getResponse();
+        $data['crud'] = $this->model->getResponse();
         //DB::commit();
         return View::make($this->view_path.'edit', $data);
 
@@ -113,7 +113,7 @@ class CrudCtl extends Controller{
     public function read($model, $method, $id){
         $this->setModel($model, $method, 'read', $id);
 
-        $data = $this->model->getResponse();
+        $data['crud'] = $this->model->getResponse();
 
         return View::make($this->view_path.'read', $data);
     }

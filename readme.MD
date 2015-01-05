@@ -16,6 +16,6 @@ Tambahkan variabel berikut pada composer
 
 trus run
 
-    composer update;
+    composer update
 
 to be continued ...

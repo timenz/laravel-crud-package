@@ -1,30 +1,30 @@
-@extends($master_blade)
+@extends($crud['master_blade'])
 
 @section('konten')
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ $title }}</h3>
+                    <h3 class="panel-title">{{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
 
-                    <form class="form-horizontal" role="form" method="post" action="{{ url('crud_save/'.$model_name.'/'.$method_name) }}" accept-charset="UTF-8">
+                    <form class="form-horizontal" role="form" method="post" action="{{ url('crud_save/'.$crud['model_name'].'/'.$crud['method_name']) }}" accept-charset="UTF-8">
 
                         <input name="_token" type="hidden" value="{{ csrf_token() }}">
                         {{--@foreach($data_type as $key=>$item)--}}
                         <?php
                             $input_old = Input::old();
-                            DebugBar::info($input_old);
+
                             $old_input_exist = false;
-                            if(count($errors) > 0){
+                            if(count($crud['errors']) > 0){
                                 $old_input_exist = true;
                             }
                         ?>
-                        @foreach($create_fields as $key)
+                        @foreach($crud['create_fields'] as $key)
 
                             <?php
-                            $item = $data_type[$key];
+                            $item = $crud['data_type'][$key];
                             $value = '';
                             if($old_input_exist){
                                 $value = $input_old[$key];
@@ -39,7 +39,7 @@
                                 @continue
                             @endif
 
-                            <div class="form-group @if(isset($errors[$key])) has-error @endif">
+                            <div class="form-group @if(isset($crud['errors'][$key])) has-error @endif">
                                 <label for="id-{{ $item['column_name'] }}" class="col-lg-2 control-label">{{ $item['column_text'] }}</label>
                                 <div class="col-lg-10">
 
@@ -111,9 +111,9 @@
                                     @endif
 
 
-                                    @if(isset($errors[$key]))
+                                    @if(isset($crud['errors'][$key]))
                                         <div class="error">
-                                            @foreach($errors[$key] as $err)
+                                            @foreach($crud['errors'][$key] as $err)
                                                 * {{ $err }} </br>
                                             @endforeach
                                         </div>
@@ -129,14 +129,14 @@
 
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
-                                <a href="{{ url('crud/'.$model_name.'/'.$method_name) }}" class="btn btn-default">{{ $back_btn_text }}</a>
-                                <button type="submit" class="btn btn-primary">{{ $create_btn_text }}</button>
+                                <a href="{{ url('crud/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-default">{{ $crud['back_btn_text'] }}</a>
+                                <button type="submit" class="btn btn-primary">{{ $crud['create_btn_text'] }}</button>
                             </div>
                         </div>
 
-                        @foreach($create_fields as $key)
+                        @foreach($crud['create_fields'] as $key)
 
-                            <?php $item = $data_type[$key]; ?>
+                            <?php $item = $crud['data_type'][$key]; ?>
 
                             @if($item['input_type'] == 'hidden')
                                 <input type="hidden"
