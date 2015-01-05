@@ -40,7 +40,7 @@ class Crud{
     protected $allowDelete = true;
     protected $allowMassDelete = false;
     protected $allowEdit = true;
-    protected $masterBlade = 'admin.master';
+    private $masterBlade = 'admin.master';
     protected $listCreateText = 'tambah';
     protected $listReadText = 'detail';
     protected $listEditText = 'ubah';
@@ -50,7 +50,7 @@ class Crud{
     protected $editBtnText = 'ubah';
     protected $backBtnText = 'kembali';
     protected $columnDisplay = array();
-    protected $masterData;
+    private $masterData;
 
 
     protected function init($table){
@@ -661,6 +661,10 @@ class Crud{
 
     protected function setMasterData($masterData){
         $this->masterData = $masterData;
+    }
+
+    protected function setMasterBlade($masterBlade){
+        $this->masterBlade = $masterBlade;
     }
 
 
