@@ -51,6 +51,7 @@ class Crud{
     protected $backBtnText = 'kembali';
     protected $columnDisplay = array();
     private $masterData;
+    private $arrWhere = array();
 
 
     protected function init($table){
@@ -323,25 +324,31 @@ class Crud{
     }
 
     private function actionIndex(){
-        if(count($this->setJoin) > 0){
-            //$this->processJoin();
-            $selected = $this->columns;
-            $selected[] = $this->table.'.id';
-
-            $lists = DB::table($this->table);
-
-            foreach($this->setJoin as $key=>$item){
-                $selected[] = $item[0].'.'.$item[1];
-                $lists->leftJoin($item[0], $this->table.'.'.$key, '=', $item[0].'.id');
-            }
-            $lists->select($selected);
-
-            $lists = $lists->paginate($this->perPage);
-
-            $this->lists = $lists;
-        }else{
-            $this->lists = DB::table($this->table)->paginate($this->perPage);
+        //$this->processJoin();
+        $selected = array();
+        foreach($this->columns as $item){
+            $selected[] = $this->table.'.'.$item;
         }
+
+        $selected[] = $this->table.'.id';
+
+        $lists = DB::table($this->table);
+
+        foreach($this->arrWhere as $item){
+            $lists->where($item[0], $item[1], $item[2]);
+        }
+
+        foreach($this->setJoin as $key=>$item){
+            $selected[] = $item[0].'.'.$item[1];
+            $lists->leftJoin($item[0], $this->table.'.'.$key, '=', $item[0].'.id');
+        }
+
+        $lists->select($selected);
+
+        $lists = $lists->paginate($this->perPage);
+
+        $this->lists = $lists;
+
 
 
         if($this->lists == null){
@@ -665,6 +672,10 @@ class Crud{
 
     protected function setMasterBlade($masterBlade){
         $this->masterBlade = $masterBlade;
+    }
+
+    protected function where($field, $condition, $value){
+        $this->arrWhere[] = array($field, $condition, $value);
     }
 
 
