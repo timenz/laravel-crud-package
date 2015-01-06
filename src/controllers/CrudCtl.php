@@ -39,7 +39,7 @@ class CrudCtl extends Controller{
         }
 
         $this->model = $objModel;
-
+        return true;
     }
 
     public function index($model, $method){
