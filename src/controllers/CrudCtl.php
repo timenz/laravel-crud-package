@@ -32,14 +32,23 @@ class CrudCtl extends Controller{
         //$model->page = $page;
 
 
-        $objModel->$methodName();
+        $status = $objModel->$methodName();
+
+        if($status == false){
+            return false;
+        }
 
         $this->model = $objModel;
 
     }
 
     public function index($model, $method){
-        $this->setModel($model, $method, 'index');
+        $set = $this->setModel($model, $method, 'index');
+
+        if($set == false){
+            return $this->notValid();
+        }
+
         $data = $this->model->getResponse();
 
         return View::make($this->view_path.'index', $data);
@@ -47,7 +56,11 @@ class CrudCtl extends Controller{
 
     public function create($model, $method){
 
-        $this->setModel($model, $method, 'create');
+        $set = $this->setModel($model, $method, 'create');
+        if($set == false){
+            return $this->notValid();
+        }
+
         $data = $this->model->getResponse();
 
 
@@ -55,8 +68,10 @@ class CrudCtl extends Controller{
     }
 
     public function save($model, $method){
-        $this->setModel($model, $method, 'save');
-
+        $set = $this->setModel($model, $method, 'save');
+        if($set == false){
+            return $this->notValid();
+        }
         $data = $this->model->getResponse();
 
         //return 'ok';
@@ -79,7 +94,10 @@ class CrudCtl extends Controller{
     }
 
     public function edit($model, $method, $id){
-        $this->setModel($model, $method, 'edit', $id);
+        $set = $this->setModel($model, $method, 'edit', $id);
+        if($set == false){
+            return $this->notValid();
+        }
         $data = $this->model->getResponse();
         //DB::commit();
         return View::make($this->view_path.'edit', $data);
@@ -87,7 +105,10 @@ class CrudCtl extends Controller{
     }
 
     public function update($model, $method, $id){
-        $this->setModel($model, $method, 'update', $id);
+        $set = $this->setModel($model, $method, 'update', $id);
+        if($set == false){
+            return $this->notValid();
+        }
         $data = $this->model->getResponse();
 
         if($data['status'] === false){
@@ -111,8 +132,10 @@ class CrudCtl extends Controller{
 
 
     public function read($model, $method, $id){
-        $this->setModel($model, $method, 'read', $id);
-
+        $set = $this->setModel($model, $method, 'read', $id);
+        if($set == false){
+            return $this->notValid();
+        }
         $data = $this->model->getResponse();
 
         return View::make($this->view_path.'read', $data);
@@ -120,10 +143,17 @@ class CrudCtl extends Controller{
 
     public function delete($model, $method, $id){
 
-        $this->setModel($model, $method, 'delete', $id);
+        $set = $this->setModel($model, $method, 'delete', $id);
+        if($set == false){
+            return $this->notValid();
+        }
         $data = $this->model->getResponse();
 
         return Redirect::back()->with('message', 'Data berhasil di hapus.');
+    }
+
+    private function notValid(){
+        return 'page not found';
     }
 
 }
