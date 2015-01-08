@@ -8,7 +8,16 @@
                     <h3 class="panel-title">{{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
-
+                    <div class="row">
+                        <div class="col-xs-12 text-right">
+                            @foreach($crud['external_link'] as $item)
+                                @if($item['show_at_read'] == true)
+                                    <a href="{{ $item['url'] }}" class="{{ $item['class'] }}" target="{{ $item['target'] }}">{{ $item['title'] }}</a>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="clearfix" style="height: 10px;"></div>
                     <form class="form-horizontal" role="form">
 
                         @foreach($crud['read_fields'] as $key)

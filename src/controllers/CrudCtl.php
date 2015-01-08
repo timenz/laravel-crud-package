@@ -28,8 +28,6 @@ class CrudCtl extends Controller{
         $objModel = new $modelName();
         $objModel->load($model, $method, $action, $id);
 
-        //$page = Input::get('page') ?: 0;
-        //$model->page = $page;
 
 
         $status = $objModel->$methodName();
@@ -52,6 +50,7 @@ class CrudCtl extends Controller{
 
 
         $data = $this->model->getResponse();
+        DebugBar::info($data);
 
         return View::make($this->view_path.'index', $data);
     }

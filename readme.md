@@ -1,5 +1,9 @@
 ## Crud Library for Laravel
 
+Adalah crud library untuk laravel, almost awesome .
+
+### Install
+
 Tambahkan variabel berikut pada composer
 
 	{

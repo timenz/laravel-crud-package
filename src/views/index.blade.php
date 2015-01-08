@@ -21,29 +21,40 @@ $x = $crud['lists']['from'];
                             <strong>Selamat!</strong> {{ $crud['message'] }}
                         </div>
                     @endif
+                    <div class="row">
+                        <div class="col-xs-7">
+                            @if($crud['allow_create'])
+                                <a href="{{ url('crud_create/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-success">{{ $crud['list_create_text'] }}</a>
+                            @endif
 
-                    <div>
-                        @if($crud['allow_create'])
-                            <a href="{{ url('crud_create/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-success">{{ $crud['list_create_text'] }}</a>
-                        @endif
+                            @if($crud['allow_mass_delete'])
+                                <a href="{{ url('crud_mass_delete/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-danger sel-many" style="display: none;">{{ $crud['list_mass_delete_text'] }}</a>
+                            @endif
 
-                        @if($crud['allow_mass_delete'])
-                            <a href="{{ url('crud_mass_delete/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-danger sel-many" style="display: none;">{{ $crud['list_mass_delete_text'] }}</a>
-                        @endif
+                            @if($crud['allow_read'])
+                                <a href="#" id="list-btn-read" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_read_text'] }}</a>
+                            @endif
+                            @if($crud['allow_edit'])
+                                <a href="#" id="list-btn-edit" class="btn btn-primary sel-one" style="display: none;">{{ $crud['list_edit_text'] }}</a>
+                            @endif
+                            @if($crud['allow_delete'])
+                                <a href="#" id="list-btn-delete" class="btn btn-warning sel-one" style="display: none;">{{ $crud['list_delete_text'] }}</a>
+                            @endif
+                            <span id="action_lists"></span>
 
-                        @if($crud['allow_read'])
-                            <a href="#" id="list-btn-read" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_read_text'] }}</a>
-                        @endif
-                        @if($crud['allow_edit'])
-                            <a href="#" id="list-btn-edit" class="btn btn-primary sel-one" style="display: none;">{{ $crud['list_edit_text'] }}</a>
-                        @endif
-                        @if($crud['allow_delete'])
-                            <a href="#" id="list-btn-delete" class="btn btn-warning sel-one" style="display: none;">{{ $crud['list_delete_text'] }}</a>
-                        @endif
-                        <span id="action_lists"></span>
+                        </div>
+                        <div class="col-xs-5 text-right">
+                            @foreach($crud['external_link'] as $item)
+                                @if($item['show_at_index'] == true)
+                                    <a href="{{ $item['url'] }}" class="{{ $item['class'] }}" target="{{ $item['target'] }}">{{ $item['title'] }}</a>
+                                @endif
+                            @endforeach
+                        </div>
                     </div>
 
-                    <div class="list-table">
+                    <div class="clearfix" style="height: 10px;"></div>
+
+                    <div class="list-table ">
                         <table class="table table-striped">
                             <thead>
 

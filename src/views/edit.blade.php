@@ -9,7 +9,16 @@
                     <h3 class="panel-title">{{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
-
+                    <div class="row">
+                        <div class="col-xs-12 text-right">
+                            @foreach($crud['external_link'] as $item)
+                                @if($item['show_at_edit'] == true)
+                                    <a href="{{ $item['url'] }}" class="{{ $item['class'] }}" target="{{ $item['target'] }}">{{ $item['title'] }}</a>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="clearfix" style="height: 10px;"></div>
                     <form class="form-horizontal" role="form" method="post" action="{{ url('crud_update/'.$crud['model_name'].'/'.$crud['method_name'].'/'.$crud['id']) }}" accept-charset="UTF-8">
 
                         <input name="_method" type="hidden" value="PUT">

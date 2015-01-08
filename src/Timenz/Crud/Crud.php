@@ -40,6 +40,7 @@ class Crud{
     private $masterData;
     private $arrWhere = array();
     private $masterBlade = '';
+    private $externalLink = array();
 
     protected $allowCreate = true;
     protected $allowRead = true;
@@ -62,6 +63,9 @@ class Crud{
     protected $subTitleEdit = 'Ubah';
 
 
+    /**
+     * @param $table
+     */
     protected function init($table){
         $this->table = $table;
         $postData = Input::all();
@@ -70,6 +74,9 @@ class Crud{
 
     }
 
+    /**
+     * @return bool
+     */
     protected function execute(){
         if($this->action == null){
             return false;
@@ -136,6 +143,9 @@ class Crud{
 
     }
 
+    /**
+     *
+     */
     private function setDefaultColumn(){
         $dbName = DB::getDatabaseName();
         $schema = DB::select("select column_name, data_type, character_maximum_length, numeric_precision, numeric_scale, column_type
@@ -167,6 +177,12 @@ class Crud{
         }
     }
 
+    /**
+     * @param $field
+     * @param $newType
+     * @param array $option
+     * @param bool $renewOnUpdate
+     */
     protected function changeType($field, $newType, $option = array(), $renewOnUpdate = false){
         $changeType = $this->changeType;
 
@@ -218,6 +234,11 @@ class Crud{
         $this->changeType = $changeType;
     }
 
+    /**
+     * @param $columnName
+     * @param $dataColumn
+     * @return mixed
+     */
     private function applyNewType($columnName, $dataColumn){
         $changeType = $this->changeType;
 
@@ -244,6 +265,12 @@ class Crud{
         return $dataColumn;
     }
 
+    /**
+     * @param $field
+     * @param $joinTable
+     * @param $joinField
+     * @param array $arrayWhere
+     */
     protected function setJoin($field, $joinTable, $joinField, $arrayWhere = array()){
 
         $this->setJoin[$field] = array($joinTable, $joinField, $arrayWhere);
@@ -261,6 +288,9 @@ class Crud{
         $this->changeType[$field] = $newType;
     }
 
+    /**
+     *
+     */
     private function populateField(){
         $schema = $this->schema;
         $columnDisplay = $this->columnDisplay;
@@ -336,6 +366,9 @@ class Crud{
 
     }
 
+    /**
+     * @return bool
+     */
     private function actionIndex(){
         //$this->processJoin();
         $selected = array();
@@ -378,10 +411,16 @@ class Crud{
         return true;
     }
 
+    /**
+     *
+     */
     private function actionCreate(){
         $this->initCreateFields();
     }
 
+    /**
+     * @return bool
+     */
     private function actionSave(){
         $this->initCreateFields();
         $createFields = $this->createFields;
@@ -419,10 +458,16 @@ class Crud{
         return false;
     }
 
+    /**
+     *
+     */
     private function actionEdit(){
         $this->initEditFields();
     }
 
+    /**
+     * @return bool
+     */
     private function actionUpdate(){
         $this->initEditFields();
 
@@ -466,10 +511,16 @@ class Crud{
         return false;
     }
 
+    /**
+     *
+     */
     private function actionRead(){
         $this->initReadFields();
     }
 
+    /**
+     *
+     */
     private function actionDelete(){
         if($this->allowDelete){
             DB::table($this->table)->delete($this->id);
@@ -477,6 +528,9 @@ class Crud{
 
     }
 
+    /**
+     * @return bool
+     */
     private function getOneRow(){
         $selected = $this->allColumns;
         unset($selected[0]);
@@ -521,6 +575,9 @@ class Crud{
         return false;
     }
 
+    /**
+     *
+     */
     private function initEditFields(){
 
         if(count($this->editFields) < 1 and count($this->fields) > 0){
@@ -530,6 +587,9 @@ class Crud{
         }
     }
 
+    /**
+     *
+     */
     private function initCreateFields(){
 
         if(count($this->createFields) < 1 and count($this->fields) > 0){
@@ -539,6 +599,9 @@ class Crud{
         }
     }
 
+    /**
+     *
+     */
     private function initReadFields(){
 
         if(count($this->readFields) < 1 and count($this->fields) > 0){
@@ -549,10 +612,19 @@ class Crud{
     }
 
 
+    /**
+     * @param $id
+     */
     public function setId($id){
         $this->id = $id;
     }
 
+    /**
+     * @param $model
+     * @param $method
+     * @param $action
+     * @param int $id
+     */
     public function load($model, $method, $action, $id = 0){
         $this->action = $action;
         $this->modelName = $model;
@@ -561,6 +633,9 @@ class Crud{
 
     }
 
+    /**
+     * @return array
+     */
     public function getResponse(){
 
 
@@ -592,6 +667,7 @@ class Crud{
                     'title' => $this->subTitleIndex.' '.$this->title,
                     'master_blade' => $this->masterBlade,
                     'paging_links' => $this->pagingLinks,
+                    'external_link' => $this->externalLink,
 
                 );
                 $response = array_merge($response, $indexResponse);
@@ -603,6 +679,7 @@ class Crud{
                     'title' => $this->subTitleCreate.' '.$this->title,
                     'master_blade' => $this->masterBlade,
                     'back_btn_text' => $this->backBtnText,
+                    'external_link' => $this->externalLink,
                     'errors' => Session::get('validate_errors')
 
                 );
@@ -625,6 +702,7 @@ class Crud{
                     'title' => $this->subTitleEdit.' '.$this->title,
                     'master_blade' => $this->masterBlade,
                     'back_btn_text' => $this->backBtnText,
+                    'external_link' => $this->externalLink,
                     'errors' => Session::get('validate_errors')
 
                 );
@@ -647,6 +725,7 @@ class Crud{
                     'master_blade' => $this->masterBlade,
                     'read_fields' => $this->readFields,
                     'back_btn_text' => $this->backBtnText,
+                    'external_link' => $this->externalLink,
 
                 );
                 $response = array_merge($response, $readResponse);
@@ -657,35 +736,48 @@ class Crud{
 
         $this->response = $this->masterData;
 
-        //DebugBar::info($this->response);
 
         return $this->response;
     }
 
+    /**
+     * @param $columns
+     */
     protected function columns($columns){
         $this->columns = $columns;
     }
-//
-//    protected function setTable($table){
-//        $this->table = $table;
-//    }
 
+    /**
+     * @param $fields
+     */
     protected function fields($fields){
         $this->fields = $fields;
     }
 
+    /**
+     * @param $createFields
+     */
     protected function createFields($createFields){
         $this->createFields = $createFields;
     }
 
+    /**
+     * @param $editFields
+     */
     protected function editFields($editFields){
         $this->editFields = $editFields;
     }
 
+    /**
+     * @param $readFields
+     */
     protected function readFields($readFields){
         $this->readFields = $readFields;
     }
 
+    /**
+     * @param $rules
+     */
     protected function validateRules($rules){
         if(is_array($rules)){
             $this->validateRules = $rules;
@@ -693,6 +785,10 @@ class Crud{
 
     }
 
+    /**
+     * @param $callback
+     * @return bool
+     */
     protected function callbackBeforeUpdate($callback){
         if($this->action != 'update'){
             return false;
@@ -707,14 +803,26 @@ class Crud{
         return false;
     }
 
+    /**
+     * @param $masterData
+     */
     protected function setMasterData($masterData){
         $this->masterData = $masterData;
     }
 
+    /**
+     * @param $masterBlade
+     */
     protected function setMasterBlade($masterBlade){
         $this->masterBlade = $masterBlade;
     }
 
+    /**
+     * @param $title
+     * @param $class
+     * @param $callbackUrl
+     * @return bool
+     */
     protected function addAction($title, $class, $callbackUrl){
         if($this->action != 'index'){
             return false;
@@ -729,6 +837,49 @@ class Crud{
 
     }
 
+    /**
+     * @param $title
+     * @param $url
+     * @param string $class
+     * @param bool $openNewPage
+     * @param bool $showAtIndex
+     * @param bool $showAtRead
+     * @param bool $showAtCreate
+     * @param bool $showAtEdit
+     * @return bool
+     */
+    protected function addExternalLink($title, $url, $class = 'btn btn-default', $openNewPage = false, $showAtIndex = true, $showAtRead = true, $showAtCreate = true, $showAtEdit = true){
+        if(is_null($class)){$class = 'btn btn-default';}
+        if(is_null($openNewPage)){$openNewPage = false;}
+        if(is_null($showAtIndex)){$showAtIndex = true;}
+        if(is_null($showAtRead)){$showAtRead = true;}
+        if(is_null($showAtCreate)){$showAtCreate = true;}
+        if(is_null($showAtEdit)){$showAtEdit = true;}
+
+
+        $ext = array(
+            'title' => $title,
+            'url' => $url,
+            'class' => $class,
+            'target' => '_self',
+            'show_at_index' => $showAtIndex,
+            'show_at_read' => $showAtRead,
+            'show_at_create' => $showAtCreate,
+            'show_at_edit' => $showAtEdit,
+        );
+
+        if($openNewPage){
+            $ext['target'] = '_blank';
+        }
+
+        $this->externalLink[] = $ext;
+
+        return false;
+    }
+
+    /**
+     * @param $row
+     */
     private function setActions($row){
 
         foreach ($this->actions as $item) {
@@ -745,6 +896,11 @@ class Crud{
 
     }
 
+    /**
+     * @param $field
+     * @param $condition
+     * @param $value
+     */
     protected function where($field, $condition, $value){
         $this->arrWhere[] = array($field, $condition, $value);
     }
