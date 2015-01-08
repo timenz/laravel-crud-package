@@ -11,7 +11,12 @@
 
                     <form class="form-horizontal" role="form">
 
-                        @foreach($crud['data_type'] as $key=>$item)
+                        @foreach($crud['read_fields'] as $key)
+                            <?php
+                            $item = $crud['data_type'][$key];
+                            $value = $item['value'];
+                            ?>
+
                             @if($key == 'id')
                                 @continue
                             @endif
@@ -27,8 +32,8 @@
 
                                 </div>
                             </div>
-
                         @endforeach
+
 
 
                         <div class="form-group">

@@ -2,9 +2,10 @@
 
 namespace Timenz\Crud;
 
-use \Illuminate\Support\Facades\DB;
-use \Illuminate\Support\Facades\Input;
-use \Illuminate\Support\Facades\Session;
+use DB;
+use Input;
+use Session;
+use Validator;
 
 class Crud{
 
@@ -12,18 +13,20 @@ class Crud{
     private $dataType = array();
     private $modelName = '';
     private $methodName = '';
-    private $title = 'Crud';
     private $action = null;
+    private $actions = array();
+    private $actionLists = null;
     private $table = '';
     private $columns = array();
     private $allColumns = array();
     private $fields = array();
     private $createFields = array();
     private $editFields = array();
+    private $readFields = array();
     private $validateRules = array();
     private $validateErrors = array();
     private $lists = array();
-    private $crudField;
+//    private $crudField;
     private $perPage = 20;
     private $id = 0;
     private $response = array();
@@ -34,13 +37,15 @@ class Crud{
     private $pagingLinks;
     private $postCreateData = array();
     private $postUpdateData = array();
+    private $masterData;
+    private $arrWhere = array();
+    private $masterBlade = '';
 
     protected $allowCreate = true;
     protected $allowRead = true;
     protected $allowDelete = true;
     protected $allowMassDelete = false;
     protected $allowEdit = true;
-    private $masterBlade = 'admin.master';
     protected $listCreateText = 'tambah';
     protected $listReadText = 'detail';
     protected $listEditText = 'ubah';
@@ -50,8 +55,11 @@ class Crud{
     protected $editBtnText = 'ubah';
     protected $backBtnText = 'kembali';
     protected $columnDisplay = array();
-    private $masterData;
-    private $arrWhere = array();
+    protected $title = 'Crud';
+    protected $subTitleIndex = 'List';
+    protected $subTitleCreate = 'Tambah';
+    protected $subTitleRead = 'Detail';
+    protected $subTitleEdit = 'Ubah';
 
 
     protected function init($table){
@@ -64,6 +72,11 @@ class Crud{
 
     protected function execute(){
         if($this->action == null){
+            return false;
+        }
+
+
+        if($this->masterBlade == ''){
             return false;
         }
 
@@ -350,6 +363,10 @@ class Crud{
         $this->lists = $lists;
 
 
+        foreach ($lists as $item) {
+            $this->setActions($item);
+        }
+
 
         if($this->lists == null){
             return false;
@@ -399,6 +416,7 @@ class Crud{
         }
 
         $this->status = $status;
+        return false;
     }
 
     private function actionEdit(){
@@ -445,10 +463,11 @@ class Crud{
 
 
         $this->status = $status;
+        return false;
     }
 
     private function actionRead(){
-
+        $this->initReadFields();
     }
 
     private function actionDelete(){
@@ -499,6 +518,7 @@ class Crud{
 
         $this->dataType = $dataType;
         $this->row = $row;
+        return false;
     }
 
     private function initEditFields(){
@@ -519,6 +539,15 @@ class Crud{
         }
     }
 
+    private function initReadFields(){
+
+        if(count($this->readFields) < 1 and count($this->fields) > 0){
+            $this->readFields = $this->fields;
+        }else if(count($this->readFields) < 1){
+            $this->readFields = $this->allColumns;
+        }
+    }
+
 
     public function setId($id){
         $this->id = $id;
@@ -534,6 +563,7 @@ class Crud{
 
     public function getResponse(){
 
+
         $response = array(
             'data_type' => $this->dataType,
             'model_name' => $this->modelName,
@@ -546,6 +576,7 @@ class Crud{
             case 'index':
                 $indexResponse = array(
                     'lists' => $this->lists->toArray(),
+                    'action_lists' => $this->actionLists,
                     'columns' => $this->columns,
                     'allow_create' => $this->allowCreate,
                     'allow_read' => $this->allowRead,
@@ -558,7 +589,7 @@ class Crud{
                     'list_read_text' => $this->listReadText,
                     'list_delete_text' => $this->listDeleteText,
                     'list_mass_delete_text' => $this->listMassDeleteText,
-                    'title' => $this->title,
+                    'title' => $this->subTitleIndex.' '.$this->title,
                     'master_blade' => $this->masterBlade,
                     'paging_links' => $this->pagingLinks,
 
@@ -569,7 +600,7 @@ class Crud{
                 $createResponse = array(
                     'create_fields' => $this->createFields,
                     'create_btn_text' => $this->createBtnText,
-                    'title' => $this->title,
+                    'title' => $this->subTitleCreate.' '.$this->title,
                     'master_blade' => $this->masterBlade,
                     'back_btn_text' => $this->backBtnText,
                     'errors' => Session::get('validate_errors')
@@ -591,7 +622,7 @@ class Crud{
                     'edit_fields' => $this->editFields,
                     'edit_btn_text' => $this->editBtnText,
                     'id' => $this->id,
-                    'title' => $this->title,
+                    'title' => $this->subTitleEdit.' '.$this->title,
                     'master_blade' => $this->masterBlade,
                     'back_btn_text' => $this->backBtnText,
                     'errors' => Session::get('validate_errors')
@@ -612,8 +643,9 @@ class Crud{
             case 'read':
 
                 $readResponse = array(
-                    'title' => $this->title,
+                    'title' => $this->subTitleRead.' '.$this->title,
                     'master_blade' => $this->masterBlade,
+                    'read_fields' => $this->readFields,
                     'back_btn_text' => $this->backBtnText,
 
                 );
@@ -646,6 +678,14 @@ class Crud{
         $this->createFields = $createFields;
     }
 
+    protected function editFields($editFields){
+        $this->editFields = $editFields;
+    }
+
+    protected function readFields($readFields){
+        $this->readFields = $readFields;
+    }
+
     protected function validateRules($rules){
         if(is_array($rules)){
             $this->validateRules = $rules;
@@ -664,6 +704,7 @@ class Crud{
         }
 
         $this->postUpdateData = $result;
+        return false;
     }
 
     protected function setMasterData($masterData){
@@ -672,6 +713,36 @@ class Crud{
 
     protected function setMasterBlade($masterBlade){
         $this->masterBlade = $masterBlade;
+    }
+
+    protected function addAction($title, $class, $callbackUrl){
+        if($this->action != 'index'){
+            return false;
+        }
+
+        $this->actions[] = array(
+            'title' => $title,
+            'class' => $class,
+            'callback_url' => $callbackUrl
+        );
+
+
+    }
+
+    private function setActions($row){
+
+        foreach ($this->actions as $item) {
+            $url = $item['callback_url']($row, $row->id);
+
+            if(!$url){continue;}
+
+            $this->actionLists[$row->id][] = array(
+                'title' => $item['title'],
+                'class' => $item['class'],
+                'url' => $url,
+            );
+        }
+
     }
 
     protected function where($field, $condition, $value){

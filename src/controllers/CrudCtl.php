@@ -34,6 +34,7 @@ class CrudCtl extends Controller{
 
         $status = $objModel->$methodName();
 
+
         if($status == false){
             return false;
         }
@@ -48,6 +49,7 @@ class CrudCtl extends Controller{
         if($set == false){
             return $this->notValid();
         }
+
 
         $data = $this->model->getResponse();
 
@@ -76,7 +78,7 @@ class CrudCtl extends Controller{
 
         //return 'ok';
 
-        if($data['status'] === false){
+        if($data['crud']['status'] === false){
 
             return Redirect::back()
                 ->withInput()
@@ -86,7 +88,7 @@ class CrudCtl extends Controller{
 
         $msg = 'Data gagl disimpan';
 
-        if($data['status']){
+        if($data['crud']['status']){
             $msg = 'Data berhasil disimpan.';
         }
 
@@ -111,7 +113,8 @@ class CrudCtl extends Controller{
         }
         $data = $this->model->getResponse();
 
-        if($data['status'] === false){
+
+        if($data['crud']['status'] === false){
 
             return Redirect::back()
                 ->withInput()
@@ -122,7 +125,7 @@ class CrudCtl extends Controller{
 
         $msg = 'Data gagl diupdate';
 
-        if($data['status']){
+        if($data['crud']['status']){
             $msg = 'Data berhasil diupdate.';
         }
 

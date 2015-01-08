@@ -40,6 +40,7 @@ $x = $crud['lists']['from'];
                         @if($crud['allow_delete'])
                             <a href="#" id="list-btn-delete" class="btn btn-warning sel-one" style="display: none;">{{ $crud['list_delete_text'] }}</a>
                         @endif
+                        <span id="action_lists"></span>
                     </div>
 
                     <div class="list-table">
@@ -63,7 +64,10 @@ $x = $crud['lists']['from'];
 
                                 <?php $item = (array)$item;  ?>
                                 <tr>
-                                    <td><input type="checkbox" class="cb-list" name="" id="cb-list-{{ $item['id'] }}" data-id="{{ $item['id'] }}"></td>
+                                    <td><input type="checkbox" class="cb-list" name="" id="cb-list-{{ $item['id'] }}" data-id="{{ $item['id'] }}">
+                                    <span style="display: none" id="action-{{ $item['id'] }}">@if(isset($crud['action_lists'][$item['id']]))
+                                            {{ json_encode($crud['action_lists'][$item['id']]) }}@endif</span>
+                                    </td>
                                     <?php $x++; ?>
                                     @foreach($item as $key=>$subitem)
 
@@ -168,12 +172,30 @@ $x = $crud['lists']['from'];
 
             var checked = $('.cb-list:checked');
             var id = checked.attr('data-id');
+            var act_lists = $('#action-' + id).html();
+
+            //act_lists = JSON.parse(act_lists);
+
+            $('#action_lists').html('');
 
             if(checked.length == 1){
+
                 $('.sel-one').show();
                 $('#list-btn-read').attr('href', '{{ url('crud_read/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
                 $('#list-btn-edit').attr('href', '{{ url('crud_edit/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
                 $('#form-delete').attr('action', '{{ url('crud_delete/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
+
+                act_lists = JSON.parse(act_lists);
+
+                if(act_lists.length > 0){
+                    var str = '';
+                    for(i in act_lists){
+                        var row = act_lists[i];
+
+                        str += '<a href="'+row.url+'" class="'+row.class+'">'+row.title+'</a>';
+                    }
+                    $('#action_lists').html(str);
+                }
             }else{
                 $('.sel-one').hide();
                 $('#list-btn-read').attr('href', '#');
