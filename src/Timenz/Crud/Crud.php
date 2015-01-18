@@ -41,6 +41,7 @@ class Crud{
     private $arrWhere = array();
     private $masterBlade = '';
     private $externalLink = array();
+    private $orderBy;
 
     protected $allowCreate = true;
     protected $allowRead = true;
@@ -390,6 +391,11 @@ class Crud{
         }
 
         $lists->select($selected);
+
+        if($this->orderBy != null){
+            $order = $this->orderBy;
+            $lists->orderBy($order[0], $order[1]);
+        }
 
         $lists = $lists->paginate($this->perPage);
 
@@ -903,6 +909,10 @@ class Crud{
      */
     protected function where($field, $condition, $value){
         $this->arrWhere[] = array($field, $condition, $value);
+    }
+
+    protected function orderBy($field, $direction = 'asc'){
+        $this->orderBy = array($field, $direction);
     }
 
 
