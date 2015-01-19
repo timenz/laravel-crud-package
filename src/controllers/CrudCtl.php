@@ -50,7 +50,6 @@ class CrudCtl extends Controller{
 
 
         $data = $this->model->getResponse();
-        DebugBar::info($data);
 
         return View::make($this->view_path.'index', $data);
     }
