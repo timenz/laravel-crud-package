@@ -48,6 +48,7 @@ class Crud{
     protected $allowDelete = true;
     protected $allowMassDelete = false;
     protected $allowEdit = true;
+    protected $allowMultipleSelect = false;
     protected $listCreateText = 'tambah';
     protected $listReadText = 'detail';
     protected $listEditText = 'ubah';
@@ -674,6 +675,7 @@ class Crud{
                     'master_blade' => $this->masterBlade,
                     'paging_links' => $this->pagingLinks,
                     'external_link' => $this->externalLink,
+                    'allow_multiple_select' => $this->allowMultipleSelect,
 
                 );
                 $response = array_merge($response, $indexResponse);

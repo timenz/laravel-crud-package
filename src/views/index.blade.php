@@ -27,6 +27,8 @@ $x = $crud['lists']['from'];
                                 <a href="{{ url('crud_create/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-success">{{ $crud['list_create_text'] }}</a>
                             @endif
 
+                            <div class="btn-group">
+
                             @if($crud['allow_mass_delete'])
                                 <a href="{{ url('crud_mass_delete/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-danger sel-many" style="display: none;">{{ $crud['list_mass_delete_text'] }}</a>
                             @endif
@@ -35,20 +37,23 @@ $x = $crud['lists']['from'];
                                 <a href="#" id="list-btn-read" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_read_text'] }}</a>
                             @endif
                             @if($crud['allow_edit'])
-                                <a href="#" id="list-btn-edit" class="btn btn-primary sel-one" style="display: none;">{{ $crud['list_edit_text'] }}</a>
+                                <a href="#" id="list-btn-edit" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_edit_text'] }}</a>
                             @endif
                             @if($crud['allow_delete'])
-                                <a href="#" id="list-btn-delete" class="btn btn-warning sel-one" style="display: none;">{{ $crud['list_delete_text'] }}</a>
+                                <a href="#" id="list-btn-delete" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_delete_text'] }}</a>
                             @endif
-                            <span id="action_lists"></span>
+                            </div>
+                            <span  class="btn-group" id="action_lists"></span>
 
                         </div>
                         <div class="col-xs-5 text-right">
+                            @if(count($crud['external_link']) > 0)<div class="btn-group">@endif
                             @foreach($crud['external_link'] as $item)
                                 @if($item['show_at_index'] == true)
                                     <a href="{{ $item['url'] }}" class="{{ $item['class'] }}" target="{{ $item['target'] }}">{{ $item['title'] }}</a>
                                 @endif
                             @endforeach
+                            @if(count($crud['external_link']) > 0)</div>@endif
                         </div>
                     </div>
 
@@ -139,7 +144,12 @@ $x = $crud['lists']['from'];
 
 @section('js')
 <script>
+    var allowMultipleSelect = @if($crud['allow_multiple_select']) true @else() false @endif;
     $(function(){
+        if(allowMultipleSelect == false){
+            $('#cb-all').hide();
+        }
+
         cbListAction();
 
         $('#modal-confirm-hapus').modal({
@@ -155,6 +165,11 @@ $x = $crud['lists']['from'];
         });
 
         $('.cb-list').click(function(){
+            if(allowMultipleSelect == false){
+                $('.cb-list').prop("checked", false);
+                $(this).prop("checked", true);
+            }
+
             var all = $('.cb-list').length;
             var checked = $('.cb-list:checked').length;
             var not_checked = all - checked;
@@ -188,10 +203,12 @@ $x = $crud['lists']['from'];
             //act_lists = JSON.parse(act_lists);
 
             $('#action_lists').html('');
+            $('#action_lists').hide();
+            $('.sel-one').hide();
 
             if(checked.length == 1){
 
-                $('.sel-one').show();
+
                 $('#list-btn-read').attr('href', '{{ url('crud_read/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
                 $('#list-btn-edit').attr('href', '{{ url('crud_edit/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
                 $('#form-delete').attr('action', '{{ url('crud_delete/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
@@ -207,6 +224,8 @@ $x = $crud['lists']['from'];
                     }
                     $('#action_lists').html(str);
                 }
+                $('.sel-one').fadeIn();
+                $('#action_lists').fadeIn();
             }else{
                 $('.sel-one').hide();
                 $('#list-btn-read').attr('href', '#');
