@@ -22,7 +22,8 @@ class CrudCtl extends Controller{
         $methodName = $this->methodName;
 
         if(!class_exists($modelName)){
-            return 'page not found';
+            App::abort(404);
+            //return 'page not found';
         }
 
         $objModel = new $modelName();
@@ -154,7 +155,8 @@ class CrudCtl extends Controller{
     }
 
     private function notValid(){
-        return 'page not found';
+        //return 'page not found';
+        App::abort(404);
     }
 
 }
