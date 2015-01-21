@@ -200,7 +200,6 @@ $x = $crud['lists']['from'];
             var id = checked.attr('data-id');
             var act_lists = $('#action-' + id).html();
 
-            //act_lists = JSON.parse(act_lists);
 
             $('#action_lists').html('');
             $('#action_lists').hide();
@@ -213,17 +212,21 @@ $x = $crud['lists']['from'];
                 $('#list-btn-edit').attr('href', '{{ url('crud_edit/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
                 $('#form-delete').attr('action', '{{ url('crud_delete/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
 
-                act_lists = JSON.parse(act_lists);
+                if(typeof act_lists !== undefined && act_lists != ''){
+                    act_lists = JSON.parse(act_lists);
 
-                if(act_lists.length > 0){
-                    var str = '';
-                    for(i in act_lists){
-                        var row = act_lists[i];
+                    if(act_lists.length > 0){
+                        var str = '';
+                        for(i in act_lists){
+                            var row = act_lists[i];
 
-                        str += '<a href="'+row.url+'" class="'+row.class+'">'+row.title+'</a>';
+                            str += '<a href="'+row.url+'" class="'+row.class+'">'+row.title+'</a>';
+                        }
+                        $('#action_lists').html(str);
                     }
-                    $('#action_lists').html(str);
                 }
+
+
                 $('.sel-one').fadeIn();
                 $('#action_lists').fadeIn();
             }else{
