@@ -27,7 +27,7 @@
                             ?>
 
                             @if($key == 'id')
-                                @continue
+                                    <?php continue; ?>
                             @endif
 
                             <div class="form-group">

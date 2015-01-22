@@ -88,7 +88,7 @@ $x = $crud['lists']['from'];
                                     @foreach($item as $key=>$subitem)
 
                                         @if(!in_array($key, $crud['columns']))
-                                            @continue
+                                            <?php continue; ?>
                                         @endif
 
                                         @if($crud['data_type'][$key]['input_type'] == 'money')

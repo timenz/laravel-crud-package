@@ -42,11 +42,11 @@
                             ?>
 
                             @if($key == 'id')
-                                @continue
+                                    <?php continue; ?>
                             @endif
 
                             @if($item['input_type'] == 'hidden')
-                                @continue
+                                    <?php continue; ?>
                             @endif
 
                             <div class="form-group @if(isset($crud['errors'][$key])) has-error @endif">
