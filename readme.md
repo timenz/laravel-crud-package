@@ -36,35 +36,25 @@ publish view on-dev
 
 ### Mininal code example
 
+
+buat route
+
+	Route::resource('ok', 'TestCrud');
 	
 code taruh sembarang asal kebaca composer
 
 	<?php
-	
-	use \Timenz\Crud\Crud;
-	
-	class UserCrud extends Crud{
-	
-		function index(){
-	
-			$master = array(
-				'title' => 'my'
-			);
-			
-			$this->init('users');
-			
-			$this->setMasterBlade('admin.master');
-			$this->setMasterData($master) ;
-			
-			return $this->execute();
-		}
-	}
-	
-panggil melalui url 
-
-	/crud/user_crud/index
-	
-	crud : controller
-	user_crud : nama class (UserCrud)
-	index : nama method
-	
+    
+    use \Timenz\Crud\Crud;
+    
+    class TestCrud extends Crud{
+    
+        public function __construct(){
+            $this->init('users');
+    
+            $master = array('title' => 'my');
+            $this->setMasterData($master);
+            $this->setMasterBlade('admin.master');
+        }
+    }
+    
