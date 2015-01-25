@@ -24,14 +24,11 @@ $x = $crud['lists']['from'];
                     <div class="row">
                         <div class="col-xs-7">
                             @if($crud['allow_create'])
-                                <a href="{{ url('crud_create/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-success">{{ $crud['list_create_text'] }}</a>
+                                <a href="{{ url($crud['uri'].'/create') }}" class="btn btn-success">{{ $crud['list_create_text'] }}</a>
                             @endif
 
                             <div class="btn-group">
 
-                            @if($crud['allow_mass_delete'])
-                                <a href="{{ url('crud_mass_delete/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-danger sel-many" style="display: none;">{{ $crud['list_mass_delete_text'] }}</a>
-                            @endif
 
                             @if($crud['allow_read'])
                                 <a href="#" id="list-btn-read" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_read_text'] }}</a>
@@ -208,9 +205,9 @@ $x = $crud['lists']['from'];
             if(checked.length == 1){
 
 
-                $('#list-btn-read').attr('href', '{{ url('crud_read/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
-                $('#list-btn-edit').attr('href', '{{ url('crud_edit/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
-                $('#form-delete').attr('action', '{{ url('crud_delete/'.$crud['model_name'].'/'.$crud['method_name']) }}/' + id);
+                $('#list-btn-read').attr('href', '{{ url($crud['uri'].'/') }}/' + id);
+                $('#list-btn-edit').attr('href', '{{ url($crud['uri'].'/') }}/' + id + '/edit');
+                $('#form-delete').attr('action', '{{ url($crud['uri'].'/') }}/' + id);
 
                 if(typeof act_lists !== undefined && act_lists != ''){
                     act_lists = JSON.parse(act_lists);

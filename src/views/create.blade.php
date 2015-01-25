@@ -19,7 +19,7 @@
                         </div>
                     </div>
                     <div class="clearfix" style="height: 10px;"></div>
-                    <form class="form-horizontal" role="form" method="post" action="{{ url('crud_save/'.$crud['model_name'].'/'.$crud['method_name']) }}" accept-charset="UTF-8">
+                    <form class="form-horizontal" role="form" method="post" action="{{ url($crud['uri']) }}" accept-charset="UTF-8">
 
                         <input name="_token" type="hidden" value="{{ csrf_token() }}">
                         {{--@foreach($data_type as $key=>$item)--}}
@@ -139,7 +139,7 @@
 
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
-                                <a href="{{ url('crud/'.$crud['model_name'].'/'.$crud['method_name']) }}" class="btn btn-default">{{ $crud['back_btn_text'] }}</a>
+                                <a href="{{ url($crud['uri']) }}" class="btn btn-default">{{ $crud['back_btn_text'] }}</a>
                                 <button type="submit" class="btn btn-primary">{{ $crud['create_btn_text'] }}</button>
                             </div>
                         </div>

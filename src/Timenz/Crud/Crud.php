@@ -6,14 +6,17 @@ use DB;
 use Input;
 use Session;
 use Validator;
+use Controller;
+use Route;
+use View;
+use Redirect;
 
-class Crud{
+class Crud extends Controller{
 
     private $schema;
     private $dataType = array();
-    private $modelName = '';
-    private $methodName = '';
     private $action = null;
+    private $uri = null;
     private $actions = array();
     private $actionLists = null;
     private $table = '';
@@ -79,7 +82,7 @@ class Crud{
     /**
      * @return bool
      */
-    protected function execute(){
+    private function execute(){
         if($this->action == null){
             return false;
         }
@@ -89,8 +92,6 @@ class Crud{
             return false;
         }
 
-//        $this->modelName = $modelName;
-//        $this->title = ucwords(str_replace('_', ' ', $modelName));
 
         $this->setDefaultColumn();
 
@@ -131,7 +132,7 @@ class Crud{
 
             default:
                 return false;
-            break;
+                break;
 
         }
 
@@ -622,35 +623,32 @@ class Crud{
     /**
      * @param $id
      */
-    public function setId($id){
+    protected function setId($id){
         $this->id = $id;
     }
 
-    /**
-     * @param $model
-     * @param $method
-     * @param $action
-     * @param int $id
-     */
-    public function load($model, $method, $action, $id = 0){
+    private function setAction($action){
         $this->action = $action;
-        $this->modelName = $model;
-        $this->methodName = $method;
-        $this->id = $id;
+    }
 
+    private function setUri($uri){
+        $this->uri = $uri;
+    }
+
+    private function setIds($id){
+        $this->id = $id;
     }
 
     /**
      * @return array
      */
-    public function getResponse(){
+    private function getResponse(){
 
 
         $response = array(
             'data_type' => $this->dataType,
-            'model_name' => $this->modelName,
-            'method_name' => $this->methodName,
             'action' => $this->action,
+            'uri' => $this->uri,
             'status' => $this->status,
         );
 
@@ -917,7 +915,144 @@ class Crud{
         $this->orderBy = array($field, $direction);
     }
 
+    private $view_path = 'packages.timenz.crud.';
+
+
+    public function index(){
+        $uri = Route::getCurrentRoute()->uri();
+        $this->setAction('index');
+        $this->setUri($uri);
+
+        $this->execute();
+        return View::make($this->view_path.'index', $this->getResponse());
+    }
+
+    public function create(){
+        $uri = Route::getCurrentRoute()->uri();
+        $xuri = explode('/', $uri, -1);
+
+        $uri = join('/', $xuri);
+
+        $this->setAction('create');
+        $this->setUri($uri);
+
+        $this->execute();
+        return View::make($this->view_path.'create', $this->getResponse());
+    }
+
+    public function store(){
+        $uri = Route::getCurrentRoute()->uri();
+        $this->setAction('save');
+
+        $this->setUri($uri);
+
+        $this->execute();
+
+        $data = $this->getResponse();
+        \DebugBar::info($data);
+        //return 'ok';
+
+        if($data['crud']['status'] === false){
+
+            return Redirect::back()
+                ->withInput()
+                ->with('validate_errors', $data['crud']['validate_errors'])
+                ->with('message', 'There were validation errors.');
+        }
+
+        $msg = 'Data gagl disimpan';
+
+        if($data['crud']['status']){
+            $msg = 'Data berhasil disimpan.';
+        }
+
+        return Redirect::to($uri)->with('message', $msg);
+    }
 
 
 
+    public function show($id){
+        $uri = Route::getCurrentRoute()->uri();
+
+        $xuri = explode('/', $uri, -1);
+
+        $uri = join('/', $xuri);
+
+        $this->setAction('read');
+        $this->setUri($uri);
+        $this->setId($id);
+
+        $this->execute();
+        return View::make($this->view_path.'read', $this->getResponse());
+    }
+
+
+
+    public function edit($id){
+        $uri = Route::getCurrentRoute()->uri();
+        $xuri = explode('/', $uri, -2);
+
+        $uri = join('/', $xuri);
+
+        $this->setAction('edit');
+        $this->setUri($uri);
+        $this->setId($id);
+
+        $this->execute();
+        return View::make($this->view_path.'edit', $this->getResponse());
+    }
+
+
+
+    public function update($id){
+
+        $uri = Route::getCurrentRoute()->uri();
+        $xuri = explode('/', $uri, -1);
+
+        $uri = join('/', $xuri);
+        $this->setAction('update');
+
+        $this->setUri($uri);
+        $this->setId($id);
+
+        $this->execute();
+
+        $data = $this->getResponse();
+        //return 'ok';
+
+        if($data['crud']['status'] === false){
+
+            return Redirect::back()
+                ->withInput()
+                ->with('validate_errors', $data['crud']['validate_errors'])
+                ->with('message', 'There were validation errors.');
+        }
+
+        $msg = 'Data gagl diupdate';
+
+        if($data['crud']['status']){
+            $msg = 'Data berhasil diupdate.';
+        }
+
+        return Redirect::to($uri)->with('message', $msg);
+    }
+
+    public function destroy($id){
+
+
+        $uri = Route::getCurrentRoute()->uri();
+        $xuri = explode('/', $uri, -1);
+
+        $uri = join('/', $xuri);
+        $this->setAction('delete');
+
+        $this->setUri($uri);
+        $this->setId($id);
+
+        $this->execute();
+
+        $this->getResponse();
+
+        return Redirect::back()->with('message', 'Data berhasil di hapus.');
+    }
 }

@@ -47,7 +47,7 @@
 
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
-                                <a href="{{ URL::previous() }}" class="btn btn-default">{{ $crud['back_btn_text'] }}</a>
+                                <a href="{{ url($crud['uri']) }}" class="btn btn-default">{{ $crud['back_btn_text'] }}</a>
                             </div>
                         </div>
                     </form>
