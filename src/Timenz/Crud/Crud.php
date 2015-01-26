@@ -540,9 +540,13 @@ class Crud extends Controller{
      * @return bool
      */
     private function getOneRow(){
-        $selected = $this->allColumns;
-        unset($selected[0]);
-        $selected[] = $this->table.'.id';
+
+        $selected = array();
+
+        foreach($this->allColumns as $item){
+            $selected[] = $this->table.'.'.$item;
+        }
+
 
         if($this->id < 1){
             return false;
