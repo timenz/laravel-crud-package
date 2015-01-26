@@ -831,7 +831,7 @@ class Crud extends Controller{
      */
     protected function addAction($title, $class, $callbackUrl){
         if($this->action != 'index'){
-            return false;
+            //return false;
         }
 
         $this->actions[] = array(
@@ -924,7 +924,9 @@ class Crud extends Controller{
         $this->setUri($uri);
 
         $this->execute();
-        return View::make($this->view_path.'index', $this->getResponse());
+        $data = $this->getResponse();
+        \DebugBar::info($this->actions);
+        return View::make($this->view_path.'index', $data);
     }
 
     public function create(){
@@ -937,7 +939,8 @@ class Crud extends Controller{
         $this->setUri($uri);
 
         $this->execute();
-        return View::make($this->view_path.'create', $this->getResponse());
+        $data = $this->getResponse();
+        return View::make($this->view_path.'create', $data);
     }
 
     public function store(){
@@ -949,7 +952,6 @@ class Crud extends Controller{
         $this->execute();
 
         $data = $this->getResponse();
-        \DebugBar::info($data);
         //return 'ok';
 
         if($data['crud']['status'] === false){
