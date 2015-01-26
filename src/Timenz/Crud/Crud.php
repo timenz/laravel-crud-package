@@ -925,7 +925,7 @@ class Crud extends Controller{
 
         $this->execute();
         $data = $this->getResponse();
-        \DebugBar::info($this->actions);
+        //\DebugBar::info($this->actions);
         return View::make($this->view_path.'index', $data);
     }
 
