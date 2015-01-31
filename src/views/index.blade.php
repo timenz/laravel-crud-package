@@ -50,7 +50,14 @@ $x = $crud['lists']['from'];
                                     <a href="{{ $item['url'] }}" class="{{ $item['class'] }}" target="{{ $item['target'] }}">{{ $item['title'] }}</a>
                                 @endif
                             @endforeach
+
+
                             @if(count($crud['external_link']) > 0)</div>@endif
+
+
+                            @if($crud['allow_export'])
+                                <a href="#" id="list-btn-export" class="btn btn-success">{{ $crud['list_export_text'] }}</a>
+                            @endif
                         </div>
                     </div>
 
@@ -137,6 +144,39 @@ $x = $crud['lists']['from'];
     </div><!-- /.modal -->
 
 
+    <div class="modal fade" id="modal-confirm-export" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Export Data</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Export data.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary">Export</button>
+
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="modal-confirm-wait" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Mohon Ditunggu</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Proses data, silakan tunggu.</p>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
 @endsection
 
 @section('js')
@@ -189,6 +229,30 @@ $x = $crud['lists']['from'];
         $('#list-btn-delete').click(function(e){
             e.preventDefault();
             $('#modal-confirm-hapus').modal('show');
+        });
+
+        $('#list-btn-export').click(function(e){
+            e.preventDefault();
+            $('#modal-confirm-wait').modal('show');
+
+            $.get('{{ url($crud['uri'].'/') }}?action=prepare_export', function(data){
+                $('#modal-confirm-wait').modal('hide');
+                if(data.status){
+                    if(data.paging == false){
+                        $('#modal-confirm-export').modal('show');
+                    }
+                }
+            }, 'json');
+
+        });
+
+        $('#modal-confirm-export').modal({
+            show: false
+        });
+
+        $('#modal-confirm-wait').modal({
+            backdrop: 'static',
+            show: false
         });
 
         function cbListAction(){

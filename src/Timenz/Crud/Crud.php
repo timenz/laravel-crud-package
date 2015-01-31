@@ -10,6 +10,7 @@ use Controller;
 use Route;
 use View;
 use Redirect;
+use Response;
 
 class Crud extends Controller{
 
@@ -45,6 +46,7 @@ class Crud extends Controller{
     private $masterBlade = '';
     private $externalLink = array();
     private $orderBy;
+    private $responseType;
 
     protected $allowCreate = true;
     protected $allowRead = true;
@@ -52,6 +54,8 @@ class Crud extends Controller{
     protected $allowMassDelete = false;
     protected $allowEdit = true;
     protected $allowMultipleSelect = false;
+    protected $allowExport = true;
+    protected $listExportText = 'export';
     protected $listCreateText = 'tambah';
     protected $listReadText = 'detail';
     protected $listEditText = 'ubah';
@@ -129,6 +133,11 @@ class Crud extends Controller{
                 //$this->getOneRow();
                 $this->actionDelete();
                 break;
+
+            case 'prepare_export':
+                $this->actionPrepareExport();
+                break;
+
 
             default:
                 return false;
@@ -536,6 +545,10 @@ class Crud extends Controller{
 
     }
 
+    private function actionPrepareExport(){
+        $this->responseType = 'json';
+    }
+
     /**
      * @return bool
      */
@@ -666,8 +679,10 @@ class Crud extends Controller{
                     'allow_read' => $this->allowRead,
                     'allow_edit' => $this->allowEdit,
                     'allow_delete' => $this->allowDelete,
+                    'allow_export' => $this->allowExport,
                     'allow_mass_delete' => $this->allowMassDelete,
                     'message' => Session::get('message'),
+                    'list_export_text' => $this->listExportText,
                     'list_create_text' => $this->listCreateText,
                     'list_edit_text' => $this->listEditText,
                     'list_read_text' => $this->listReadText,
@@ -740,6 +755,30 @@ class Crud extends Controller{
                 );
                 $response = array_merge($response, $readResponse);
                 break;
+
+            case 'prepare_export':
+
+                $row = DB::table($this->table)->selectRaw("count(*) as aggregate")->first();
+
+                $total = $row->aggregate * 1;
+
+                $paging = false;
+
+                if($total > 1000){
+                    $paging = true;
+                }
+
+                $response = array(
+                    'action' => $this->action,
+                    'uri' => $this->uri,
+                    'status' => $this->status,
+                    'total' => $total,
+                    'paging' => $paging
+
+                );
+
+                return $response;
+
         }
 
         $this->masterData['crud'] = $response;
@@ -924,12 +963,27 @@ class Crud extends Controller{
 
     public function index(){
         $uri = Route::getCurrentRoute()->uri();
-        $this->setAction('index');
         $this->setUri($uri);
+
+        $extAction = array('prepare_export', 'export');
+        $action = Input::get('action');
+
+        if(in_array($action, $extAction)){
+            $this->setAction($action);
+
+            $this->execute();
+
+            if($this->responseType == 'json'){
+                return Response::json($this->getResponse());
+            }
+
+            return 'ok';
+        }
+
+        $this->setAction('index');
 
         $this->execute();
         $data = $this->getResponse();
-        //\DebugBar::info($this->actions);
         return View::make($this->view_path.'index', $data);
     }
 
