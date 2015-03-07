@@ -960,6 +960,10 @@ class Crud extends Controller{
 
     private $view_path = 'packages.timenz.crud.';
 
+    protected function run(){
+
+    }
+
 
     public function index(){
         $uri = Route::getCurrentRoute()->uri();
@@ -982,6 +986,8 @@ class Crud extends Controller{
 
         $this->setAction('index');
 
+        $this->run();
+
         $this->execute();
         $data = $this->getResponse();
         return View::make($this->view_path.'index', $data);
@@ -996,6 +1002,8 @@ class Crud extends Controller{
         $this->setAction('create');
         $this->setUri($uri);
 
+        $this->run();
+
         $this->execute();
         $data = $this->getResponse();
         return View::make($this->view_path.'create', $data);
@@ -1006,6 +1014,7 @@ class Crud extends Controller{
         $this->setAction('save');
 
         $this->setUri($uri);
+        $this->run();
 
         $this->execute();
 
@@ -1041,6 +1050,7 @@ class Crud extends Controller{
         $this->setAction('read');
         $this->setUri($uri);
         $this->setId($id);
+        $this->run();
 
         $this->execute();
         return View::make($this->view_path.'read', $this->getResponse());
@@ -1057,6 +1067,7 @@ class Crud extends Controller{
         $this->setAction('edit');
         $this->setUri($uri);
         $this->setId($id);
+        $this->run();
 
         $this->execute();
         return View::make($this->view_path.'edit', $this->getResponse());
@@ -1074,6 +1085,7 @@ class Crud extends Controller{
 
         $this->setUri($uri);
         $this->setId($id);
+        $this->run();
 
         $this->execute();
 
@@ -1108,6 +1120,7 @@ class Crud extends Controller{
 
         $this->setUri($uri);
         $this->setId($id);
+        $this->run();
 
         $this->execute();
 
