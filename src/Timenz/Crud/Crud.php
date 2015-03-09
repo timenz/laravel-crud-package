@@ -70,6 +70,7 @@ class Crud extends Controller{
     protected $subTitleCreate = 'Tambah';
     protected $subTitleRead = 'Detail';
     protected $subTitleEdit = 'Ubah';
+    protected $errorText = '';
 
 
     /**
@@ -495,6 +496,7 @@ class Crud extends Controller{
         $postData = $this->postUpdateData;
 
         foreach($editFields as $item){
+            if($item == 'id'){continue;}
             $updateData[$item] = $postData[$item];
         }
 
@@ -585,8 +587,10 @@ class Crud extends Controller{
         $dataType = $this->dataType;
 
         foreach($dataType as $key=>$item){
-            if($dataType[$key]['input_type'] == 'join'){
+            if($dataType[$key]['input_type'] == 'join' and $this->action != 'edit'){
+
                 $dataType[$key]['value'] = $row[$dataType[$key]['related_field']];
+
             }else{
                 $dataType[$key]['value'] = $row[$key];
             }
@@ -988,9 +992,14 @@ class Crud extends Controller{
 
         $this->run();
 
+        if($this->errorText != ''){
+            return $this->errorText;
+        }
+
         $this->execute();
         $data = $this->getResponse();
         return View::make($this->view_path.'index', $data);
+
     }
 
     public function create(){
@@ -1004,6 +1013,9 @@ class Crud extends Controller{
 
         $this->run();
 
+        if($this->errorText != ''){
+            return $this->errorText;
+        }
         $this->execute();
         $data = $this->getResponse();
         return View::make($this->view_path.'create', $data);
@@ -1016,6 +1028,9 @@ class Crud extends Controller{
         $this->setUri($uri);
         $this->run();
 
+        if($this->errorText != ''){
+            return $this->errorText;
+        }
         $this->execute();
 
         $data = $this->getResponse();
@@ -1052,6 +1067,9 @@ class Crud extends Controller{
         $this->setId($id);
         $this->run();
 
+        if($this->errorText != ''){
+            return $this->errorText;
+        }
         $this->execute();
         return View::make($this->view_path.'read', $this->getResponse());
     }
@@ -1069,7 +1087,12 @@ class Crud extends Controller{
         $this->setId($id);
         $this->run();
 
+        if($this->errorText != ''){
+            return $this->errorText;
+        }
         $this->execute();
+        \DebugBar::info($this->dataType);
+
         return View::make($this->view_path.'edit', $this->getResponse());
     }
 
@@ -1087,6 +1110,9 @@ class Crud extends Controller{
         $this->setId($id);
         $this->run();
 
+        if($this->errorText != ''){
+            return $this->errorText;
+        }
         $this->execute();
 
         $data = $this->getResponse();
@@ -1122,6 +1148,9 @@ class Crud extends Controller{
         $this->setId($id);
         $this->run();
 
+        if($this->errorText != ''){
+            return $this->errorText;
+        }
         $this->execute();
 
         $this->getResponse();

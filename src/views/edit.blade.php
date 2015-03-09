@@ -79,6 +79,23 @@
                                                value="{{ $value }}" >{{ $option }}</select>
                                     @endif
 
+                                    @if($item['input_type'] == 'join')
+                                        <?php
+                                        $arr_option = $item['options'];
+                                        $str_option = '<option>Pilih</option>';
+
+                                        foreach($arr_option as $option){
+                                            $selected = '';
+                                            if($option->id == $value){$selected = 'selected="selected"';}
+                                            $str_option .= '<option value="'.$option->id.'" '.$selected.'>'.$option->{$item['related_field']}.'</option>';
+                                        }
+                                        ?>
+                                        <select name="{{ $item['column_name'] }}"
+                                                class="cl-{{ $item['column_name'] }} form-control"
+                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+
+                                    @endif
+
                                     @if(isset($crud['errors'][$key]))
                                         <div class="error">
                                             @foreach($crud['errors'][$key] as $err)
