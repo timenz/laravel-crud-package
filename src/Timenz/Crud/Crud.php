@@ -47,6 +47,7 @@ class Crud extends Controller{
     private $externalLink = array();
     private $orderBy;
     private $responseType;
+    private $tbCount = 1;
 
     protected $allowCreate = true;
     protected $allowRead = true;
@@ -286,7 +287,8 @@ class Crud extends Controller{
      */
     protected function setJoin($field, $joinTable, $joinField, $arrayWhere = array()){
 
-        $this->setJoin[$field] = array($joinTable, $joinField, $arrayWhere);
+        $this->setJoin[$field] = array($joinTable, $joinField, $arrayWhere, 't'.$this->tbCount);
+        $this->tbCount++;
 
         $newType = array(
             'new_type' => 'join',
@@ -386,20 +388,20 @@ class Crud extends Controller{
         //$this->processJoin();
         $selected = array();
         foreach($this->columns as $item){
-            $selected[] = $this->table.'.'.$item;
+            $selected[] = 't0.'.$item;
         }
 
-        $selected[] = $this->table.'.id';
+        $selected[] = 't0.id';
 
-        $lists = DB::table($this->table);
+        $lists = DB::table($this->table.' as t0');
 
         foreach($this->arrWhere as $item){
             $lists->where($item[0], $item[1], $item[2]);
         }
 
         foreach($this->setJoin as $key=>$item){
-            $selected[] = $item[0].'.'.$item[1];
-            $lists->leftJoin($item[0], $this->table.'.'.$key, '=', $item[0].'.id');
+            $selected[] = $item[3].'.'.$item[1];
+            $lists->leftJoin($item[0].' as '.$item[3] , 't0.'.$key, '=', $item[3].'.id');
         }
 
         $lists->select($selected);
@@ -559,7 +561,7 @@ class Crud extends Controller{
         $selected = array();
 
         foreach($this->allColumns as $item){
-            $selected[] = $this->table.'.'.$item;
+            $selected[] = 't0.'.$item;
         }
 
 
@@ -568,15 +570,15 @@ class Crud extends Controller{
         }
 
         //$row = $this->find($this->id);
-        $row = DB::table($this->table)->select($this->table.'.*');
+        $row = DB::table($this->table.' as t0')->select('t0.*');
         foreach($this->setJoin as $key=>$item){
-            $selected[] = $item[0].'.'.$item[1];
-            $row->leftJoin($item[0], $this->table.'.'.$key, '=', $item[0].'.id');
+            $selected[] = $item[3].'.'.$item[1];
+            $row->leftJoin($item[0].' as '.$item[3], 't0.'.$key, '=', $item[3].'.id');
 
         }
         $row->select($selected);
 
-        $row = $row->where($this->table.'.id', '=', $this->id)->first();
+        $row = $row->where('t0.id', '=', $this->id)->first();
 
         if($row == null){
             return false;
@@ -990,7 +992,11 @@ class Crud extends Controller{
 
         $this->setAction('index');
 
-        $this->run();
+        $run = $this->run();
+
+        if($run === false){
+            return 'on k';
+        }
 
         if($this->errorText != ''){
             return $this->errorText;
