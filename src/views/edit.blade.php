@@ -60,6 +60,31 @@
                                                value="{{ $value }}" />
                                     @endif
 
+
+                                    @if($item['input_type'] == 'numeric')
+                                        <input type="text"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control col-md-6 numeric"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $value }}" />
+                                    @endif
+
+                                    @if($item['input_type'] == 'decimal')
+                                        <input type="text"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control col-md-6 decimal"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $value }}" />
+                                    @endif
+
+                                    @if($item['input_type'] == 'money')
+                                        <input type="text"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control col-md-6 money"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $value }}" />
+                                    @endif
+
                                     @if($item['input_type'] == 'enum')
                                         <?php
                                             $option = '<option></option>';
