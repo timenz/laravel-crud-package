@@ -32,7 +32,7 @@ class Crud extends Controller{
     private $lists = array();
 //    private $crudField;
     private $perPage = 20;
-    private $id = 0;
+    private $ids = 0;
     private $response = array();
     private $row = array();
     private $changeType = array();
@@ -529,7 +529,7 @@ class Crud extends Controller{
 
 
         if($this->allowEdit and $valid){
-            DB::table($this->table)->where(array('id' => $this->id))->update($updateData);
+            DB::table($this->table)->where(array('id' => $this->ids))->update($updateData);
             $status = true;
         }
 
@@ -550,7 +550,7 @@ class Crud extends Controller{
      */
     private function actionDelete(){
         if($this->allowDelete){
-            DB::table($this->table)->delete($this->id);
+            DB::table($this->table)->delete($this->ids);
         }
 
     }
@@ -571,11 +571,11 @@ class Crud extends Controller{
         }
 
 
-        if($this->id < 1){
+        if($this->ids < 1){
             return false;
         }
 
-        //$row = $this->find($this->id);
+        //$row = $this->find($this->ids);
         $row = DB::table($this->table.' as t0')->select('t0.*');
         foreach($this->setJoin as $key=>$item){
             $selected[] = $item[3].'.'.$item[1];
@@ -584,7 +584,7 @@ class Crud extends Controller{
         }
         $row->select($selected);
 
-        $row = $row->where('t0.id', '=', $this->id)->first();
+        $row = $row->where('t0.id', '=', $this->ids)->first();
 
         if($row == null){
             return false;
@@ -653,7 +653,7 @@ class Crud extends Controller{
      * @param $id
      */
     protected function setId($id){
-        $this->id = $id;
+        $this->ids = $id;
     }
 
     private function setAction($action){
@@ -664,9 +664,9 @@ class Crud extends Controller{
         $this->uri = $uri;
     }
 
-    private function setIds($id){
-        $this->id = $id;
-    }
+//    private function setIds($id){
+//        $this->ids = $id;
+//    }
 
     /**
      * @return array
@@ -735,7 +735,7 @@ class Crud extends Controller{
                 $editResponse = array(
                     'edit_fields' => $this->editFields,
                     'edit_btn_text' => $this->editBtnText,
-                    'id' => $this->id,
+                    'id' => $this->ids,
                     'title' => $this->subTitleEdit.' '.$this->title,
                     'master_blade' => $this->masterBlade,
                     'back_btn_text' => $this->backBtnText,
@@ -854,7 +854,7 @@ class Crud extends Controller{
         if($this->action != 'update'){
             return false;
         }
-        $result = $callback($this->postUpdateData, $this->id);
+        $result = $callback($this->postUpdateData, $this->ids);
 
         if($result === false){
             return $this->status = false;
