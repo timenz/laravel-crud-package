@@ -99,6 +99,20 @@
 
                                     @endif
 
+                                    @if($item['input_type'] == 'select')
+                                        <?php
+                                                $arr_option = $item['options'];
+                                                $str_option = '<option>Pilih</option>';
+                                                foreach($arr_option as $key=>$option){
+                                                    $str_option .= '<option value="'.$key.'">'.$option.'</option>';
+                                                }
+                                            ?>
+                                        <select name="{{ $item['column_name'] }}"
+                                                class="cl-{{ $item['column_name'] }} form-control"
+                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+
+                                    @endif
+
                                     @if($item['input_type'] == 'join')
                                         <?php
                                                 $arr_option = $item['options'];

@@ -99,6 +99,19 @@ $x = $crud['lists']['from'];
                                             <td class="align-right">{{ number_format((float)$subitem, 2) }}</td>
                                         @elseif($crud['data_type'][$key]['input_type'] == 'join')
                                             <td>{{ $item[$crud['data_type'][$key]['related_field']] }}</td>
+                                        @elseif($crud['data_type'][$key]['input_type'] == 'select')
+                                            <?php
+                                            $value = '';
+                                            foreach($crud['data_type'][$key]['options'] as $key=>$opt){
+
+                                                if($key == $subitem){
+                                                    $value = $opt;
+                                                    break;
+                                                }
+                                            }
+                                            ?>
+                                            <td>{{ $value }}</td>
+
                                         @else
                                             <td>{{ $subitem }}</td>
                                         @endif

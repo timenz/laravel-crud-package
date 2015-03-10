@@ -214,6 +214,9 @@ class Crud extends Controller{
                 break;
 
             case 'select':
+                if(!is_array($option)){
+                    break;
+                }
                 $changeType[$field] = array(
                     'new_type' => $newType,
                     'options' => $option
@@ -268,6 +271,9 @@ class Crud extends Controller{
                 $dataColumn['options'] = $changeType[$columnName]['options'];
                 break;
             case 'enum':
+                $dataColumn['options'] = $changeType[$columnName]['options'];
+                break;
+            case 'select':
                 $dataColumn['options'] = $changeType[$columnName]['options'];
                 break;
             case 'hidden':
@@ -1097,7 +1103,6 @@ class Crud extends Controller{
             return $this->errorText;
         }
         $this->execute();
-        \DebugBar::info($this->dataType);
 
         return View::make($this->view_path.'edit', $this->getResponse());
     }
@@ -1162,5 +1167,9 @@ class Crud extends Controller{
         $this->getResponse();
 
         return Redirect::back()->with('message', 'Data berhasil di hapus.');
+    }
+
+    protected function getDataType(){
+        return $this->dataType;
     }
 }

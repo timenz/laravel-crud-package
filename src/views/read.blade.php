@@ -35,6 +35,19 @@
                                 <div class="col-lg-10">
                                     @if($item['input_type'] == 'join')
                                         <p class="form-control-static">{{ $item['value'] }}</p>
+                                    @elseif($item['input_type'] == 'select')
+                                        <?php
+                                        $value = '';
+                                        foreach($item['options'] as $key=>$opt){
+
+                                            if($key == $item['value']){
+                                                $value = $opt;
+                                                break;
+                                            }
+                                        }
+                                        ?>
+                                            <p class="form-control-static">{{ $value }}</p>
+
                                     @else
                                         <p class="form-control-static">{{ $item['value'] }}</p>
                                     @endif
