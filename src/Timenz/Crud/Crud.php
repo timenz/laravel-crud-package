@@ -23,6 +23,8 @@ class Crud extends Controller{
     private $table = '';
     private $columns = array();
     private $allColumns = array();
+    private $customColumns = array();
+    private $customValues = array();
     private $fields = array();
     private $createFields = array();
     private $editFields = array();
@@ -72,6 +74,7 @@ class Crud extends Controller{
     protected $subTitleRead = 'Detail';
     protected $subTitleEdit = 'Ubah';
     protected $errorText = '';
+    protected $log;
 
 
     /**
@@ -424,6 +427,7 @@ class Crud extends Controller{
 
         foreach ($lists as $item) {
             $this->setActions($item);
+            $this->setCostomColumns($item);
         }
 
 
@@ -681,10 +685,12 @@ class Crud extends Controller{
             'status' => $this->status,
         );
 
+
         switch($this->action){
             case 'index':
                 $indexResponse = array(
                     'lists' => $this->lists->toArray(),
+                    'custom_values' => $this->customValues,
                     'action_lists' => $this->actionLists,
                     'columns' => $this->columns,
                     'allow_create' => $this->allowCreate,
@@ -796,6 +802,9 @@ class Crud extends Controller{
         $this->masterData['crud'] = $response;
 
         $this->response = $this->masterData;
+
+        //\DebugBar::info($this->lists->toArray());
+        //\DebugBar::info($this->customValues);
 
 
         return $this->response;
@@ -955,6 +964,16 @@ class Crud extends Controller{
             );
         }
 
+    }
+
+    private function setCostomColumns($row){
+        foreach($this->customColumns as $key=>$item){
+            $value = $item['callback']($row, $row->{$key});
+            if(!$value){continue;}
+
+
+            $this->customValues[$key][$row->id] = $value;
+        }
     }
 
     /**
@@ -1171,5 +1190,11 @@ class Crud extends Controller{
 
     protected function getDataType(){
         return $this->dataType;
+    }
+
+    protected function callbackColumn($columnName, $callback){
+        $this->customColumns[$columnName] = array(
+            'callback' => $callback
+        );
     }
 }

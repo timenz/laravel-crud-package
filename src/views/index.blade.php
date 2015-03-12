@@ -91,9 +91,18 @@ $x = $crud['lists']['from'];
                                     <?php $x++; ?>
                                     @foreach($item as $key=>$subitem)
 
+
                                         @if(!in_array($key, $crud['columns']))
                                             <?php continue; ?>
                                         @endif
+
+                                        <?php
+
+                                        if(isset($crud['custom_values'][$key][$item['id']])){
+                                            ?><td>{{ $crud['custom_values'][$key][$item['id']] }}</td><?php
+                                            continue;
+                                        }
+                                        ?>
 
                                         @if($crud['data_type'][$key]['input_type'] == 'money')
                                             <td class="align-right">{{ number_format((float)$subitem, 2) }}</td>
@@ -102,9 +111,9 @@ $x = $crud['lists']['from'];
                                         @elseif($crud['data_type'][$key]['input_type'] == 'select')
                                             <?php
                                             $value = '';
-                                            foreach($crud['data_type'][$key]['options'] as $key=>$opt){
+                                            foreach($crud['data_type'][$key]['options'] as $keys=>$opt){
 
-                                                if($key == $subitem){
+                                                if($keys == $subitem){
                                                     $value = $opt;
                                                     break;
                                                 }
