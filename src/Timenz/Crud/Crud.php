@@ -395,12 +395,12 @@ class Crud extends Controller{
      */
     private function actionIndex(){
         //$this->processJoin();
-        $selected = array();
-        foreach($this->columns as $item){
-            $selected[] = 't0.'.$item;
-        }
-
-        $selected[] = 't0.id';
+        $selected = array('t0.*');
+//        foreach($this->columns as $item){
+//            $selected[] = 't0.'.$item;
+//        }
+//
+//        $selected[] = 't0.id';
 
         $lists = DB::table($this->table.' as t0');
 
