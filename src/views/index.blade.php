@@ -101,7 +101,7 @@ $x = $crud['lists']['from'];
                                             } ?>
 
                                             @if($crud['data_type'][$column]['input_type'] == 'money')
-                                                <td class="align-right">{{ number_format((float)$item[$column], 2) }}</td>
+                                                <td class="text-right">{{ number_format((float)$item[$column], 2) }}</td>
                                             @elseif($crud['data_type'][$column]['input_type'] == 'join')
                                                 <td>{{ $item[$crud['data_type'][$column]['related_field']] }}</td>
                                             @elseif($crud['data_type'][$column]['input_type'] == 'select')
@@ -120,7 +120,8 @@ $x = $crud['lists']['from'];
                                             @else
                                                 <td>{{ $item[$column] }}</td>
                                             @endif
-
+                                        @else
+                                            <td><em>null</em></td>
                                         @endif
                                     @endforeach
 
