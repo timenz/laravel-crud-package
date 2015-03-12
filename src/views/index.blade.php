@@ -89,42 +89,41 @@ $x = $crud['lists']['from'];
                                             {{ json_encode($crud['action_lists'][$item['id']]) }}@endif</span>
                                     </td>
                                     <?php $x++; ?>
-                                    @foreach($item as $key=>$subitem)
 
+                                    @foreach($crud['columns'] as $column)
 
-                                        @if(!in_array($key, $crud['columns']))
-                                            <?php continue; ?>
-                                        @endif
-
-                                        <?php
-
-                                        if(isset($crud['custom_values'][$key][$item['id']])){
-                                            ?><td>{{ $crud['custom_values'][$key][$item['id']] }}</td><?php
-                                            continue;
-                                        }
-                                        ?>
-
-                                        @if($crud['data_type'][$key]['input_type'] == 'money')
-                                            <td class="align-right">{{ number_format((float)$subitem, 2) }}</td>
-                                        @elseif($crud['data_type'][$key]['input_type'] == 'join')
-                                            <td>{{ $item[$crud['data_type'][$key]['related_field']] }}</td>
-                                        @elseif($crud['data_type'][$key]['input_type'] == 'select')
+                                        @if(isset($item[$column]))
                                             <?php
-                                            $value = '';
-                                            foreach($crud['data_type'][$key]['options'] as $keys=>$opt){
 
-                                                if($keys == $subitem){
-                                                    $value = $opt;
-                                                    break;
+                                            if(isset($crud['custom_values'][$column][$item['id']])){
+                                                ?><td>{{ $crud['custom_values'][$column][$item['id']] }}</td><?php
+                                                continue;
+                                            } ?>
+
+                                            @if($crud['data_type'][$column]['input_type'] == 'money')
+                                                <td class="align-right">{{ number_format((float)$item[$column], 2) }}</td>
+                                            @elseif($crud['data_type'][$column]['input_type'] == 'join')
+                                                <td>{{ $item[$crud['data_type'][$column]['related_field']] }}</td>
+                                            @elseif($crud['data_type'][$column]['input_type'] == 'select')
+                                                <?php
+                                                $value = '';
+                                                foreach($crud['data_type'][$column]['options'] as $keys=>$opt){
+
+                                                    if($keys == $item[$column]){
+                                                        $value = $opt;
+                                                        break;
+                                                    }
                                                 }
-                                            }
-                                            ?>
-                                            <td>{{ $value }}</td>
+                                                ?>
+                                                <td>{{ $value }}</td>
 
-                                        @else
-                                            <td>{{ $subitem }}</td>
+                                            @else
+                                                <td>{{ $item[$column] }}</td>
+                                            @endif
+
                                         @endif
                                     @endforeach
+
 
 
                                 </tr>
