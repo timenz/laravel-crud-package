@@ -457,9 +457,10 @@ class Crud extends Controller{
 
 
         $insertData = array();
-        $postData = $this->postUpdateData;
+        $postData = $this->postCreateData;
 
         foreach($createFields as $item){
+            if($item == 'id'){continue;}
             $insertData[$item] = $postData[$item];
         }
 
@@ -870,6 +871,20 @@ class Crud extends Controller{
         }
 
         $this->postUpdateData = $result;
+        return false;
+    }
+
+    protected function callbackBeforeSave($callback){
+        if($this->action != 'save'){
+            return false;
+        }
+        $result = $callback($this->postCreateData);
+
+        if($result === false){
+            return $this->status = false;
+        }
+
+        $this->postCreateData = $result;
         return false;
     }
 
