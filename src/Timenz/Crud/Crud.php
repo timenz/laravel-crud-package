@@ -249,6 +249,19 @@ class Crud extends Controller{
                 );
                 break;
 
+            case 'text':
+                $value = '';
+                if(!is_array($option)){
+                    $value = $option;
+                }
+
+                $changeType[$field] = array(
+                    'new_type' => $newType,
+                    'default_value' => $value,
+                    'renew_on_update' => $renewOnUpdate
+                );
+                break;
+
         }
 
         $this->changeType = $changeType;
@@ -278,6 +291,10 @@ class Crud extends Controller{
                 break;
             case 'select':
                 $dataColumn['options'] = $changeType[$columnName]['options'];
+                break;
+            case 'text':
+                $dataColumn['default_value'] = $changeType[$columnName]['default_value'];
+                $dataColumn['renew_on_update'] = $changeType[$columnName]['renew_on_update'];
                 break;
             case 'hidden':
                 $dataColumn['default_value'] = $changeType[$columnName]['default_value'];
@@ -510,10 +527,17 @@ class Crud extends Controller{
 
         foreach($editFields as $item){
             if($item == 'id'){continue;}
+            if(!isset($postData[$item])){
+                continue;
+            }
             $updateData[$item] = $postData[$item];
         }
 
         //$id = Input::get('id');
+
+        if(count($updateData) < 1){
+            return false;
+        }
 
         if($this->status == false){
             return false;
@@ -1010,6 +1034,10 @@ class Crud extends Controller{
 
     }
 
+    protected function afterRun(){
+
+    }
+
 
     public function index(){
         $uri = Route::getCurrentRoute()->uri();
@@ -1044,6 +1072,7 @@ class Crud extends Controller{
 
         $this->execute();
         $data = $this->getResponse();
+        $this->afterRun();
         return View::make($this->view_path.'index', $data);
 
     }
@@ -1064,6 +1093,7 @@ class Crud extends Controller{
         }
         $this->execute();
         $data = $this->getResponse();
+        $this->afterRun();
         return View::make($this->view_path.'create', $data);
     }
 
@@ -1081,6 +1111,7 @@ class Crud extends Controller{
 
         $data = $this->getResponse();
         //return 'ok';
+        $this->afterRun();
 
         if($data['crud']['status'] === false){
 
@@ -1117,6 +1148,7 @@ class Crud extends Controller{
             return $this->errorText;
         }
         $this->execute();
+        $this->afterRun();
         return View::make($this->view_path.'read', $this->getResponse());
     }
 
@@ -1138,6 +1170,7 @@ class Crud extends Controller{
         }
         $this->execute();
 
+        $this->afterRun();
         return View::make($this->view_path.'edit', $this->getResponse());
     }
 
@@ -1162,6 +1195,7 @@ class Crud extends Controller{
 
         $data = $this->getResponse();
         //return 'ok';
+        $this->afterRun();
 
         if($data['crud']['status'] === false){
 
@@ -1200,6 +1234,7 @@ class Crud extends Controller{
 
         $this->getResponse();
 
+        $this->afterRun();
         return Redirect::back()->with('message', 'Data berhasil di hapus.');
     }
 

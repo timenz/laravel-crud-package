@@ -52,7 +52,11 @@
                                 <label for="id-{{ $item['column_name'] }}" class="col-lg-2 control-label">{{ $item['column_text'] }}</label>
                                 <div class="col-lg-10">
                                     @if($item['input_type'] == 'text')
-
+                                        <?php if(isset($item['renew_on_update'])){
+                                            if($item['renew_on_update']){
+                                                $value = $item['default_value'];
+                                            }
+                                        } ?>
                                         <input type="text"
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control"
