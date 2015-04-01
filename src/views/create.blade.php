@@ -19,12 +19,13 @@
                         </div>
                     </div>
                     <div class="clearfix" style="height: 10px;"></div>
-                    <form class="form-horizontal" role="form" method="post" action="{{ url($crud['uri']) }}" accept-charset="UTF-8">
+                    <form class="form-horizontal" role="form" method="post" action="{{ url($crud['uri']) }}" accept-charset="UTF-8" enctype="multipart/form-data">
 
                         <input name="_token" type="hidden" value="{{ csrf_token() }}">
                         {{--@foreach($data_type as $key=>$item)--}}
                         <?php
                             $input_old = Input::old();
+                            $load_mce = false;
 
                             $old_input_exist = false;
                             if(count($crud['errors']) > 0){
@@ -85,6 +86,14 @@
                                                value="{{ $value }}" />
                                     @endif
 
+                                    @if($item['input_type'] == 'image')
+                                        <input type="file"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control col-md-6"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="" />
+                                    @endif
+
                                     @if($item['input_type'] == 'enum')
                                         <?php
                                                 $arr_option = $item['options'];
@@ -131,6 +140,14 @@
                                         <textarea
                                                 name="{{ $item['column_name'] }}"
                                                 class=" cl-{{ $item['column_name'] }} form-control"
+                                                id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
+                                    @endif
+
+                                    @if($item['input_type'] == 'richarea')
+                                        <?php $load_mce = true; ?>
+                                        <textarea
+                                                name="{{ $item['column_name'] }}"
+                                                class=" cl-{{ $item['column_name'] }} form-control richarea"
                                                 id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
                                     @endif
 
@@ -181,4 +198,21 @@
     </div>
 
 
+@endsection
+
+@section('js')
+    @if($load_mce)<script src="{{ asset('libs/tinymce/tinymce.min.js') }}"></script>@endif
+<script>
+@if($load_mce)
+tinymce.init({
+    selector: "textarea.richarea",
+    plugins: [
+        "advlist autolink lists link image charmap print preview anchor",
+        "searchreplace visualblocks code fullscreen",
+        "insertdatetime media table contextmenu paste"
+    ],
+    toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
+});
+@endif
+</script>
 @endsection

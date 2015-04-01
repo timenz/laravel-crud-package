@@ -11,6 +11,7 @@ use Route;
 use View;
 use Redirect;
 use Response;
+use Log;
 
 class Crud extends Controller{
 
@@ -92,6 +93,7 @@ class Crud extends Controller{
      * @return bool
      */
     private function execute(){
+
         if($this->action == null){
             return false;
         }
@@ -126,6 +128,7 @@ class Crud extends Controller{
                 break;
 
             case 'update':
+                $this->getOneRow();
                 $this->actionUpdate();
                 break;
 
@@ -135,7 +138,7 @@ class Crud extends Controller{
                 break;
 
             case 'delete':
-                //$this->getOneRow();
+                $this->getOneRow();
                 $this->actionDelete();
                 break;
 
@@ -210,7 +213,28 @@ class Crud extends Controller{
                 );
                 break;
 
+            case 'image':
+                if(is_array($option) or $option == ''){
+                    break;
+                }
+
+                if(!is_writable(public_path($option))){
+                    Log::warning('apply new type for '.$field.' failed . Directory '.$option.' is not exist and or not writeable.');
+                    break;
+                }
+                $changeType[$field] = array(
+                    'new_type' => $newType,
+                    'target_dir' => $option
+                );
+                break;
+
             case 'textarea':
+                $changeType[$field] = array(
+                    'new_type' => $newType
+                );
+                break;
+
+            case 'richarea':
                 $changeType[$field] = array(
                     'new_type' => $newType
                 );
@@ -295,6 +319,9 @@ class Crud extends Controller{
             case 'text':
                 $dataColumn['default_value'] = $changeType[$columnName]['default_value'];
                 $dataColumn['renew_on_update'] = $changeType[$columnName]['renew_on_update'];
+                break;
+            case 'image':
+                $dataColumn['target_dir'] = $changeType[$columnName]['target_dir'];
                 break;
             case 'hidden':
                 $dataColumn['default_value'] = $changeType[$columnName]['default_value'];
@@ -478,7 +505,19 @@ class Crud extends Controller{
 
         foreach($createFields as $item){
             if($item == 'id'){continue;}
-            $insertData[$item] = $postData[$item];
+            $value = $postData[$item];
+
+            $changeType = $this->changeType;
+            if(isset($changeType[$item])){
+                $type = $changeType[$item];
+                if($type['new_type'] == 'image'){
+                    $val = $this->uploadFile($item, $type['target_dir']);
+                    if(!$val){continue;}else{$value = $val;}
+                }
+            }
+
+
+            $insertData[$item] = $value;
         }
 
         if($this->status == false){
@@ -517,20 +556,40 @@ class Crud extends Controller{
      * @return bool
      */
     private function actionUpdate(){
+
         $this->initEditFields();
 
         $editFields = $this->editFields;
 
-
         $updateData = array();
         $postData = $this->postUpdateData;
+        $changeType = $this->changeType;
 
         foreach($editFields as $item){
             if($item == 'id'){continue;}
             if(!isset($postData[$item])){
                 continue;
             }
-            $updateData[$item] = $postData[$item];
+
+            $value = $postData[$item];
+
+            if(isset($changeType[$item])){
+
+                $type = $changeType[$item];
+
+                if($type['new_type'] == 'image'){
+
+                    $val = $this->uploadFile($item, $type['target_dir'], 'update');
+                    if(!$val){continue;}else{$value = $val;}
+                }
+            }
+
+//            if(!isset($postData[$item])){
+//                continue;
+//            }
+//            $value = $postData[$item];
+
+            $updateData[$item] = $value;
         }
 
         //$id = Input::get('id');
@@ -579,6 +638,20 @@ class Crud extends Controller{
      */
     private function actionDelete(){
         if($this->allowDelete){
+            foreach($this->changeType as $key=>$item){
+                if($item['new_type'] == 'image'){
+                    $targetDir = public_path($item['target_dir']);
+                    $row = $this->row;
+                    $oldFile = $targetDir.'/'.$row[$key];
+
+                    if(file_exists($oldFile) and is_file($oldFile)){
+                        if(is_writable($oldFile)){
+                            unlink($oldFile);
+                        }
+                    }
+                }
+            }
+
             DB::table($this->table)->delete($this->ids);
         }
 
@@ -1246,5 +1319,54 @@ class Crud extends Controller{
         $this->customColumns[$columnName] = array(
             'callback' => $callback
         );
+    }
+
+    private function uploadFile($item, $targetDir, $action = 'insert', $type = 'image'){
+
+
+        $file = Input::file($item);
+
+        $value = '';
+        if($file != null){
+            if($file->isValid()){
+                $mime = explode('/', $file->getClientMimeType());
+                $extension = '.jpg';
+                if($mime[0] != 'image' and $type == 'image'){
+                    return false;
+                }
+
+                $targetDir = public_path($targetDir);
+
+                if($action == 'update'){
+                    $row = $this->row;
+                    $oldFile = $targetDir.'/'.$row[$item];
+
+                    if(file_exists($oldFile) and is_file($oldFile)){
+                        if(is_writable($oldFile)){
+                            unlink($oldFile);
+                        }
+                    }
+                }
+
+                if(isset($mime[1])){$extension = '.'.$mime[1];}
+
+                $fileName = $file->getClientOriginalName();
+
+                while(file_exists($targetDir.'/'.$fileName)){
+                    $fileName = str_replace($extension, '', $fileName).'.cc'.$extension;
+                }
+                $file->move($targetDir, $fileName);
+                $value = $fileName;
+
+
+
+
+            }
+
+        }
+        if($value != ''){
+            return $value;
+        }
+        return false;
     }
 }

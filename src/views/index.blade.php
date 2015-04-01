@@ -102,8 +102,22 @@ $x = $crud['lists']['from'];
 
                                             @if($crud['data_type'][$column]['input_type'] == 'money')
                                                 <td class="text-right">{{ number_format((float)$item[$column], 2) }}</td>
+
                                             @elseif($crud['data_type'][$column]['input_type'] == 'join')
                                                 <td>{{ $item[$crud['data_type'][$column]['related_field']] }}</td>
+
+                                            @elseif($crud['data_type'][$column]['input_type'] == 'richarea')
+                                                <td>{{ substr(strip_tags($item[$column]), 0, 100) }} ...</td>
+
+                                            @elseif($crud['data_type'][$column]['input_type'] == 'textarea')
+                                                <td>{{ substr(strip_tags($item[$column]), 0, 40) }} ...</td>
+
+                                            @elseif($crud['data_type'][$column]['input_type'] == 'image')
+                                                <td><img class="image-thumb"
+                                                    data-full="{{ ImageSrc::path('/'.$crud['data_type'][$column]['target_dir'].'/'.$item[$column], 'resize', 400) }}"
+                                                    src="{{ ImageSrc::path('/'.$crud['data_type'][$column]['target_dir'].'/'.$item[$column], 'resizeCrop', 40, 30) }}"
+                                                    /></td>
+
                                             @elseif($crud['data_type'][$column]['input_type'] == 'select')
                                                 <?php
                                                 $value = '';
@@ -198,6 +212,17 @@ $x = $crud['lists']['from'];
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    <div class="modal fade" id="modal-image-full" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <div class="text-center"><img class="image-full" /></div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
 
 @endsection
 
@@ -214,6 +239,11 @@ $x = $crud['lists']['from'];
         $('#modal-confirm-hapus').modal({
             show: false,
             backdrop: false
+        });
+
+        $('.image-thumb').click(function(){
+            $('.image-full').attr('src', $(this).attr('data-full'));
+            $('#modal-image-full').modal();
         });
 
         $('#cb-all').click(function(){
