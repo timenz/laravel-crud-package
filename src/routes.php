@@ -1,3 +1,3 @@
 <?php
 
-Route::get('crud/{action?}', array('uses' => 'CrudController@index'));
+//Route::get('crud/{action?}', array('uses' => 'CrudController@index'));

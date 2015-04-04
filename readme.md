@@ -141,6 +141,11 @@ Menspesifikasikan field-field yang akan tampil di form create, edit dan read
 		'id_role',
 	));
 	
+### displayAs
+Modifikasi nama kolom
+
+	$this->displayAs('id_airlines', 'Maskapai');
+	
 ### createFields
 Menspesifikasikan field-field yang akan tampil di form create saja
 

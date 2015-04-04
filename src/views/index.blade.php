@@ -3,7 +3,9 @@
 
 <?php
 $x = $crud['lists']['from'];
+$session = $crud['index_session'];
 ?>
+
 
 @section('konten')
     <div class="row">
@@ -15,6 +17,23 @@ $x = $crud['lists']['from'];
                     <h3 class="panel-title">{{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
+                    @if(count($session) > 0)
+                        @foreach($session as $key=>$item)
+                            @if($key == 'order')
+                            <a href="{{ url($crud['uri'].'?action=reset_order') }}"
+                               class="label label-primary">Reset {{ $key }} : | @foreach($item as $i) {{ $i }} | @endforeach
+                                    <span>&times;</span></a>&nbsp;
+                            @endif
+                            @if($key == 'filter')
+                                <a href="{{ url($crud['uri'].'?action=reset_search') }}"
+                                   class="label label-primary">Reset search <span>&times;</span></a>&nbsp;
+
+
+                            @endif
+                        @endforeach
+                        <div class="clearfix" style="height: 10px;"></div>
+                    @endif
+
                     @if($crud['message'])
                         <div class="alert alert-success fade in">
                             <a href="#" class="close" data-dismiss="alert">&times;</a>
@@ -58,6 +77,9 @@ $x = $crud['lists']['from'];
                             @if($crud['allow_export'])
                                 <a href="#" id="list-btn-export" class="btn btn-success">{{ $crud['list_export_text'] }}</a>
                             @endif
+                            @if($crud['allow_search'])
+                                <a href="#" id="list-btn-search" class="btn btn-success">{{ $crud['list_search_text'] }}</a>
+                            @endif
                         </div>
                     </div>
 
@@ -70,7 +92,15 @@ $x = $crud['lists']['from'];
                             <tr>
                                 <th><input type="checkbox" class="" name="cb-all" id="cb-all"></th>
                                 @foreach($crud['columns'] as $item)
-                                    <th>{{ $crud['data_type'][$item]['column_text'] }}</th>
+                                    <th>{{ $crud['data_type'][$item]['column_text'] }}
+                                        @if($crud['allow_order'])
+                                        <div class="pull-right">
+                                            <?php $link = url($crud['uri'].'?action=set_order&sort_field='.$crud['data_type'][$item]['column_name'].'&direction='); ?>
+                                            <a href="{{ $link }}asc" class="glyphicon glyphicon-arrow-up text-muted" aria-hidden="true"></a>
+                                            <a href="{{ $link }}desc" href="#" class="glyphicon glyphicon-arrow-down" aria-hidden="true"></a>
+                                        </div>
+                                        @endif
+                                    </th>
                                 @endforeach
 
 
@@ -211,7 +241,6 @@ $x = $crud['lists']['from'];
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-
     <div class="modal fade" id="modal-image-full" >
         <div class="modal-dialog">
             <div class="modal-content">
@@ -222,6 +251,54 @@ $x = $crud['lists']['from'];
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
+    @if($crud['allow_search'])
+    <div class="modal fade" id="modal-search" >
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="get" action="{{ url($crud['uri']) }}">
+                <div class="modal-header">
+                    <h4 class="modal-title">Filter Data</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-hover">
+                    @foreach($crud['columns'] as $item)
+                        <?php
+                            $x = $crud['data_type'][$item];
+                            if(!($x['input_type'] == 'text' or $x['input_type'] == 'numeric' or $x['input_type'] == 'money')){
+                                continue;
+                            }
+                            $contain = array('contain');
+                            $value = '';
+                            if(isset($session['filter'])){
+                                if(isset($session['filter'][$x['column_name']])){
+                                    $value = $session['filter'][$x['column_name']][1];
+                                }
+                            }
+                        ?>
+                        <tr>
+                            <td><label>{{ $x['column_text'] }}</label></td>
+                            <td><select name="search[{{ $x['column_name'].'][filter]' }}" class="form-control">
+                                    @foreach($contain as $ct)<option value="{{ $ct }}">{{ $ct }}</option>@endforeach
+                                </select></td>
+                            <td><input name="search[{{ $x['column_name'].'][value]' }}" value="{{ $value }}" class="form-control"></td>
+                        </tr>
+
+                        </th>
+                    @endforeach
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="action" value="search">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Search</button>
+
+                </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    @endif
 
 
 @endsection
@@ -295,6 +372,13 @@ $x = $crud['lists']['from'];
                     }
                 }
             }, 'json');
+
+        });
+
+        $('#list-btn-search').click(function(e){
+            e.preventDefault();
+            $('#modal-search').modal('show');
+
 
         });
 

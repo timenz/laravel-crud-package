@@ -2,6 +2,7 @@
 
 namespace Timenz\Crud;
 
+use Aws\Common\Facade\Ses;
 use DB;
 use Input;
 use Session;
@@ -49,8 +50,11 @@ class Crud extends Controller{
     private $masterBlade = '';
     private $externalLink = array();
     private $orderBy;
+    private $orderByCustom;
     private $responseType;
     private $tbCount = 1;
+    private $indexSession = array();
+    private $filter;
 
     protected $allowCreate = true;
     protected $allowRead = true;
@@ -59,7 +63,10 @@ class Crud extends Controller{
     protected $allowEdit = true;
     protected $allowMultipleSelect = false;
     protected $allowExport = true;
+    protected $allowSearch = true;
+    protected $allowOrder = true;
     protected $listExportText = 'export';
+    protected $listSearchText = 'search';
     protected $listCreateText = 'tambah';
     protected $listReadText = 'detail';
     protected $listEditText = 'ubah';
@@ -452,6 +459,15 @@ class Crud extends Controller{
             $lists->where($item[0], $item[1], $item[2]);
         }
 
+        if($this->filter != null){
+            foreach($this->filter as $key=>$item){
+                if($item[0] == 'contain'){
+                    // still using t0, column from other tb not included
+                    $lists->where('t0.'.$key, 'LIKE', '%'.$item[1].'%');
+                }
+            }
+        }
+
         foreach($this->setJoin as $key=>$item){
             $selected[] = $item[3].'.'.$item[1];
             $lists->leftJoin($item[0].' as '.$item[3] , 't0.'.$key, '=', $item[3].'.id');
@@ -459,8 +475,13 @@ class Crud extends Controller{
 
         $lists->select($selected);
 
-        if($this->orderBy != null){
+        if($this->orderBy != null and $this->orderByCustom == null){
             $order = $this->orderBy;
+            $lists->orderBy($order[0], $order[1]);
+        }
+
+        if($this->orderByCustom != null){
+            $order = $this->orderByCustom;
             $lists->orderBy($order[0], $order[1]);
         }
 
@@ -789,6 +810,7 @@ class Crud extends Controller{
                 $indexResponse = array(
                     'lists' => $this->lists->toArray(),
                     'custom_values' => $this->customValues,
+                    'index_session' => $this->indexSession,
                     'action_lists' => $this->actionLists,
                     'columns' => $this->columns,
                     'allow_create' => $this->allowCreate,
@@ -796,9 +818,12 @@ class Crud extends Controller{
                     'allow_edit' => $this->allowEdit,
                     'allow_delete' => $this->allowDelete,
                     'allow_export' => $this->allowExport,
+                    'allow_search' => $this->allowSearch,
+                    'allow_order' => $this->allowOrder,
                     'allow_mass_delete' => $this->allowMassDelete,
                     'message' => Session::get('message'),
                     'list_export_text' => $this->listExportText,
+                    'list_search_text' => $this->listSearchText,
                     'list_create_text' => $this->listCreateText,
                     'list_edit_text' => $this->listEditText,
                     'list_read_text' => $this->listReadText,
@@ -902,7 +927,7 @@ class Crud extends Controller{
         $this->response = $this->masterData;
 
         //\DebugBar::info($this->lists->toArray());
-        //\DebugBar::info($this->customValues);
+        //\DebugBar::info($this->response);
 
 
         return $this->response;
@@ -1116,10 +1141,68 @@ class Crud extends Controller{
         $uri = Route::getCurrentRoute()->uri();
         $this->setUri($uri);
 
-        $extAction = array('prepare_export', 'export');
+        $session = array();
+        if(Session::has('crud-'.$uri)){
+            $session = Session::get('crud-'.$uri);
+            $this->indexSession = $session;
+            if(isset($session['order'])){
+                $this->orderByCustom = array($session['order'][0], $session['order'][1]);
+            }
+            if(isset($session['filter'])){
+                $this->filter = $session['filter'];
+            }
+        }
+
+        $extAction = array('prepare_export', 'export', 'set_order', 'reset_order', 'search', 'reset_search');
         $action = Input::get('action');
 
         if(in_array($action, $extAction)){
+            if($action == 'set_order'){
+                $session['order'] = array(Input::get('sort_field'), Input::get('direction'));
+
+                Session::set('crud-'.$uri, $session);
+                return Redirect::back();
+
+            }
+            if($action == 'search'){
+
+                if(Input::has('search')){
+                    $filter = array();
+                    foreach(Input::get('search') as $key=>$item){
+                        if($item['value'] == ''){continue;}
+                        $filter[$key] = array($item['filter'], $item['value']);
+                    }
+
+                    if(count($filter) > 0){
+                        $this->filter = $filter;
+                        $session['filter'] = $filter;
+                        Session::set('crud-'.$uri, $session);
+                    }
+                }
+                return Redirect::back();
+
+            }
+
+            if($action == 'reset_order'){
+                if(isset($session['order'])){
+                    unset($session['order']);
+                }
+
+                Session::set('crud-'.$uri, $session);
+                return Redirect::back();
+
+            }
+
+            if($action == 'reset_search'){
+                if(isset($session['filter'])){
+                    unset($session['filter']);
+                }
+
+                Session::set('crud-'.$uri, $session);
+                return Redirect::back();
+
+            }
+
             $this->setAction($action);
 
             $this->execute();
@@ -1319,6 +1402,10 @@ class Crud extends Controller{
         $this->customColumns[$columnName] = array(
             'callback' => $callback
         );
+    }
+
+    protected function displayAs($columnName, $displayAs){
+        $this->columnDisplay[$columnName] = $displayAs;
     }
 
     private function uploadFile($item, $targetDir, $action = 'insert', $type = 'image'){
