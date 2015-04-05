@@ -1,5 +1,5 @@
 @extends($crud['master_blade'])
-
+<?php $load_mce = false; ?>
 @section('konten')
     <div class="row">
         <div class="col-md-12">
@@ -25,7 +25,6 @@
                         {{--@foreach($data_type as $key=>$item)--}}
                         <?php
                             $input_old = Input::old();
-                            $load_mce = false;
 
                             $old_input_exist = false;
                             if(count($crud['errors']) > 0){

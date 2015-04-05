@@ -1,5 +1,6 @@
 
 @extends($crud['master_blade'])
+<?php $load_mce = false; ?>
 
 @section('konten')
     <div class="row">
