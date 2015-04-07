@@ -1138,7 +1138,9 @@ class Crud extends Controller{
 
 
     public function index(){
-        $uri = Route::getCurrentRoute()->uri();
+        //$uri = Route::getCurrentRoute()->uri();
+        $uri = \Request::decodedPath();
+
         $this->setUri($uri);
 
         $session = array();
@@ -1234,7 +1236,7 @@ class Crud extends Controller{
     }
 
     public function create(){
-        $uri = Route::getCurrentRoute()->uri();
+        $uri = \Request::decodedPath();
         $xuri = explode('/', $uri, -1);
 
         $uri = join('/', $xuri);
@@ -1254,7 +1256,7 @@ class Crud extends Controller{
     }
 
     public function store(){
-        $uri = Route::getCurrentRoute()->uri();
+        $uri = \Request::decodedPath();
         $this->setAction('save');
 
         $this->setUri($uri);
@@ -1289,7 +1291,8 @@ class Crud extends Controller{
 
 
     public function show($id){
-        $uri = Route::getCurrentRoute()->uri();
+        //$uri = Route::getCurrentRoute()->uri();
+        $uri = \Request::decodedPath();
 
         $xuri = explode('/', $uri, -1);
 
@@ -1311,7 +1314,7 @@ class Crud extends Controller{
 
 
     public function edit($id){
-        $uri = Route::getCurrentRoute()->uri();
+        $uri = \Request::decodedPath();
         $xuri = explode('/', $uri, -2);
 
         $uri = join('/', $xuri);
@@ -1334,7 +1337,7 @@ class Crud extends Controller{
 
     public function update($id){
 
-        $uri = Route::getCurrentRoute()->uri();
+        $uri = \Request::decodedPath();
         $xuri = explode('/', $uri, -1);
 
         $uri = join('/', $xuri);
@@ -1371,9 +1374,7 @@ class Crud extends Controller{
     }
 
     public function destroy($id){
-
-
-        $uri = Route::getCurrentRoute()->uri();
+        $uri = \Request::decodedPath();
         $xuri = explode('/', $uri, -1);
 
         $uri = join('/', $xuri);
