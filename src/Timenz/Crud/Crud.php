@@ -1292,11 +1292,12 @@ class Crud extends Controller{
 
     public function show($id){
         //$uri = Route::getCurrentRoute()->uri();
-        $uri = \Request::decodedPath();
+        $uri1 = \Request::decodedPath();
 
-        $xuri = explode('/', $uri, -1);
+        $xuri = explode('/', $uri1, -1);
 
         $uri = join('/', $xuri);
+        $id = str_replace($uri.'/', '', $uri1);
 
         $this->setAction('read');
         $this->setUri($uri);
@@ -1314,10 +1315,12 @@ class Crud extends Controller{
 
 
     public function edit($id){
-        $uri = \Request::decodedPath();
-        $xuri = explode('/', $uri, -2);
+        $uri1 = str_replace('/edit', '', \Request::decodedPath());
+        $xuri = explode('/', $uri1, -1);
 
         $uri = join('/', $xuri);
+
+        $id = str_replace($uri.'/', '', $uri1);
 
         $this->setAction('edit');
         $this->setUri($uri);
@@ -1337,10 +1340,13 @@ class Crud extends Controller{
 
     public function update($id){
 
-        $uri = \Request::decodedPath();
-        $xuri = explode('/', $uri, -1);
+        $uri1 = \Request::decodedPath();
+        $xuri = explode('/', $uri1, -1);
 
         $uri = join('/', $xuri);
+
+        $id = str_replace($uri.'/', '', $uri1);
+
         $this->setAction('update');
 
         $this->setUri($uri);
@@ -1374,10 +1380,13 @@ class Crud extends Controller{
     }
 
     public function destroy($id){
-        $uri = \Request::decodedPath();
-        $xuri = explode('/', $uri, -1);
+        $uri1 = \Request::decodedPath();
+        $xuri = explode('/', $uri1, -1);
 
         $uri = join('/', $xuri);
+
+        $id = str_replace($uri.'/', '', $uri1);
+
         $this->setAction('delete');
 
         $this->setUri($uri);
