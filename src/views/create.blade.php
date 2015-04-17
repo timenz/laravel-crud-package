@@ -200,7 +200,7 @@
 @endsection
 
 @section('js')
-    @if($load_mce)<script src="{{ asset('libs/tinymce/tinymce.min.js') }}"></script>@endif
+
 <script>
 @if($load_mce)
 tinymce.init({

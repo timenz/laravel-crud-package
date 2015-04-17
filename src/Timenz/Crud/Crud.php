@@ -2,7 +2,6 @@
 
 namespace Timenz\Crud;
 
-use Aws\Common\Facade\Ses;
 use DB;
 use Input;
 use Session;
@@ -55,14 +54,16 @@ class Crud extends Controller{
     private $tbCount = 1;
     private $indexSession = array();
     private $filter;
+    private $exportFilter;
 
     protected $allowCreate = true;
     protected $allowRead = true;
     protected $allowDelete = true;
-    protected $allowMassDelete = false;
+    private $allowMassDelete = false;
     protected $allowEdit = true;
     protected $allowMultipleSelect = false;
-    protected $allowExport = true;
+    protected $allowExport = false;
+    protected $exportMaxLimit = 1000;
     protected $allowSearch = true;
     protected $allowOrder = true;
     protected $listExportText = 'export';
@@ -119,9 +120,11 @@ class Crud extends Controller{
                 if(!$status){
                     return false;
                 }
+                $this->applyJoinNN();
                 break;
 
             case 'create':
+                $this->applyJoinNN();
                 $this->actionCreate();
                 break;
 
@@ -153,12 +156,17 @@ class Crud extends Controller{
                 $this->actionPrepareExport();
                 break;
 
+            case 'export':
+                $this->actionExport();
+                break;
+
 
             default:
                 return false;
                 break;
 
         }
+
 
         if($this->allowMassDelete){
             $this->allowDelete = false;
@@ -202,6 +210,13 @@ class Crud extends Controller{
         if(count($this->columns) < 1){
             $this->columns = $columns;
         }
+//        else{
+//            foreach($this->columns as $item){
+//                if(!isset($dataType[$item])){
+//
+//                }
+//            }
+//        }
     }
 
     /**
@@ -363,12 +378,92 @@ class Crud extends Controller{
         $this->changeType[$field] = $newType;
     }
 
+    private $joinNN;
+    private $joinNNColumn;
+    private $joinNNOption;
+
+    protected function setJoinNN($columnName, $joinField, $joinTable, $relationTable, $fieldRel, $joinFieldRel){
+
+        $this->joinNN[] = array(
+            'column_name' => $columnName,
+            'join_field' => $joinField,
+            'join_table' => $joinTable,
+            'relation_table' => $relationTable,
+            'field_rel' => $fieldRel,
+            'join_field_rel' => $joinFieldRel
+        );
+
+
+    }
+
+
+    private function applyJoinNN(){
+
+
+        if(count($this->joinNN) < 1){
+            return false;
+        }
+
+
+        $action = $this->action;
+        $joinNNColumn = array();
+        $joinNNOption = array();
+
+        foreach($this->joinNN as $join){
+            if($action == 'index'){
+                foreach($this->lists as $item){
+                    if(!isset($item->id)){continue;}
+                    $get = DB::table($join['relation_table'])
+                        ->selectRaw('group_concat(`'.$join['join_field'].'`) as '.$join['column_name'])
+                        ->rightJoin($join['join_table'], $join['join_table'].'.id', '=', $join['join_field_rel'])
+                        ->where($join['relation_table'].'.'.$join['field_rel'], '=', $item->id)
+                        ->groupBy($join['relation_table'].'.'.$join['field_rel'])
+                        ->first();
+
+                    if($get != null){
+                        $joinNNColumn[$item->id][$join['column_name']] = $get->{$join['column_name']};
+                    }
+                }
+            }
+
+            if($action == 'edit' or $action == 'read'){
+
+                $get = DB::table($join['relation_table'])
+                    ->selectRaw('group_concat(`'.$join['join_field'].'`) as '.$join['column_name'])
+                    ->rightJoin($join['join_table'], $join['join_table'].'.id', '=', $join['join_field_rel'])
+                    ->where($join['relation_table'].'.'.$join['field_rel'], '=', $this->ids)
+                    ->groupBy($join['relation_table'].'.'.$join['field_rel'])
+                    ->first();
+                if($get != null){
+                    $joinNNColumn[$join['column_name']] = $get->{$join['column_name']};
+                }
+            }
+
+            if($action == 'edit' or $action == 'create'){
+
+                $get = DB::table($join['join_table'])
+                    ->select('id', $join['join_field'].' as option')
+                    ->limit(1000)
+                    ->get();
+                if($get != null){
+                    $joinNNOption[$join['column_name']] = $get;
+                }
+            }
+        }
+
+        $this->joinNNColumn = $joinNNColumn;
+        $this->joinNNOption = $joinNNOption;
+
+
+    }
+
     /**
      *
      */
     private function populateField(){
         $schema = $this->schema;
         $columnDisplay = $this->columnDisplay;
+        $columns = $this->columns;
 
 
         $dataType = array();
@@ -435,6 +530,26 @@ class Crud extends Controller{
             $dataType[$item->column_name] = $dataColumn;
 
 
+        }
+
+        foreach($columns as $item){
+            if(isset($dataType[$item])){continue;}
+            $display = ucwords(str_replace('_', ' ', $item));
+
+            $dataColumn = array(
+                'column_name' => $item,
+                'column_text' => $display,
+                'max_length' => 0,
+                'dec_length' => 0,
+                'input_type' => 'text',
+                'related_field' => '',
+                'type' => 'additional',
+                'options' => array()
+            );
+
+            $dataColumn = $this->applyNewType($item, $dataColumn);
+
+            $dataType[$item] = $dataColumn;
         }
 
         $this->dataType = $dataType;
@@ -678,8 +793,42 @@ class Crud extends Controller{
 
     }
 
+    private $exportTotal;
+    private $exportPaging;
+
     private function actionPrepareExport(){
+
+        $row = DB::table($this->table)->selectRaw("count(*) as aggregate");
+
+        if(Session::has('crud-'.$this->uri)){
+            $session = Session::get('crud-'.$this->uri);
+
+            if(isset($session['export-from']) and isset($session['export-to']) and $this->exportFilter != null){
+                $row->whereBetween($this->exportFilter, array($session['export-from'], $session['export-to']));
+            }
+        }
+
+        $row = $row->first();
+
+        $total = $row->aggregate * 1;
+
+        $paging = true;
+
+        if($total > 1000){
+            $paging = true;
+        }
+
+        $this->exportTotal = $total;
+        $this->exportPaging = $paging;
+
         $this->responseType = 'json';
+    }
+
+    private function actionExport(){
+        $csv = DB::table('booked_ticket_his')->orderBy('id', 'desc')->limit(10)->get();
+
+        $this->csv = $csv;
+        $this->responseType = 'csv';
     }
 
     /**
@@ -751,12 +900,37 @@ class Crud extends Controller{
      *
      */
     private function initCreateFields(){
-
+        $createFields = array();
         if(count($this->createFields) < 1 and count($this->fields) > 0){
-            $this->createFields = $this->fields;
+            $createFields = $this->fields;
         }else if(count($this->createFields) < 1){
-            $this->createFields = $this->allColumns;
+            $createFields = $this->allColumns;
         }
+        //\DebugBar::info($this->createFields);
+        $dataType = $this->dataType;
+
+        if($this->joinNN != null){
+            foreach($this->joinNN as $item){
+                $createFields[] = $item['column_name'];
+
+
+                $dataType[$item['column_name']] = array(
+                    'column_name' => $item['column_name'],
+                    'column_text' => ucwords(str_replace('_', ' ', $item['column_name'])),
+                    'max_length' => 0,
+                    'dec_length' => 0,
+                    'input_type' => 'join_nn',
+                    'related_field' => '',
+                    'options' => $this->joinNNOption[$item['column_name']]
+                );
+
+            }
+        }
+
+        $this->createFields = $createFields;
+        $this->dataType = $dataType;
+        //\DebugBar::info($dataType);
+
     }
 
     /**
@@ -818,6 +992,8 @@ class Crud extends Controller{
                     'allow_edit' => $this->allowEdit,
                     'allow_delete' => $this->allowDelete,
                     'allow_export' => $this->allowExport,
+                    'export_max_limit' => $this->exportMaxLimit,
+                    'export_filter' => $this->exportFilter,
                     'allow_search' => $this->allowSearch,
                     'allow_order' => $this->allowOrder,
                     'allow_mass_delete' => $this->allowMassDelete,
@@ -846,6 +1022,8 @@ class Crud extends Controller{
                     'master_blade' => $this->masterBlade,
                     'back_btn_text' => $this->backBtnText,
                     'external_link' => $this->externalLink,
+                    //'join_nn' => $this->joinNN,
+                    //'join_nn_option' => $this->joinNNOption,
                     'errors' => Session::get('validate_errors')
 
                 );
@@ -899,22 +1077,13 @@ class Crud extends Controller{
 
             case 'prepare_export':
 
-                $row = DB::table($this->table)->selectRaw("count(*) as aggregate")->first();
-
-                $total = $row->aggregate * 1;
-
-                $paging = false;
-
-                if($total > 1000){
-                    $paging = true;
-                }
 
                 $response = array(
                     'action' => $this->action,
                     'uri' => $this->uri,
                     'status' => $this->status,
-                    'total' => $total,
-                    'paging' => $paging
+                    'total' => $this->exportTotal,
+                    'paging' => $this->exportPaging
 
                 );
 
@@ -1105,7 +1274,8 @@ class Crud extends Controller{
 
     private function setCostomColumns($row){
         foreach($this->customColumns as $key=>$item){
-            $value = $item['callback']($row, $row->{$key});
+            isset($row->{$key}) ? $keyVal = $row->{$key} : $keyVal = null;
+            $value = $item['callback']($row, $keyVal);
             if(!$value){continue;}
 
 
@@ -1136,6 +1306,7 @@ class Crud extends Controller{
 
     }
 
+    private $csv;
 
     public function index(){
         //$uri = Route::getCurrentRoute()->uri();
@@ -1155,7 +1326,15 @@ class Crud extends Controller{
             }
         }
 
-        $extAction = array('prepare_export', 'export', 'set_order', 'reset_order', 'search', 'reset_search');
+        $extAction = array(
+            'prepare_export',
+            'export',
+            'limit_export',
+            'set_order',
+            'reset_order',
+            'search',
+            'reset_search'
+        );
         $action = Input::get('action');
 
         if(in_array($action, $extAction)){
@@ -1205,7 +1384,26 @@ class Crud extends Controller{
 
             }
 
+            if($action == 'limit_export'){
+                $session['export-from'] = Input::get('from');
+                $session['export-to'] = Input::get('to');
+
+                Session::set('crud-'.$uri, $session);
+                return Redirect::back()->with('show-modal-export', true);
+
+            }
+
             $this->setAction($action);
+
+            $run = $this->run();
+
+            if($run === false){
+                return 'on k';
+            }
+
+            if($this->errorText != ''){
+                return $this->errorText;
+            }
 
             $this->execute();
 
@@ -1213,7 +1411,43 @@ class Crud extends Controller{
                 return Response::json($this->getResponse());
             }
 
-            return 'ok';
+            if($this->responseType == 'csv'){
+                $headers = [
+                    'Content-type'        => 'application/csv'
+                    ,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+                    ,   'Content-type'        => 'text/csv'
+                    ,   'Content-Disposition' => 'attachment; filename='.$this->uri.'-'.time().'.csv'
+                    ,   'Expires'             => '0'
+                    ,   'Pragma'              => 'public'
+                ];
+
+                $csv = $this->csv;
+
+                if($csv != null){
+                    //$list = $list->toArray();
+
+
+                    # add headers for each column in the CSV download
+                    array_unshift($csv, array_keys((array)$csv[0]));
+                    \DebugBar::info($csv);
+
+
+                    $callback = function() use ($csv)
+                    {
+                        $FH = fopen('php://output', 'w');
+                        foreach ($csv as $row) {
+                            fputcsv($FH, (array)$row);
+                        }
+                        fclose($FH);
+                    };
+
+
+                    return Response::stream($callback, 200, $headers);
+                }
+
+            }
+
+            return 'okai';
         }
 
         $this->setAction('index');
@@ -1465,5 +1699,10 @@ class Crud extends Controller{
             return $value;
         }
         return false;
+    }
+
+    protected function setExportFilter($field){
+        $this->allowExport = true;
+        $this->exportFilter = $field;
     }
 }

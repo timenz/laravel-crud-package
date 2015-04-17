@@ -33,6 +33,14 @@ publish view
 publish view on-dev
 
 	php artisan view:publish --path="workbench/timenz/crud/src/views" timenz/crud
+	
+Javascript Libs Dependency
+
+	{
+    	"bootstrap": "~3.3.0",
+    	"tinymce": "~4.1",
+    	"bootstrap-datepicker": "1.3.0",
+    }
 
 ### Mininal code example
 

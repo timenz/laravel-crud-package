@@ -4,6 +4,7 @@
 <?php
 $x = $crud['lists']['from'];
 $session = $crud['index_session'];
+$load_datepicker = false;
 ?>
 
 
@@ -121,14 +122,14 @@ $session = $crud['index_session'];
                                     <?php $x++; ?>
 
                                     @foreach($crud['columns'] as $column)
+                                        <?php
 
+                                        if(isset($crud['custom_values'][$column][$item['id']])){
+                                        ?><td>{{ $crud['custom_values'][$column][$item['id']] }}</td><?php
+                                        continue;
+                                        } ?>
                                         @if(isset($item[$column]))
-                                            <?php
 
-                                            if(isset($crud['custom_values'][$column][$item['id']])){
-                                                ?><td>{{ $crud['custom_values'][$column][$item['id']] }}</td><?php
-                                                continue;
-                                            } ?>
 
                                             @if($crud['data_type'][$column]['input_type'] == 'money')
                                                 <td class="text-right">{{ number_format((float)$item[$column], 2) }}</td>
@@ -218,11 +219,36 @@ $session = $crud['index_session'];
                     <h4 class="modal-title">Export Data</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Export data.</p>
+
+
+                    @if($crud['export_filter'] != null)
+                        <?php $load_datepicker = true; ?>
+                        <h5>Filter {{ ucwords(str_replace('_', ' ', $crud['export_filter'])) }}</h5>
+                        <form class="form-inline" method="get" action="{{ url($crud['uri']) }}">
+                            <div class="form-group">
+                                <label></label>
+                                <input name="from" type="text" class="form-control input-date" placeholder="From"
+                                       value="@if(isset($session['export-from'])){{ $session['export-from'] }}@endif">
+                            </div>
+                            <div class="form-group">
+                                <label></label>
+                                <input name="to" type="text" class="form-control input-date" placeholder="To"
+                                       value="@if(isset($session['export-to'])){{ $session['export-to'] }}@endif">
+                            </div>
+                            <input type="hidden" value="limit_export" name="action">
+                            <button type="submit" class="btn btn-default">Update Filter</button>
+                        </form>
+                    @endif
+
+                    <nav>
+                        <ul class="pagination"></ul>
+                    </nav>
+                    <p>Limit : <strong>{{ number_format($crud['export_max_limit']) }}</strong> rows/export.</p>
+                    <p>Total : <strong class="total">0</strong> rows.</p>
+                    <p>* klik paging to export.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary">Export</button>
 
                 </div>
             </div><!-- /.modal-content -->
@@ -300,7 +326,9 @@ $session = $crud['index_session'];
     </div><!-- /.modal -->
     @endif
 
-
+    <style>
+        .datepicker{z-index:1151 !important;}
+    </style>
 @endsection
 
 @section('js')
@@ -362,14 +390,24 @@ $session = $crud['index_session'];
 
         $('#list-btn-export').click(function(e){
             e.preventDefault();
-            $('#modal-confirm-wait').modal('show');
+            //$('#modal-confirm-wait').modal('show');
 
             $.get('{{ url($crud['uri'].'/') }}?action=prepare_export', function(data){
                 $('#modal-confirm-wait').modal('hide');
                 if(data.status){
-                    if(data.paging == false){
-                        $('#modal-confirm-export').modal('show');
+                    var str = '', max_limit = {{ $crud['export_max_limit'] }};
+                    var pagingNum = data.total/max_limit;
+                    for(var i = 1; i <= pagingNum ; i++){
+                        str += '<li><a href="{{ url($crud['uri'].'?action=export&page=') }}' + i + '">' + i + '</a></li>';
                     }
+                    if(str == ''){
+                        str = '<li><a href="{{ url($crud['uri'].'?action=export') }}">' + 1 + '</a></li>';
+                    }
+
+                    $('#modal-confirm-export').modal('show');
+                    $('#modal-confirm-export .pagination').html(str);
+                    $('#modal-confirm-export .total').html(data.total.formatMoney(0));
+
                 }
             }, 'json');
 
@@ -381,14 +419,23 @@ $session = $crud['index_session'];
 
 
         });
+        @if(Session::has('show-modal-export'))
+        $('#list-btn-export').click();
+        @endif
 
         $('#modal-confirm-export').modal({
+            backdrop: 'static',
             show: false
         });
 
         $('#modal-confirm-wait').modal({
             backdrop: 'static',
             show: false
+        });
+
+        $('.input-date').datepicker({
+            autoclose: true,
+            format: 'yyyy-mm-dd'
         });
 
         function cbListAction(){
