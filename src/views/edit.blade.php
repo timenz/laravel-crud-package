@@ -41,7 +41,7 @@
                             <?php
                                     $item = $crud['data_type'][$key];
                                     $value = $item['value'];
-                                    if($old_input_exist){
+                                    if($old_input_exist and isset($input_old[$key])){
                                         $value = $input_old[$key];
                                     }
                             ?>
