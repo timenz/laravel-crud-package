@@ -55,6 +55,7 @@ class Crud extends Controller{
     private $indexSession = array();
     private $filter;
     private $exportFilter;
+    private $isLoadMceLibs = false;
 
     protected $allowCreate = true;
     protected $allowRead = true;
@@ -260,6 +261,7 @@ class Crud extends Controller{
                 $changeType[$field] = array(
                     'new_type' => $newType
                 );
+                $this->isLoadMceLibs = true;
                 break;
 
             case 'select':
@@ -1022,6 +1024,7 @@ class Crud extends Controller{
                     'master_blade' => $this->masterBlade,
                     'back_btn_text' => $this->backBtnText,
                     'external_link' => $this->externalLink,
+                    'is_load_mce_libs' => $this->isLoadMceLibs,
                     //'join_nn' => $this->joinNN,
                     //'join_nn_option' => $this->joinNNOption,
                     'errors' => Session::get('validate_errors')
@@ -1047,6 +1050,7 @@ class Crud extends Controller{
                     'master_blade' => $this->masterBlade,
                     'back_btn_text' => $this->backBtnText,
                     'external_link' => $this->externalLink,
+                    'is_load_mce_libs' => $this->isLoadMceLibs,
                     'errors' => Session::get('validate_errors')
 
                 );
