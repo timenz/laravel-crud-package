@@ -35,10 +35,14 @@
                                 <div class="col-lg-10">
                                     @if($item['input_type'] == 'join')
                                         <p class="form-control-static">{{ $item['value'] }}</p>
-                                    @elseif($item['input_type'] == 'image')
+                                    @endif
+
+                                    @if($item['input_type'] == 'image')
                                         <p>Download : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
                                         <p class="form-control-static"><img src="{{ ImageSrc::path('/'.$item['target_dir'].'/'.$item['value'], 'resize', 400) }}" /></p>
-                                    @elseif($item['input_type'] == 'select')
+                                    @endif
+
+                                    @if($item['input_type'] == 'select')
                                         <?php
                                         $value = '';
                                         foreach($item['options'] as $key=>$opt){
@@ -51,10 +55,17 @@
                                         ?>
                                             <p class="form-control-static">{{ $value }}</p>
 
-                                    @elseif($item['input_type'] == 'textarea')
+                                    @endif
+
+                                    @if($item['input_type'] == 'textarea')
                                         <p class="form-control-static">{{ $item['value'] }}</p>
-                                    @else
+
+
+                                    @endif
+
+                                    @if($item['input_type'] == 'join_nn')
                                         <p class="form-control-static">{{ $item['value'] }}</p>
+
                                     @endif
 
                                 </div>

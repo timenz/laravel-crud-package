@@ -161,6 +161,29 @@
 
                                     @endif
 
+                                    @if($item['input_type'] == 'join_nn')
+                                        <?php
+                                        $arr_option = $item['options'];
+                                        $str_option = '<option value="">Pilih</option>';
+                                        foreach($arr_option as $option){
+                                            $sel = '';
+
+                                            if(is_array($value)){
+                                                foreach($value as $opt){
+                                                    if($opt == $option->id){
+                                                        $sel = 'selected';
+                                                    }
+                                                }
+                                            }
+                                            $str_option .= '<option '.$sel.' value="'.$option->id.'">'.$option->option.'</option>';
+                                        }
+                                        ?>
+                                        <select name="{{ $item['column_name'] }}[]"
+                                                class="cl-{{ $item['column_name'] }} form-control chosen-select" multiple
+                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+
+                                    @endif
+
 
 
                                     @if($item['input_type'] == 'textarea')
@@ -234,6 +257,9 @@
 
 @section('js')
     <script>
+        $(function(){
+            $('.chosen-select').chosen();
+        });
         @if($load_mce)
         tinymce.init({
             selector: "textarea.richarea",

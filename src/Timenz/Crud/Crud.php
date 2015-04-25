@@ -130,25 +130,30 @@ class Crud extends Controller{
                 break;
 
             case 'save':
+                $this->applyJoinNN();
                 $this->actionSave();
                 break;
 
             case 'edit':
+                $this->applyJoinNN();
                 $this->getOneRow();
                 $this->actionEdit();
                 break;
 
             case 'update':
+                $this->applyJoinNN();
                 $this->getOneRow();
                 $this->actionUpdate();
                 break;
 
             case 'read':
+                $this->applyJoinNN();
                 $this->getOneRow();
                 $this->actionRead();
                 break;
 
             case 'delete':
+                $this->applyJoinNN();
                 $this->getOneRow();
                 $this->actionDelete();
                 break;
@@ -383,6 +388,8 @@ class Crud extends Controller{
     private $joinNN;
     private $joinNNColumn;
     private $joinNNOption;
+    private $insertNN;
+    private $delNN;
 
     protected function setJoinNN($columnName, $joinField, $joinTable, $relationTable, $fieldRel, $joinFieldRel){
 
@@ -410,6 +417,8 @@ class Crud extends Controller{
         $action = $this->action;
         $joinNNColumn = array();
         $joinNNOption = array();
+        $insertNN = array();
+        $delNN = array();
 
         foreach($this->joinNN as $join){
             if($action == 'index'){
@@ -451,10 +460,33 @@ class Crud extends Controller{
                     $joinNNOption[$join['column_name']] = $get;
                 }
             }
+
+            if($action == 'save' or $action == 'update'){
+
+                $delNN[$join['column_name']] = array(
+                    'relation_table' => $join['relation_table'],
+                    'field_rel' => $join['field_rel'],
+                    'join_field_rel' => $join['join_field_rel']
+                );
+
+                if(!Input::has($join['column_name'])){
+                    continue;
+                }
+                $insertNN[$join['column_name']] = array(
+                    'relation_table' => $join['relation_table'],
+                    'field_rel' => $join['field_rel'],
+                    'join_field_rel' => $join['join_field_rel'],
+                    'values' => Input::get($join['column_name'])
+                );
+            }
         }
+
+
 
         $this->joinNNColumn = $joinNNColumn;
         $this->joinNNOption = $joinNNOption;
+        $this->insertNN = $insertNN;
+        $this->delNN = $delNN;
 
 
     }
@@ -639,21 +671,32 @@ class Crud extends Controller{
 
 
         $insertData = array();
+        $validateData = array();
         $postData = $this->postCreateData;
 
         foreach($createFields as $item){
             if($item == 'id'){continue;}
+            if(!isset($postData[$item])){continue;}
             $value = $postData[$item];
 
             $changeType = $this->changeType;
+
             if(isset($changeType[$item])){
                 $type = $changeType[$item];
                 if($type['new_type'] == 'image'){
                     $val = $this->uploadFile($item, $type['target_dir']);
                     if(!$val){continue;}else{$value = $val;}
                 }
+
+
             }
 
+
+            $validateData[$item] = $value;
+
+            if($this->dataType[$item]['input_type'] == 'join_nn'){
+                continue;
+            }
 
             $insertData[$item] = $value;
         }
@@ -665,6 +708,7 @@ class Crud extends Controller{
         $status = false;
         $valid = true;
 
+
         if(count($this->validateRules) > 0){
             $validator = Validator::make($insertData, $this->validateRules);
             if($validator->fails()){
@@ -675,8 +719,32 @@ class Crud extends Controller{
 
 
         if($this->allowCreate and $valid){
-            DB::table($this->table)->insert($insertData);
-            $status = true;
+            $insertNN = $this->insertNN;
+            $status = DB::transaction(function() use($insertData, $insertNN) {
+                $insertId = DB::table($this->table)->insertGetId($insertData);
+
+                if($insertNN != null){
+                    $bulkInsert = array();
+                    foreach($insertNN as $item){
+                        foreach($item['values'] as $val){
+                            $bulkInsert[] = array(
+                                $item['field_rel'] => $insertId,
+                                $item['join_field_rel'] => $val
+                        );
+                        }
+
+                    }
+
+
+                    if(count($bulkInsert) > 0){
+                        DB::table($item['relation_table'])->insert($bulkInsert);
+                    }
+
+                }
+
+                return true;
+            });
+
         }
 
         $this->status = $status;
@@ -700,6 +768,7 @@ class Crud extends Controller{
         $editFields = $this->editFields;
 
         $updateData = array();
+        $validateData = array();
         $postData = $this->postUpdateData;
         $changeType = $this->changeType;
 
@@ -722,10 +791,12 @@ class Crud extends Controller{
                 }
             }
 
-//            if(!isset($postData[$item])){
-//                continue;
-//            }
-//            $value = $postData[$item];
+
+            $validateData[$item] = $value;
+
+            if($this->dataType[$item]['input_type'] == 'join_nn'){
+                continue;
+            }
 
             $updateData[$item] = $value;
         }
@@ -744,20 +815,109 @@ class Crud extends Controller{
         $valid = true;
 
         if(count($this->validateRules) > 0){
-            $validator = Validator::make($updateData, $this->validateRules);
+            $validator = Validator::make($validateData, $this->validateRules);
             if($validator->fails()){
                 $this->validateErrors = $validator->messages()->toArray();
                 $valid = false;
             }
         }
 
-
-
-
         if($this->allowEdit and $valid){
-            DB::table($this->table)->where(array('id' => $this->ids))->update($updateData);
-            $status = true;
+            $insertNN = $this->insertNN;
+
+            $insertId = $this->ids;
+            $dataType = $this->dataType;
+            $status = DB::transaction(function() use($updateData, $insertNN, $insertId, $dataType) {
+
+                DB::table($this->table)->where(array('id' => $this->ids))->update($updateData);
+
+                if($insertNN != null){
+
+
+                    $bulkInsert = array();
+
+                    foreach($insertNN as $key=>$item){
+                        $oldNNValues = $dataType[$key]['value'];
+
+                        foreach($item['values'] as $val){
+
+                            $skipInsert = false;
+                            if(count($oldNNValues) > 0){
+                                foreach($oldNNValues as $old){
+                                    if($old == $val){
+                                        $skipInsert = true;
+                                        break;
+                                    }
+                                }
+
+                            }
+
+                            if(!$skipInsert){
+                                $bulkInsert[] = array(
+                                    $item['field_rel'] => $insertId,
+                                    $item['join_field_rel'] => $val
+                                );
+                            }
+
+                        }
+
+
+                    }
+
+
+                    if(count($bulkInsert) > 0){
+                        DB::table($item['relation_table'])->insert($bulkInsert);
+                    }
+
+                }
+
+
+                if($this->delNN != null){
+                    foreach($this->delNN as $key=>$del){
+
+                        if(isset($this->dataType[$key])){
+                            if(count($this->dataType[$key]['value']) > 0){
+                                foreach($this->dataType[$key]['value'] as $val){
+                                    $skipDel = false;
+                                    if($insertNN != null){
+                                        if(isset($insertNN[$key])){
+                                            foreach($insertNN[$key]['values'] as $dval){
+                                                if($dval == $val){
+                                                    $skipDel = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if(!$skipDel){
+                                        $arrDel = array(
+                                            $del['field_rel'] => $this->ids,
+                                            $del['join_field_rel'] => $val
+                                        );
+
+
+                                        DB::table($del['relation_table'])->where($arrDel)->delete();
+                                    }
+
+
+
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
+
+                return true;
+            });
+
         }
+
+
+
 
 
         $this->status = $status;
@@ -790,7 +950,50 @@ class Crud extends Controller{
                 }
             }
 
-            DB::table($this->table)->delete($this->ids);
+            $deleteNN = null;
+
+            if($this->joinNN != null){
+
+
+                foreach($this->joinNN as $item){
+
+
+                    $x = DB::table($item['relation_table'])
+                        ->select($item['relation_table'].'.id')
+                        ->where($item['field_rel'], '=', $this->ids)
+                        ->join($item['join_table'], $item['join_table'].'.id', '=', $item['relation_table'].'.'.$item['join_field_rel'])
+                        ->get();
+
+                    if($x != null){
+                        $deleteNN[] = array(
+                            'table' => $item['relation_table'],
+                            'data' => $x
+                        );
+                    }
+
+
+                }
+
+
+            }
+
+            $use = $this;
+
+            DB::transaction(function() use($use, $deleteNN){
+                if($deleteNN != null){
+                    foreach($deleteNN as $item){
+                        foreach($item['data'] as $x){
+                            DB::table($item['table'])->delete($x->id);
+                        }
+
+                    }
+                }
+
+                DB::table($use->table)->delete($use->ids);
+            });
+
+
+
         }
 
     }
@@ -891,11 +1094,58 @@ class Crud extends Controller{
      */
     private function initEditFields(){
 
+        $editFields = array();
+
         if(count($this->editFields) < 1 and count($this->fields) > 0){
-            $this->editFields = $this->fields;
+            $editFields = $this->fields;
         }else if(count($this->editFields) < 1){
-            $this->editFields = $this->allColumns;
+            $editFields = $this->allColumns;
         }
+
+        $dataType = $this->dataType;
+
+        if($this->joinNN != null){
+            foreach($this->joinNN as $item){
+                $editFields[] = $item['column_name'];
+                $options = array();
+                if($this->action == 'edit'){
+                    $options = $this->joinNNOption[$item['column_name']];
+                }
+
+                $values = DB::table($item['relation_table'])
+                    ->select($item['relation_table'].'.'.$item['join_field_rel'].' as id')
+                    ->where($item['field_rel'], '=', $this->ids)
+                    ->join($item['join_table'], $item['join_table'].'.id', '=', $item['relation_table'].'.'.$item['join_field_rel'])
+                    ->get();
+                $value = null;
+
+                if($values != null){
+                    $value = array();
+
+                    foreach($values as $val){
+                        $value[] = $val->id;
+                    }
+                }
+
+
+                $dataType[$item['column_name']] = array(
+                    'column_name' => $item['column_name'],
+                    'column_text' => ucwords(str_replace('_', ' ', $item['column_name'])),
+                    'max_length' => 0,
+                    'dec_length' => 0,
+                    'input_type' => 'join_nn',
+                    'related_field' => '',
+                    'options' => $options,
+                    'value' => $value
+                );
+
+            }
+
+
+        }
+
+        $this->editFields = $editFields;
+        $this->dataType = $dataType;
     }
 
     /**
@@ -908,12 +1158,16 @@ class Crud extends Controller{
         }else if(count($this->createFields) < 1){
             $createFields = $this->allColumns;
         }
-        //\DebugBar::info($this->createFields);
+
         $dataType = $this->dataType;
 
         if($this->joinNN != null){
             foreach($this->joinNN as $item){
                 $createFields[] = $item['column_name'];
+                $options = array();
+                if($this->action == 'create'){
+                    $options = $this->joinNNOption[$item['column_name']];
+                }
 
 
                 $dataType[$item['column_name']] = array(
@@ -923,7 +1177,7 @@ class Crud extends Controller{
                     'dec_length' => 0,
                     'input_type' => 'join_nn',
                     'related_field' => '',
-                    'options' => $this->joinNNOption[$item['column_name']]
+                    'options' => $options
                 );
 
             }
@@ -931,7 +1185,7 @@ class Crud extends Controller{
 
         $this->createFields = $createFields;
         $this->dataType = $dataType;
-        //\DebugBar::info($dataType);
+
 
     }
 
@@ -940,11 +1194,62 @@ class Crud extends Controller{
      */
     private function initReadFields(){
 
+        $readFields = array();
+
         if(count($this->readFields) < 1 and count($this->fields) > 0){
-            $this->readFields = $this->fields;
+            $readFields = $this->fields;
         }else if(count($this->readFields) < 1){
-            $this->readFields = $this->allColumns;
+            $readFields = $this->allColumns;
         }
+        $dataType = $this->dataType;
+
+        if($this->joinNN != null){
+            foreach($this->joinNN as $item){
+                $readFields[] = $item['column_name'];
+                $options = array();
+                if($this->action == 'edit'){
+                    $options = $this->joinNNOption[$item['column_name']];
+                }
+
+                $values = DB::table($item['relation_table'])
+                    ->select($item['join_table'].'.'.$item['join_field'].' as value')
+                    ->where($item['field_rel'], '=', $this->ids)
+                    ->join($item['join_table'], $item['join_table'].'.id', '=', $item['relation_table'].'.'.$item['join_field_rel'])
+                    ->get();
+                $value = null;
+
+                if($values != null){
+                    $value = '';
+
+                    foreach($values as $val){
+                        $value .= $val->value.', ';
+                    }
+                }
+
+                if($value != ''){
+                    $value = substr($value, 0, -2);
+                }
+
+
+                $dataType[$item['column_name']] = array(
+                    'column_name' => $item['column_name'],
+                    'column_text' => ucwords(str_replace('_', ' ', $item['column_name'])),
+                    'max_length' => 0,
+                    'dec_length' => 0,
+                    'input_type' => 'join_nn',
+                    'related_field' => '',
+                    'options' => $options,
+                    'value' => $value
+                );
+
+            }
+
+
+        }
+
+        $this->readFields = $readFields;
+        $this->dataType = $dataType;
+
     }
 
 
@@ -1099,8 +1404,7 @@ class Crud extends Controller{
 
         $this->response = $this->masterData;
 
-        //\DebugBar::info($this->lists->toArray());
-        //\DebugBar::info($this->response);
+
 
 
         return $this->response;
@@ -1433,7 +1737,7 @@ class Crud extends Controller{
 
                     # add headers for each column in the CSV download
                     array_unshift($csv, array_keys((array)$csv[0]));
-                    \DebugBar::info($csv);
+
 
 
                     $callback = function() use ($csv)

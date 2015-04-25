@@ -96,13 +96,17 @@
                                     @if($item['input_type'] == 'enum')
                                         <?php
                                                 $arr_option = $item['options'];
-                                                $str_option = '<option>Pilih</option>';
+                                                $str_option = '<option value="">Pilih</option>';
                                                 foreach($arr_option as $option){
-                                                    $str_option .= '<option value="'.$option.'">'.$option.'</option>';
+                                                    $sel = '';
+                                                    if($option == $value){
+                                                        $sel = 'selected';
+                                                    }
+                                                    $str_option .= '<option '.$sel.' value="'.$option.'">'.$option.'</option>';
                                                 }
                                             ?>
                                         <select name="{{ $item['column_name'] }}"
-                                                class="cl-{{ $item['column_name'] }} form-control"
+                                                class="cl-{{ $item['column_name'] }} form-control chosen-select"
                                                 id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
 
                                     @endif
@@ -110,9 +114,13 @@
                                     @if($item['input_type'] == 'select')
                                         <?php
                                                 $arr_option = $item['options'];
-                                                $str_option = '<option>Pilih</option>';
+                                                $str_option = '<option value="">Pilih</option>';
                                                 foreach($arr_option as $key=>$option){
-                                                    $str_option .= '<option value="'.$key.'">'.$option.'</option>';
+                                                    $sel = '';
+                                                    if($key == $value){
+                                                        $sel = 'selected';
+                                                    }
+                                                    $str_option .= '<option '.$sel.' value="'.$key.'">'.$option.'</option>';
                                                 }
                                             ?>
                                         <select name="{{ $item['column_name'] }}"
@@ -124,13 +132,40 @@
                                     @if($item['input_type'] == 'join')
                                         <?php
                                                 $arr_option = $item['options'];
-                                                $str_option = '<option>Pilih</option>';
+                                                $str_option = '<option value="">Pilih</option>';
                                                 foreach($arr_option as $option){
-                                                    $str_option .= '<option value="'.$option->id.'">'.$option->{$item['related_field']}.'</option>';
+                                                    $sel = '';
+                                                    if($option->id == $value){
+                                                        $sel = 'selected';
+                                                    }
+                                                    $str_option .= '<option '.$sel.' value="'.$option->id.'">'.$option->{$item['related_field']}.'</option>';
                                                 }
                                             ?>
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control"
+                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+
+                                    @endif
+
+                                    @if($item['input_type'] == 'join_nn')
+                                        <?php
+                                                $arr_option = $item['options'];
+                                                $str_option = '<option value="">Pilih</option>';
+                                                foreach($arr_option as $option){
+                                                    $sel = '';
+
+                                                    if(is_array($value)){
+                                                        foreach($value as $opt){
+                                                            if($opt == $option->id){
+                                                                $sel = 'selected';
+                                                            }
+                                                        }
+                                                    }
+                                                    $str_option .= '<option '.$sel.' value="'.$option->id.'">'.$option->option.'</option>';
+                                                }
+                                            ?>
+                                        <select name="{{ $item['column_name'] }}[]"
+                                                class="cl-{{ $item['column_name'] }} form-control chosen-select" multiple
                                                 id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
 
                                     @endif
@@ -158,6 +193,7 @@
                                             @endforeach
                                         </div>
                                     @endif
+
 
                                 </div>
                             </div>
@@ -202,6 +238,11 @@
 @section('js')
 
 <script>
+    $(function(){
+        $('.chosen-select').chosen();
+    });
+
+
 @if($load_mce)
 tinymce.init({
     selector: "textarea.richarea",
@@ -213,5 +254,7 @@ tinymce.init({
     toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
 });
 @endif
+
+
 </script>
 @endsection
