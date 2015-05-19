@@ -1100,6 +1100,8 @@ class Crud extends Controller{
             $editFields = $this->fields;
         }else if(count($this->editFields) < 1){
             $editFields = $this->allColumns;
+        }else{
+            $editFields = $this->editFields;
         }
 
         $dataType = $this->dataType;

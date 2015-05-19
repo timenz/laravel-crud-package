@@ -68,6 +68,21 @@
 
                                     @endif
 
+                                    @if($item['input_type'] == 'numeric')
+                                        <p class="form-control-static">{{ $item['value'] }}</p>
+
+                                    @endif
+
+                                    @if($item['input_type'] == 'decimal')
+                                        <p class="form-control-static">{{ $item['value'] }}</p>
+
+                                    @endif
+
+                                    @if($item['input_type'] == 'text')
+                                        <p class="form-control-static">{{ $item['value'] }}</p>
+
+                                    @endif
+
                                 </div>
                             </div>
                         @endforeach
