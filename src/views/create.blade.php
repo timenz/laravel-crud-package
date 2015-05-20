@@ -236,24 +236,21 @@
 @endsection
 
 @section('js')
+    @if($crud['action'] == 'create' or $crud['action'] == 'edit')
+        @if($crud['is_load_mce_libs'])
+            <script type="text/javascript" src="{{ url('') }}/tinymce/tinymce.min.js"></script>
+            <script type="text/javascript" src="{{ url('') }}/tinymce/tinymce_editor.js"></script>
+            <script type="text/javascript">
+                editor_config.selector = "textarea.richarea";
+                tinymce.init(editor_config);
+            </script>
+        @endif
+    @endif
 
 <script>
     $(function(){
         $('.chosen-select').chosen();
     });
-
-
-@if($load_mce)
-tinymce.init({
-    selector: "textarea.richarea",
-    plugins: [
-        "advlist autolink lists link image charmap print preview anchor",
-        "searchreplace visualblocks code fullscreen",
-        "insertdatetime media table contextmenu paste"
-    ],
-    toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image"
-});
-@endif
 
 
 </script>

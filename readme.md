@@ -8,7 +8,8 @@ Tambahkan variabel berikut pada composer
 
 	{
 		"require": {
-		  	"timenz/crud": "dev-master"
+		  	"timenz/crud": "dev-master",
+            "pqb/filemanager-laravel": "1.*" 
 		},
 	    "repositories": {
 		  	"vcs_crud": {
@@ -17,6 +18,9 @@ Tambahkan variabel berikut pada composer
 			}
 	    },
 	}
+	
+	// follow additional library readme
+	// pqb/filemanager-laravel, use if you goin to implement richarea
 
 trus run
 
@@ -40,6 +44,7 @@ Javascript Libs Dependency
     	"bootstrap": "~3.3.0",
     	"tinymce": "~4.1",
     	"bootstrap-datepicker": "1.3.0",
+        "chosen": "~1.4.2"
     }
 
 ### Mininal code example
