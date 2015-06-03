@@ -387,9 +387,14 @@ class Crud extends Controller{
 
     private $joinNN;
     private $joinNNColumn;
+    private $joinNNColumnTitle = array();
     private $joinNNOption;
     private $insertNN;
     private $delNN;
+
+    protected function setVisibleNN($arrNN){
+        $this->joinNNColumnTitle = $arrNN;
+    }
 
     protected function setJoinNN($columnName, $joinField, $joinTable, $relationTable, $fieldRel, $joinFieldRel){
 
@@ -416,11 +421,13 @@ class Crud extends Controller{
 
         $action = $this->action;
         $joinNNColumn = array();
+        //$joinNNColumnTitle = array();
         $joinNNOption = array();
         $insertNN = array();
         $delNN = array();
 
         foreach($this->joinNN as $join){
+            //$joinNNColumnTitle[] = $join['column_name'];
             if($action == 'index'){
                 foreach($this->lists as $item){
                     if(!isset($item->id)){continue;}
@@ -484,6 +491,7 @@ class Crud extends Controller{
 
 
         $this->joinNNColumn = $joinNNColumn;
+        //$this->joinNNColumnTitle = $joinNNColumnTitle;
         $this->joinNNOption = $joinNNOption;
         $this->insertNN = $insertNN;
         $this->delNN = $delNN;
@@ -636,21 +644,22 @@ class Crud extends Controller{
 
         $lists = $lists->paginate($this->perPage);
 
-        $this->lists = $lists;
+
+
+
+        if($lists == null){
+            return false;
+        }
+
+        $this->pagingLinks = $lists->links();
 
 
         foreach ($lists as $item) {
             $this->setActions($item);
-            $this->setCostomColumns($item);
+            $this->setCustomColumns($item);
         }
 
-
-        if($this->lists == null){
-            return false;
-        }
-
-        $this->pagingLinks = $this->lists->links();
-
+        $this->lists = $lists;
 
         return true;
     }
@@ -1319,6 +1328,8 @@ class Crud extends Controller{
                     'paging_links' => $this->pagingLinks,
                     'external_link' => $this->externalLink,
                     'allow_multiple_select' => $this->allowMultipleSelect,
+                    'join_nn_column' => $this->joinNNColumn,
+                    'join_nn_column_title' => $this->joinNNColumnTitle
 
                 );
                 $response = array_merge($response, $indexResponse);
@@ -1405,8 +1416,6 @@ class Crud extends Controller{
         $this->masterData['crud'] = $response;
 
         $this->response = $this->masterData;
-
-
 
 
         return $this->response;
@@ -1582,7 +1591,7 @@ class Crud extends Controller{
 
     }
 
-    private function setCostomColumns($row){
+    private function setCustomColumns($row){
         foreach($this->customColumns as $key=>$item){
             isset($row->{$key}) ? $keyVal = $row->{$key} : $keyVal = null;
             $value = $item['callback']($row, $keyVal);
@@ -2015,4 +2024,5 @@ class Crud extends Controller{
         $this->allowExport = true;
         $this->exportFilter = $field;
     }
+
 }

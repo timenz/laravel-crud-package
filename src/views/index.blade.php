@@ -104,6 +104,10 @@ $load_datepicker = false;
                                     </th>
                                 @endforeach
 
+                                @foreach($crud['join_nn_column_title'] as $item)
+                                <th>{{ ucwords(str_replace('_', ' ', $item)) }}</th>
+                                @endforeach
+
 
                                 {{--@if($allow_create or $allow_edit or $allow_delete)--}}
                                     {{--<th>Action</th>--}}
@@ -172,6 +176,21 @@ $load_datepicker = false;
 
 
 
+                                    @foreach($crud['join_nn_column_title'] as $nn)
+                                        <?php $nnVal = '<em>null</em>'; ?>
+                                        @foreach($crud['join_nn_column'] as $key=>$colNN)
+                                            @if($key == $item['id'])
+                                                @foreach($colNN as $subKey=>$colN)
+                                                    @if($subKey == $nn)
+                                                            <?php $nnVal = $colN; ?>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        @endforeach
+                                        <td>{{ $nnVal }}</td>
+                                    @endforeach
+
+
                                 </tr>
                             @endforeach
 
@@ -185,6 +204,9 @@ $load_datepicker = false;
             </div>
         </div>
     </div>
+
+    {{ Debugbar::info($crud['join_nn_column_title']) }}
+    {{ Debugbar::info($crud['join_nn_column']) }}
 
     <div class="modal fade" id="modal-confirm-hapus" >
         <div class="modal-dialog">

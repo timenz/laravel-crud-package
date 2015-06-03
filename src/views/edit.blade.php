@@ -35,7 +35,7 @@
                                 $old_input_exist = true;
                             }
                         ?>
-                        {{ Debugbar::info($crud['edit_fields']) }}
+
                         @foreach($crud['edit_fields'] as $key)
 
                             <?php
