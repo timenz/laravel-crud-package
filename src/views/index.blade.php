@@ -205,8 +205,6 @@ $load_datepicker = false;
         </div>
     </div>
 
-    {{ Debugbar::info($crud['join_nn_column_title']) }}
-    {{ Debugbar::info($crud['join_nn_column']) }}
 
     <div class="modal fade" id="modal-confirm-hapus" >
         <div class="modal-dialog">

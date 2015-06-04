@@ -548,6 +548,9 @@ class Crud extends Controller{
                     $dataColumn['max_length'] = (int)$item->numeric_precision;
                     $dataColumn['input_type'] = 'decimal';
                     break;
+                case 'date':
+                    $dataColumn['input_type'] = 'date';
+                    break;
                 case 'enum':
                     $options = array();
                     $xstr = explode(',', substr($item->column_type, 5, -1));
@@ -2023,6 +2026,10 @@ class Crud extends Controller{
     protected function setExportFilter($field){
         $this->allowExport = true;
         $this->exportFilter = $field;
+    }
+
+    protected function getAction(){
+        return $this->action;
     }
 
 }

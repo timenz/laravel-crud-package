@@ -185,6 +185,14 @@
                                                 id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
                                     @endif
 
+                                    @if($item['input_type'] == 'date')
+                                        <input type="text"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control col-md-6 field-date"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $value }}" />
+                                    @endif
+
 
                                     @if(isset($crud['errors'][$key]))
                                         <div class="error">
@@ -250,6 +258,10 @@
 <script>
     $(function(){
         $('.chosen-select').chosen();
+        $('.field-date').datepicker({
+            format: 'yyyy-mm-dd',
+            autoclose: true
+        });
     });
 
 
