@@ -93,6 +93,14 @@
                                                value="" />
                                     @endif
 
+                                    @if($item['input_type'] == 'file')
+                                        <input type="file"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control col-md-6"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="" />
+                                    @endif
+
                                     @if($item['input_type'] == 'enum')
                                         <?php
                                                 $arr_option = $item['options'];

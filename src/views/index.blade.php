@@ -147,6 +147,11 @@ $load_datepicker = false;
                                             @elseif($crud['data_type'][$column]['input_type'] == 'textarea')
                                                 <td>{{ substr(strip_tags($item[$column]), 0, 40) }} ...</td>
 
+                                            @elseif($crud['data_type'][$column]['input_type'] == 'file')
+                                                @if(file_exists(public_path($crud['data_type'][$column]['target_dir'].'/'.$item[$column])))
+                                                <td><a target="_blank" href="{{ asset($crud['data_type'][$column]['target_dir'].'/'.$item[$column]) }}">{{ $item[$column] }}</a></td>
+                                                @else <td>{{ $item[$column] }}</td> @endif
+
                                             @elseif($crud['data_type'][$column]['input_type'] == 'image')
                                                 <td><img class="image-thumb"
                                                     data-full="{{ ImageSrc::path('/'.$crud['data_type'][$column]['target_dir'].'/'.$item[$column], 'resize', 400) }}"

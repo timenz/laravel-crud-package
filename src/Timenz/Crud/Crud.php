@@ -246,13 +246,70 @@ class Crud extends Controller{
                     break;
                 }
 
-                if(!is_writable(public_path($option))){
+                $path = public_path($option);
+
+                $createDir = false;
+
+                if(file_exists($path)){
+                    if(!is_dir($path)){
+                        $createDir = true;
+                    }
+                }else{
+                    $createDir = true;
+                }
+
+                if($createDir){
+                    try{
+                        mkdir($path, 0755, true);
+                    }catch (\Exception $ex){
+                        Log::warning('failed to create dir '.$path);
+                    }
+
+                }
+
+                if(!is_writable($path)){
                     Log::warning('apply new type for '.$field.' failed . Directory '.$option.' is not exist and or not writeable.');
                     break;
                 }
                 $changeType[$field] = array(
                     'new_type' => $newType,
                     'target_dir' => $option
+                );
+                break;
+
+            case 'file':
+                if(!is_array($option)){
+                    break;
+                }
+
+                $path = public_path($option['dir']);
+
+                $createDir = false;
+
+                if(file_exists($path)){
+                    if(!is_dir($path)){
+                        $createDir = true;
+                    }
+                }else{
+                    $createDir = true;
+                }
+
+                if($createDir){
+                    try{
+                        mkdir($path, 0755, true);
+                    }catch (\Exception $ex){
+                        Log::warning('failed to create dir '.$path);
+                    }
+
+                }
+
+                if(!is_writable($path)){
+                    Log::warning('apply new type for '.$field.' failed . Directory '.$option.' is not exist and or not writeable.');
+                    break;
+                }
+                $changeType[$field] = array(
+                    'new_type' => $newType,
+                    'target_dir' => $option['dir']
                 );
                 break;
 
@@ -350,6 +407,9 @@ class Crud extends Controller{
                 $dataColumn['renew_on_update'] = $changeType[$columnName]['renew_on_update'];
                 break;
             case 'image':
+                $dataColumn['target_dir'] = $changeType[$columnName]['target_dir'];
+                break;
+            case 'file':
                 $dataColumn['target_dir'] = $changeType[$columnName]['target_dir'];
                 break;
             case 'hidden':
@@ -695,8 +755,14 @@ class Crud extends Controller{
 
             if(isset($changeType[$item])){
                 $type = $changeType[$item];
+
                 if($type['new_type'] == 'image'){
                     $val = $this->uploadFile($item, $type['target_dir']);
+                    if(!$val){continue;}else{$value = $val;}
+                }
+
+                if($type['new_type'] == 'file'){
+                    $val = $this->uploadFile($item, $type['target_dir'], 'insert', 'file');
                     if(!$val){continue;}else{$value = $val;}
                 }
 
@@ -799,6 +865,12 @@ class Crud extends Controller{
                 if($type['new_type'] == 'image'){
 
                     $val = $this->uploadFile($item, $type['target_dir'], 'update');
+                    if(!$val){continue;}else{$value = $val;}
+                }
+
+                if($type['new_type'] == 'file'){
+
+                    $val = $this->uploadFile($item, $type['target_dir'], 'update', 'file');
                     if(!$val){continue;}else{$value = $val;}
                 }
             }
@@ -949,7 +1021,7 @@ class Crud extends Controller{
     private function actionDelete(){
         if($this->allowDelete){
             foreach($this->changeType as $key=>$item){
-                if($item['new_type'] == 'image'){
+                if($item['new_type'] == 'image' or $item['new_type'] == 'file'){
                     $targetDir = public_path($item['target_dir']);
                     $row = $this->row;
                     $oldFile = $targetDir.'/'.$row[$key];
@@ -1157,6 +1229,7 @@ class Crud extends Controller{
 
 
         }
+
 
         $this->editFields = $editFields;
         $this->dataType = $dataType;

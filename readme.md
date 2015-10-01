@@ -245,6 +245,17 @@ Menyembunyikan field
 	
 	// param 3 adl isian default waktu insert
 	$this->changeType('nama_field', 'hidden', 'ndelik');
+	
+
+#### image
+buat field gambar
+
+	$this->changeType('nama_field', 'image', 'image/path-in-public');
+
+#### file
+buat field gambar
+
+	$this->changeType('nama_field', 'file', ['dir' => 'image/path-in-public']);
 
 ### callbackColumn
 Custom format kolom field pada list
