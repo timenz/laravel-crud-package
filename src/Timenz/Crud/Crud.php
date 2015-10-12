@@ -1376,7 +1376,7 @@ class Crud extends Controller{
         switch($this->action){
             case 'index':
                 $indexResponse = array(
-                    'lists' => $this->lists,
+                    'lists' => $this->lists->toArray(),
                     'custom_values' => $this->customValues,
                     'index_session' => $this->indexSession,
                     'action_lists' => $this->actionLists,
