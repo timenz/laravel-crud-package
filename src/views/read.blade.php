@@ -93,6 +93,22 @@
 
                                     @endif
 
+                                    @if($item['input_type'] == 'enum')
+                                        <p class="form-control-static">{{ $item['value'] }}</p>
+                                    @endif
+
+                                    @if($item['input_type'] == 'date')
+                                        <p class="form-control-static">{{ $item['value'] }}</p>
+                                    @endif
+
+                                    @if($item['input_type'] == 'richarea')
+                                        <p class="form-control-static">{{ $item['value'] }}</p>
+                                    @endif
+
+                                    @if($item['input_type'] == 'hidden')
+                                        <p class="form-control-static">{{ $item['value'] }}</p>
+                                    @endif
+
                                 </div>
                             </div>
                         @endforeach

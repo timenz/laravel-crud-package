@@ -50,55 +50,70 @@
                             @endif
 
                             <div class="form-group @if(isset($crud['errors'][$key])) has-error @endif">
-                                <label for="id-{{ $item['column_name'] }}" class="col-lg-2 control-label">{{ $item['column_text'] }}</label>
-                                <div class="col-lg-10">
+                                <div class="col-md-12">
+
+                                    <label for="id-{{ $item['column_name'] }}" class="control-label">{{ $item['column_text'] }}</label>
+                                </div>
+
 
                                     @if($item['input_type'] == 'text')
+                                    <div class="col-lg-10">
                                         <input type="text"
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control"
                                                id="id-{{ $item['column_name'] }}"
                                                value="{{ $value }}" />
+                                    </div>
                                     @endif
 
                                     @if($item['input_type'] == 'numeric')
+                                    <div class="col-lg-10">
                                         <input type="text"
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control col-md-6 numeric"
                                                id="id-{{ $item['column_name'] }}"
                                                value="{{ $value }}" />
+                                    </div>
                                     @endif
 
                                     @if($item['input_type'] == 'decimal')
+                                    <div class="col-lg-10">
                                         <input type="text"
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control col-md-6 decimal"
                                                id="id-{{ $item['column_name'] }}"
                                                value="{{ $value }}" />
+                                    </div>
                                     @endif
 
                                     @if($item['input_type'] == 'money')
+                                    <div class="col-lg-10">
                                         <input type="text"
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control col-md-6 money"
                                                id="id-{{ $item['column_name'] }}"
                                                value="{{ $value }}" />
+                                    </div>
                                     @endif
 
                                     @if($item['input_type'] == 'image')
+                                    <div class="col-lg-10">
                                         <input type="file"
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control col-md-6"
                                                id="id-{{ $item['column_name'] }}"
                                                value="" />
+                                    </div>
                                     @endif
 
                                     @if($item['input_type'] == 'file')
+                                    <div class="col-lg-10">
                                         <input type="file"
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control col-md-6"
                                                id="id-{{ $item['column_name'] }}"
                                                value="" />
+                                    </div>
                                     @endif
 
                                     @if($item['input_type'] == 'enum')
@@ -113,9 +128,11 @@
                                                     $str_option .= '<option '.$sel.' value="'.$option.'">'.$option.'</option>';
                                                 }
                                             ?>
+                                            <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select"
                                                 id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                            </div>
 
                                     @endif
 
@@ -131,9 +148,11 @@
                                                     $str_option .= '<option '.$sel.' value="'.$key.'">'.$option.'</option>';
                                                 }
                                             ?>
+                                            <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control"
                                                 id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                            </div>
 
                                     @endif
 
@@ -149,9 +168,11 @@
                                                     $str_option .= '<option '.$sel.' value="'.$option->id.'">'.$option->{$item['related_field']}.'</option>';
                                                 }
                                             ?>
+                                            <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control"
                                                 id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                            </div>
 
                                     @endif
 
@@ -172,46 +193,58 @@
                                                     $str_option .= '<option '.$sel.' value="'.$option->id.'">'.$option->option.'</option>';
                                                 }
                                             ?>
+                                            <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}[]"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select" multiple
                                                 id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                            </div>
 
                                     @endif
 
                                     @if($item['input_type'] == 'textarea')
+                                    <div class="col-lg-10">
                                         <textarea
                                                 name="{{ $item['column_name'] }}"
                                                 class=" cl-{{ $item['column_name'] }} form-control"
                                                 id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
+                                    </div>
                                     @endif
 
                                     @if($item['input_type'] == 'richarea')
                                         <?php $load_mce = true; ?>
+                                            <div class="col-lg-10">
                                         <textarea
                                                 name="{{ $item['column_name'] }}"
                                                 class=" cl-{{ $item['column_name'] }} form-control richarea"
                                                 id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
+                                            </div>
                                     @endif
 
                                     @if($item['input_type'] == 'date')
+                                    <div class="col-sm-6 col-md-4">
                                         <input type="text"
                                                name="{{ $item['column_name'] }}"
-                                               class="cl-{{ $item['column_name'] }} form-control col-md-6 field-date"
+                                               class="cl-{{ $item['column_name'] }} form-control field-date"
+                                               size="100"
                                                id="id-{{ $item['column_name'] }}"
                                                value="{{ $value }}" />
+                                    </div><div class="col-sm-6 col-md-8"></div>
                                     @endif
 
 
                                     @if(isset($crud['errors'][$key]))
+                                    <div class="col-lg-10">
                                         <div class="error">
                                             @foreach($crud['errors'][$key] as $err)
                                                 * {{ $err }} </br>
                                             @endforeach
                                         </div>
+                                    </div>
+
                                     @endif
 
 
-                                </div>
+
                             </div>
 
                         @endforeach
