@@ -145,7 +145,7 @@
 
                                         <select
                                                name="{{ $item['column_name'] }}"
-                                               class="cl-{{ $item['column_name'] }} form-control"
+                                               class="cl-{{ $item['column_name'] }} form-control chosen-select"
                                                id="id-{{ $item['column_name'] }}"
                                                value="{{ $value }}" >{{ $option }}</select>
                                     @endif
@@ -164,7 +164,7 @@
 
                                         <select
                                                name="{{ $item['column_name'] }}"
-                                               class="cl-{{ $item['column_name'] }} form-control"
+                                               class="cl-{{ $item['column_name'] }} form-control chosen-select"
                                                id="id-{{ $item['column_name'] }}"
                                                value="{{ $value }}" >{{ $option }}</select>
                                     @endif
@@ -181,7 +181,7 @@
                                         }
                                         ?>
                                         <select name="{{ $item['column_name'] }}"
-                                                class="cl-{{ $item['column_name'] }} form-control"
+                                                class="cl-{{ $item['column_name'] }} form-control chosen-select"
                                                 id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
 
                                     @endif
