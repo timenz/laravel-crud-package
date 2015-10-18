@@ -57,12 +57,67 @@
                             <div class="form-group @if(isset($crud['errors'][$key])) has-error @endif">
                                 <label for="id-{{ $item['column_name'] }}" class="col-lg-2 control-label">{{ $item['column_text'] }}</label>
                                 <div class="col-lg-10">
+                                    @if($item['is_readonly'])
+                                        <?php $text = $value; ?>
+                                        @if($item['input_type'] == 'enum')
+                                            <?php
+                                            foreach($item['options'] as $opt){
+                                                if($opt == $item['value']){
+                                                    $text = $opt;
+                                                    break;
+                                                }
+                                            }
+                                            ?>
+                                        @endif
+
+                                        @if($item['input_type'] == 'select')
+                                            <?php
+                                            foreach($item['options'] as $key=>$opt){
+                                                if($key == $item['value']){
+                                                    $text = $opt;
+                                                    break;
+                                                }
+                                            }
+                                            ?>
+                                        @endif
+
+                                        @if($item['input_type'] == 'join')
+                                            <?php
+                                                foreach($item['options'] as $option){
+                                                    $selected = '';
+                                                    if($option->id == $item['value']){
+                                                        $text = $option->{$item['related_field']};
+                                                        break;
+                                                    }
+                                                }
+                                            ?>
+                                        @endif
+
+                                        @if($item['input_type'] == 'join_nn')
+                                            <?php
+                                                foreach($item['options'] as $option){
+                                                    if(is_array($value)){
+                                                        foreach($value as $opt){
+                                                            if($opt == $option->id){
+                                                                $text .= $option->option.'|';
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ?>
+                                        @endif
+
+                                    <p class="form-control-static">{{ $text }}</p>
+                                    <?php continue; ?>
+                                    @endif
+
                                     @if($item['input_type'] == 'text')
                                         <?php if(isset($item['renew_on_update'])){
                                             if($item['renew_on_update']){
                                                 $value = $item['default_value'];
                                             }
                                         } ?>
+
                                         <input type="text"
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control"

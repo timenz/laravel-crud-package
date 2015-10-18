@@ -30,6 +30,7 @@ class Crud extends Controller{
     private $createFields = array();
     private $editFields = array();
     private $readFields = array();
+    private $readonlyFields = array();
     private $validateRules = array();
     private $validateErrors = array();
     private $lists = array();
@@ -235,6 +236,13 @@ class Crud extends Controller{
         $changeType = $this->changeType;
 
         switch($newType){
+            case 'readonly':
+                $changeType[$field] = array(
+                    'new_type' => $newType,
+                    'is_readonly' => true
+                );
+                break;
+
             case 'money':
                 $changeType[$field] = array(
                     'new_type' => $newType
@@ -582,6 +590,7 @@ class Crud extends Controller{
                 'dec_length' => (int)$item->numeric_scale,
                 'input_type' => $input_type,
                 'related_field' => '',
+                'is_readonly' => false,
                 'options' => array()
             );
 
@@ -898,8 +907,17 @@ class Crud extends Controller{
         $status = false;
         $valid = true;
 
-        if(count($this->validateRules) > 0){
-            $validator = Validator::make($validateData, $this->validateRules);
+        $validateRules = $this->validateRules;
+
+        if(count($this->readonlyFields) > 0){
+            foreach ($this->readonlyFields as $item) {
+                unset($validateRules[$item]);
+            }
+
+        }
+
+        if(count($validateRules) > 0){
+            $validator = Validator::make($validateData, $validateRules);
             if($validator->fails()){
                 $this->validateErrors = $validator->messages()->toArray();
                 $valid = false;
@@ -1227,6 +1245,15 @@ class Crud extends Controller{
 
             }
 
+
+        }
+
+        if(count($this->readonlyFields) > 0){
+            foreach ($dataType as $key=>$item) {
+                if(in_array($item['column_name'], $this->readonlyFields)){
+                    $dataType[$key]['is_readonly'] = true;
+                }
+            }
 
         }
 
@@ -2094,6 +2121,10 @@ class Crud extends Controller{
             return $value;
         }
         return false;
+    }
+
+    protected function readonlyFields($fields){
+        $this->readonlyFields = $fields;
     }
 
     protected function setExportFilter($field){
