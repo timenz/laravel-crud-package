@@ -38,6 +38,18 @@ publish view on-dev
 
 	php artisan view:publish --path="workbench/timenz/crud/src/views" timenz/crud
 	
+publish assets
+	php artisan asset:publish --path="workbench/timenz/crud/public" timenz/crud
+	
+	php artisan asset:publish timenz/crud
+	php artisan asset:publish pqb/filemanager-laravel
+	cp public/packages/timenz/crud/js/en_GB.js public/packages/pqb/filemanager-laravel/tinymce/langs/
+	cd public
+	ln -s packages/pqb/filemanager-laravel/filemanager/
+	cd packages/pqb/filemanager-laravel/filemanager/
+	ln -s ../../../../uploads/userfiles/
+	
+	
 Javascript Libs Dependency
 
 	{
