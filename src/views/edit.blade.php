@@ -108,8 +108,7 @@
                                         @endif
 
                                     <p class="form-control-static">{{ $text }}</p>
-                                    <?php continue; ?>
-                                    @endif
+                                    @else
 
                                     @if($item['input_type'] == 'text')
                                         <?php if(isset($item['renew_on_update'])){
@@ -288,6 +287,7 @@
                                         </div>
                                     @endif
 
+                                    @endif
 
                                 </div>
                             </div>
