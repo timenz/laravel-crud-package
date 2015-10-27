@@ -1239,6 +1239,7 @@ class Crud extends Controller{
                     'dec_length' => 0,
                     'input_type' => 'join_nn',
                     'related_field' => '',
+                    'is_readonly' => false,
                     'options' => $options,
                     'value' => $value
                 );
