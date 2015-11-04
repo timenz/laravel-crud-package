@@ -16,7 +16,6 @@ use Log;
 class Crud extends Controller{
 
     private $entity;
-    private $schema;
     private $view_path = 'packages.timenz.crud.';
 
 
@@ -25,19 +24,6 @@ class Crud extends Controller{
         $this->entity = new CrudEntity();
     }
 
-    /**
-     * @param $table
-     */
-    protected function init($table, $masterBlade = null, $masterData = null){
-        $this->entity->table = $table;
-        $this->entity->masterBlade = $masterBlade;
-        $this->entity->masterData = $masterData;
-
-        $postData = Input::all();
-        $this->entity->postCreateData = $postData;
-        $this->entity->postUpdateData = $postData;
-
-    }
 
     /**
      * @return bool
@@ -126,6 +112,305 @@ class Crud extends Controller{
         return true;
 
     }
+
+
+    /**
+     * @return array
+     */
+    private function getResponse(){
+
+
+        $response = array(
+            'data_type' => $this->entity->dataType,
+            'action' => $this->entity->action,
+            'uri' => $this->entity->uri,
+            'status' => $this->entity->status,
+        );
+
+
+        switch($this->entity->action){
+            case 'index':
+                $indexResponse = array(
+                    'lists' => $this->entity->lists->toArray(),
+                    'custom_values' => $this->entity->customValues,
+                    'index_session' => $this->entity->indexSession,
+                    'action_lists' => $this->entity->actionLists,
+                    'columns' => $this->entity->columns,
+                    'allow_create' => $this->entity->allowCreate,
+                    'allow_read' => $this->entity->allowRead,
+                    'allow_edit' => $this->entity->allowEdit,
+                    'allow_delete' => $this->entity->allowDelete,
+                    'allow_export' => $this->entity->allowExport,
+                    'export_max_limit' => $this->entity->exportMaxLimit,
+                    'export_filter' => $this->entity->exportFilter,
+                    'allow_search' => $this->entity->allowSearch,
+                    'allow_order' => $this->entity->allowOrder,
+                    'allow_mass_delete' => $this->entity->allowMassDelete,
+                    'message' => Session::get('message'),
+                    'list_export_text' => $this->entity->listExportText,
+                    'list_search_text' => $this->entity->listSearchText,
+                    'list_create_text' => $this->entity->listCreateText,
+                    'list_edit_text' => $this->entity->listEditText,
+                    'list_read_text' => $this->entity->listReadText,
+                    'list_delete_text' => $this->entity->listDeleteText,
+                    'list_mass_delete_text' => $this->entity->listMassDeleteText,
+                    'title' => $this->entity->subTitleIndex.' '.$this->entity->title,
+                    'master_blade' => $this->entity->masterBlade,
+                    'paging_links' => $this->entity->pagingLinks,
+                    'external_link' => $this->entity->externalLink,
+                    'allow_multiple_select' => $this->entity->allowMultipleSelect,
+                    'join_nn_column' => $this->entity->joinNNColumn,
+                    'join_nn_column_title' => $this->entity->joinNNColumnTitle
+
+                );
+                $response = array_merge($response, $indexResponse);
+                break;
+            case 'create':
+                $createResponse = array(
+                    'create_fields' => $this->entity->createFields,
+                    'create_btn_text' => $this->entity->createBtnText,
+                    'title' => $this->entity->subTitleCreate.' '.$this->entity->title,
+                    'master_blade' => $this->entity->masterBlade,
+                    'back_btn_text' => $this->entity->backBtnText,
+                    'external_link' => $this->entity->externalLink,
+                    'is_load_mce_libs' => $this->entity->isLoadMceLibs,
+                    //'join_nn' => $this->joinNN,
+                    //'join_nn_option' => $this->joinNNOption,
+                    'errors' => Session::get('validate_errors')
+
+                );
+                $response = array_merge($response, $createResponse);
+
+                break;
+            case 'save':
+                $saveResponse = array(
+                    'allow_create' => $this->entity->allowCreate,
+                    'validate_errors' => $this->entity->validateErrors,
+
+                );
+                $response = array_merge($response, $saveResponse);
+                break;
+            case 'edit':
+                $editResponse = array(
+                    'edit_fields' => $this->entity->editFields,
+                    'edit_btn_text' => $this->entity->editBtnText,
+                    'id' => $this->entity->ids,
+                    'title' => $this->entity->subTitleEdit.' '.$this->entity->title,
+                    'master_blade' => $this->entity->masterBlade,
+                    'back_btn_text' => $this->entity->backBtnText,
+                    'external_link' => $this->entity->externalLink,
+                    'is_load_mce_libs' => $this->entity->isLoadMceLibs,
+                    'errors' => Session::get('validate_errors')
+
+                );
+                $response = array_merge($response, $editResponse);
+
+                break;
+            case 'update':
+
+                $updateResponse = array(
+                    'allow_create' => $this->entity->allowCreate,
+                    'validate_errors' => $this->entity->validateErrors,
+
+                );
+                $response = array_merge($response, $updateResponse);
+                break;
+            case 'read':
+
+                $readResponse = array(
+                    'title' => $this->entity->subTitleRead.' '.$this->entity->title,
+                    'master_blade' => $this->entity->masterBlade,
+                    'read_fields' => $this->entity->readFields,
+                    'back_btn_text' => $this->entity->backBtnText,
+                    'external_link' => $this->entity->externalLink,
+
+                );
+                $response = array_merge($response, $readResponse);
+                break;
+
+            case 'prepare_export':
+
+
+                $response = array(
+                    'action' => $this->entity->action,
+                    'uri' => $this->entity->uri,
+                    'status' => $this->entity->status,
+                    'total' => $this->entity->exportTotal,
+                    'paging' => $this->entity->exportPaging
+
+                );
+
+                return $response;
+
+        }
+
+//        \Debugbar::info($response['action_lists']);
+
+        $this->entity->masterData['crud'] = $response;
+
+        $this->entity->response = $this->entity->masterData;
+
+
+        return $this->entity->response;
+    }
+
+    private function processOther($uri){
+
+        $session = array();
+        if(Session::has('crud-'.$uri)){
+            $session = Session::get('crud-'.$uri);
+            $this->entity->indexSession = $session;
+            if(isset($session['order'])){
+                $this->entity->orderByCustom = array($session['order'][0], $session['order'][1]);
+            }
+            if(isset($session['filter'])){
+                $this->entity->filter = $session['filter'];
+            }
+        }
+
+        $extAction = array(
+            'prepare_export',
+            'export',
+            'limit_export',
+            'set_order',
+            'reset_order',
+            'search',
+            'reset_search'
+        );
+        $action = Input::get('action');
+
+        if(in_array($action, $extAction)){
+            if($action == 'set_order'){
+                $session['order'] = array(Input::get('sort_field'), Input::get('direction'));
+
+                Session::set('crud-'.$uri, $session);
+                return Redirect::back();
+
+            }
+            if($action == 'search'){
+
+                if(Input::has('search')){
+                    $filter = array();
+                    foreach(Input::get('search') as $key=>$item){
+                        if($item['value'] == ''){continue;}
+                        $filter[$key] = array($item['filter'], $item['value']);
+                    }
+
+                    if(count($filter) > 0){
+                        $this->entity->filter = $filter;
+                        $session['filter'] = $filter;
+                        Session::set('crud-'.$uri, $session);
+                    }
+                }
+                return Redirect::back();
+
+            }
+
+            if($action == 'reset_order'){
+                if(isset($session['order'])){
+                    unset($session['order']);
+                }
+
+                Session::set('crud-'.$uri, $session);
+                return Redirect::back();
+
+            }
+
+            if($action == 'reset_search'){
+                if(isset($session['filter'])){
+                    unset($session['filter']);
+                }
+
+                Session::set('crud-'.$uri, $session);
+                return Redirect::back();
+
+            }
+
+            if($action == 'limit_export'){
+                $session['export-from'] = Input::get('from');
+                $session['export-to'] = Input::get('to');
+
+                Session::set('crud-'.$uri, $session);
+                return Redirect::back()->with('show-modal-export', true);
+
+            }
+
+            $this->entity->action = $action;
+
+            $run = $this->run();
+
+            if($run === false){
+                return 'on k';
+            }
+
+            if($this->entity->errorText != ''){
+                return $this->entity->errorText;
+            }
+
+            $this->execute();
+
+            if($this->entity->responseType == 'json'){
+                return Response::json($this->getResponse());
+            }
+
+            if($this->entity->responseType == 'csv'){
+                $headers = [
+                    'Content-type'        => 'application/csv',
+                    'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+                    'Content-Disposition' => 'attachment; filename='.$this->uri.'-'.time().'.csv',
+                    'Expires'             => '0',
+                    'Pragma'              => 'public'
+                ];
+
+                $csv = $this->entity->csv;
+
+                if($csv != null){
+                    //$list = $list->toArray();
+
+
+                    # add headers for each column in the CSV download
+                    array_unshift($csv, array_keys((array)$csv[0]));
+
+
+
+                    $callback = function() use ($csv)
+                    {
+                        $FH = fopen('php://output', 'w');
+                        foreach ($csv as $row) {
+                            fputcsv($FH, (array)$row);
+                        }
+                        fclose($FH);
+                    };
+
+
+                    return Response::stream($callback, 200, $headers);
+                }
+
+            }
+
+
+        }
+
+        return true;
+    }
+
+    /* ##################################### START PROTECTED METHOD ################################################ */
+
+
+    /**
+     * @param $table
+     */
+    protected function init($table, $masterBlade = null, $masterData = null){
+        $this->entity->table = $table;
+        $this->entity->masterBlade = $masterBlade;
+        $this->entity->masterData = $masterData;
+
+        $postData = Input::all();
+        $this->entity->postCreateData = $postData;
+        $this->entity->postUpdateData = $postData;
+
+    }
+
 
     /**
      * @param $field
@@ -331,151 +616,6 @@ class Crud extends Controller{
     }
 
 
-
-//    private function setIds($id){
-//        $this->ids = $id;
-//    }
-
-    /**
-     * @return array
-     */
-    private function getResponse(){
-
-
-        $response = array(
-            'data_type' => $this->entity->dataType,
-            'action' => $this->entity->action,
-            'uri' => $this->entity->uri,
-            'status' => $this->entity->status,
-        );
-
-
-        switch($this->entity->action){
-            case 'index':
-                $indexResponse = array(
-                    'lists' => $this->entity->lists->toArray(),
-                    'custom_values' => $this->entity->customValues,
-                    'index_session' => $this->entity->indexSession,
-                    'action_lists' => $this->entity->actionLists,
-                    'columns' => $this->entity->columns,
-                    'allow_create' => $this->entity->allowCreate,
-                    'allow_read' => $this->entity->allowRead,
-                    'allow_edit' => $this->entity->allowEdit,
-                    'allow_delete' => $this->entity->allowDelete,
-                    'allow_export' => $this->entity->allowExport,
-                    'export_max_limit' => $this->entity->exportMaxLimit,
-                    'export_filter' => $this->entity->exportFilter,
-                    'allow_search' => $this->entity->allowSearch,
-                    'allow_order' => $this->entity->allowOrder,
-                    'allow_mass_delete' => $this->entity->allowMassDelete,
-                    'message' => Session::get('message'),
-                    'list_export_text' => $this->entity->listExportText,
-                    'list_search_text' => $this->entity->listSearchText,
-                    'list_create_text' => $this->entity->listCreateText,
-                    'list_edit_text' => $this->entity->listEditText,
-                    'list_read_text' => $this->entity->listReadText,
-                    'list_delete_text' => $this->entity->listDeleteText,
-                    'list_mass_delete_text' => $this->entity->listMassDeleteText,
-                    'title' => $this->entity->subTitleIndex.' '.$this->entity->title,
-                    'master_blade' => $this->entity->masterBlade,
-                    'paging_links' => $this->entity->pagingLinks,
-                    'external_link' => $this->entity->externalLink,
-                    'allow_multiple_select' => $this->entity->allowMultipleSelect,
-                    'join_nn_column' => $this->entity->joinNNColumn,
-                    'join_nn_column_title' => $this->entity->joinNNColumnTitle
-
-                );
-                $response = array_merge($response, $indexResponse);
-                break;
-            case 'create':
-                $createResponse = array(
-                    'create_fields' => $this->entity->createFields,
-                    'create_btn_text' => $this->entity->createBtnText,
-                    'title' => $this->entity->subTitleCreate.' '.$this->entity->title,
-                    'master_blade' => $this->entity->masterBlade,
-                    'back_btn_text' => $this->entity->backBtnText,
-                    'external_link' => $this->entity->externalLink,
-                    'is_load_mce_libs' => $this->entity->isLoadMceLibs,
-                    //'join_nn' => $this->joinNN,
-                    //'join_nn_option' => $this->joinNNOption,
-                    'errors' => Session::get('validate_errors')
-
-                );
-                $response = array_merge($response, $createResponse);
-
-                break;
-            case 'save':
-                $saveResponse = array(
-                    'allow_create' => $this->entity->allowCreate,
-                    'validate_errors' => $this->entity->validateErrors,
-
-                );
-                $response = array_merge($response, $saveResponse);
-                break;
-            case 'edit':
-                $editResponse = array(
-                    'edit_fields' => $this->entity->editFields,
-                    'edit_btn_text' => $this->entity->editBtnText,
-                    'id' => $this->entity->ids,
-                    'title' => $this->entity->subTitleEdit.' '.$this->entity->title,
-                    'master_blade' => $this->entity->masterBlade,
-                    'back_btn_text' => $this->entity->backBtnText,
-                    'external_link' => $this->entity->externalLink,
-                    'is_load_mce_libs' => $this->entity->isLoadMceLibs,
-                    'errors' => Session::get('validate_errors')
-
-                );
-                $response = array_merge($response, $editResponse);
-
-                break;
-            case 'update':
-
-                $updateResponse = array(
-                    'allow_create' => $this->entity->allowCreate,
-                    'validate_errors' => $this->entity->validateErrors,
-
-                );
-                $response = array_merge($response, $updateResponse);
-                break;
-            case 'read':
-
-                $readResponse = array(
-                    'title' => $this->entity->subTitleRead.' '.$this->entity->title,
-                    'master_blade' => $this->entity->masterBlade,
-                    'read_fields' => $this->entity->readFields,
-                    'back_btn_text' => $this->entity->backBtnText,
-                    'external_link' => $this->entity->externalLink,
-
-                );
-                $response = array_merge($response, $readResponse);
-                break;
-
-            case 'prepare_export':
-
-
-                $response = array(
-                    'action' => $this->entity->action,
-                    'uri' => $this->entity->uri,
-                    'status' => $this->entity->status,
-                    'total' => $this->entity->exportTotal,
-                    'paging' => $this->entity->exportPaging
-
-                );
-
-                return $response;
-
-        }
-
-//        \Debugbar::info($response['action_lists']);
-
-        $this->entity->masterData['crud'] = $response;
-
-        $this->entity->response = $this->entity->masterData;
-
-
-        return $this->entity->response;
-    }
-
     /**
      * @param $columns
      */
@@ -641,6 +781,35 @@ class Crud extends Controller{
         $this->entity->orderBy = array($field, $direction);
     }
 
+    protected function getDataType(){
+        return $this->entity->dataType;
+    }
+
+    protected function callbackColumn($columnName, $callback){
+        $this->entity->customColumns[$columnName] = array(
+            'callback' => $callback
+        );
+    }
+
+    protected function displayAs($columnName, $displayAs){
+        $this->entity->columnDisplay[$columnName] = $displayAs;
+    }
+
+
+
+    protected function readonlyFields($fields){
+        $this->entity->readonlyFields = $fields;
+    }
+
+    protected function setExportFilter($field){
+        $this->entity->allowExport = true;
+        $this->entity->exportFilter = $field;
+    }
+
+    protected function getAction(){
+        return $this->entity->action;
+    }
+
 
     protected function run(){
         return false;
@@ -650,145 +819,48 @@ class Crud extends Controller{
 
     }
 
-    private function processOther($uri){
+    /**
+     * List, Create, Read, Edit, Delete, Search, eXport
+     * @param string $permission
+     */
 
-        $session = array();
-        if(Session::has('crud-'.$uri)){
-            $session = Session::get('crud-'.$uri);
-            $this->entity->indexSession = $session;
-            if(isset($session['order'])){
-                $this->entity->orderByCustom = array($session['order'][0], $session['order'][1]);
-            }
-            if(isset($session['filter'])){
-                $this->entity->filter = $session['filter'];
+    protected function disAllow($permission = 'LCREDSX'){
+        $list = ['L', 'C', 'R', 'E', 'D', 'S', 'X'];
+        foreach($list as $item){
+            if(strpos($permission, $item) > -1){
+                switch($item){
+                    case 'C':
+                        $this->entity->allowCreate = false;
+                        break;
+
+                    case 'E':
+                        $this->entity->allowEdit = false;
+                        break;
+
+                    case 'R':
+                        $this->entity->allowRead = false;
+                        break;
+
+                    case 'D':
+                        $this->entity->allowDelete = false;
+                        break;
+
+                    case 'X':
+                        $this->entity->allowExport = false;
+                        break;
+
+                    case 'S':
+                        $this->entity->allowSearch = false;
+                        break;
+
+
+                }
             }
         }
 
-        $extAction = array(
-            'prepare_export',
-            'export',
-            'limit_export',
-            'set_order',
-            'reset_order',
-            'search',
-            'reset_search'
-        );
-        $action = Input::get('action');
-
-        if(in_array($action, $extAction)){
-            if($action == 'set_order'){
-                $session['order'] = array(Input::get('sort_field'), Input::get('direction'));
-
-                Session::set('crud-'.$uri, $session);
-                return Redirect::back();
-
-            }
-            if($action == 'search'){
-
-                if(Input::has('search')){
-                    $filter = array();
-                    foreach(Input::get('search') as $key=>$item){
-                        if($item['value'] == ''){continue;}
-                        $filter[$key] = array($item['filter'], $item['value']);
-                    }
-
-                    if(count($filter) > 0){
-                        $this->entity->filter = $filter;
-                        $session['filter'] = $filter;
-                        Session::set('crud-'.$uri, $session);
-                    }
-                }
-                return Redirect::back();
-
-            }
-
-            if($action == 'reset_order'){
-                if(isset($session['order'])){
-                    unset($session['order']);
-                }
-
-                Session::set('crud-'.$uri, $session);
-                return Redirect::back();
-
-            }
-
-            if($action == 'reset_search'){
-                if(isset($session['filter'])){
-                    unset($session['filter']);
-                }
-
-                Session::set('crud-'.$uri, $session);
-                return Redirect::back();
-
-            }
-
-            if($action == 'limit_export'){
-                $session['export-from'] = Input::get('from');
-                $session['export-to'] = Input::get('to');
-
-                Session::set('crud-'.$uri, $session);
-                return Redirect::back()->with('show-modal-export', true);
-
-            }
-
-            $this->entity->action = $action;
-
-            $run = $this->run();
-
-            if($run === false){
-                return 'on k';
-            }
-
-            if($this->entity->errorText != ''){
-                return $this->entity->errorText;
-            }
-
-            $this->execute();
-
-            if($this->entity->responseType == 'json'){
-                return Response::json($this->getResponse());
-            }
-
-            if($this->entity->responseType == 'csv'){
-                $headers = [
-                    'Content-type'        => 'application/csv',
-                    'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
-                    'Content-Disposition' => 'attachment; filename='.$this->uri.'-'.time().'.csv',
-                    'Expires'             => '0',
-                    'Pragma'              => 'public'
-                ];
-
-                $csv = $this->entity->csv;
-
-                if($csv != null){
-                    //$list = $list->toArray();
-
-
-                    # add headers for each column in the CSV download
-                    array_unshift($csv, array_keys((array)$csv[0]));
-
-
-
-                    $callback = function() use ($csv)
-                    {
-                        $FH = fopen('php://output', 'w');
-                        foreach ($csv as $row) {
-                            fputcsv($FH, (array)$row);
-                        }
-                        fclose($FH);
-                    };
-
-
-                    return Response::stream($callback, 200, $headers);
-                }
-
-            }
-
-
-        }
-
-        return true;
     }
+
+    /* ##################################### END PROTECTED METHOD ################################################ */
 
 
     public function index(){
@@ -1062,35 +1134,6 @@ class Crud extends Controller{
 
         $this->afterRun();
         return Redirect::back()->with('message', 'Data berhasil di hapus.');
-    }
-
-    protected function getDataType(){
-        return $this->entity->dataType;
-    }
-
-    protected function callbackColumn($columnName, $callback){
-        $this->entity->customColumns[$columnName] = array(
-            'callback' => $callback
-        );
-    }
-
-    protected function displayAs($columnName, $displayAs){
-        $this->entity->columnDisplay[$columnName] = $displayAs;
-    }
-
-
-
-    protected function readonlyFields($fields){
-        $this->entity->readonlyFields = $fields;
-    }
-
-    protected function setExportFilter($field){
-        $this->entity->allowExport = true;
-        $this->entity->exportFilter = $field;
-    }
-
-    protected function getAction(){
-        return $this->entity->action;
     }
 
 }
