@@ -91,7 +91,7 @@ $load_datepicker = false;
                             <thead>
 
                             <tr>
-                                <th><input type="checkbox" class="" name="cb-all" id="cb-all"></th>
+                                {{--<th><input type="checkbox" class="" name="cb-all" id="cb-all"></th>--}}
                                 @foreach($crud['columns'] as $item)
                                     <th>{{ $crud['data_type'][$item]['column_text'] }}
                                         @if($crud['allow_order'])
@@ -108,6 +108,8 @@ $load_datepicker = false;
                                 <th>{{ ucwords(str_replace('_', ' ', $item)) }}</th>
                                 @endforeach
 
+                                <th></th>
+
 
                                 {{--@if($allow_create or $allow_edit or $allow_delete)--}}
                                     {{--<th>Action</th>--}}
@@ -117,9 +119,8 @@ $load_datepicker = false;
                             <tbody>
                             @foreach($crud['lists']['data'] as $item)
 
-                                <?php $item = (array)$item;  ?>
+                                <?php $item = (array)$item; ?>
                                 <tr>
-                                    <td><input type="checkbox" class="cb-list" name="" id="cb-list-{{ $item['id'] }}" data-id="{{ $item['id'] }}">
                                     <span style="display: none" id="action-{{ $item['id'] }}">@if(isset($crud['action_lists'][$item['id']]))
                                             {{ json_encode($crud['action_lists'][$item['id']]) }}@endif</span>
                                     </td>
@@ -195,7 +196,35 @@ $load_datepicker = false;
                                         <td>{{ $nnVal }}</td>
                                     @endforeach
 
+                                    <td class="text-right">
+                                        <div class="btn-group">
+                                            <a href="#" class="dropdown-toggle action-link" data-toggle="dropdown">
+                                                Action <span class="caret"></span>
+                                                <span class="sr-only">Toggle Dropdown</span>
+                                            </a>
+                                            <ul class="dropdown-menu pull-right" role="menu">
+                                                @if($crud['allow_read'])
+                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id']) }}">{{ ucwords($crud['list_read_text']) }}</a></li>
+                                                @endif
+                                                @if($crud['allow_edit'])
+                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}">{{ ucwords($crud['list_edit_text']) }}</a></li>
+                                                @endif
+                                                @if($crud['allow_delete'])
+                                                    <li><a href="#" class="btn-delete">{{ ucwords($crud['list_delete_text']) }}</a></li>
+                                                @endif
 
+
+                                                @if(isset($crud['action_lists'][$item['id']]))
+
+                                                    <li class="divider"></li>
+                                                @foreach($crud['action_lists'][$item['id']] as $action)
+                                                    <li><a href="{{ $action['url'] }}">{{ $action['title'] }}</a></li>
+                                                @endforeach
+
+                                                @endif
+                                            </ul>
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforeach
 
@@ -376,39 +405,7 @@ $load_datepicker = false;
             $('#modal-image-full').modal();
         });
 
-        $('#cb-all').click(function(){
-            var prop = $(this).is(':checked');
-
-            $('.cb-list').prop("checked", prop);
-            cbListAction();
-        });
-
-        $('.cb-list').click(function(){
-            if(allowMultipleSelect == false){
-                $('.cb-list').prop("checked", false);
-                $(this).prop("checked", true);
-            }
-
-            var all = $('.cb-list').length;
-            var checked = $('.cb-list:checked').length;
-            var not_checked = all - checked;
-            document.getElementById('cb-all').indeterminate = false;
-
-
-
-            if(not_checked == all){
-                $('#cb-all').prop("checked", false);
-            }else if(all == checked){
-                $('#cb-all').prop("checked", true);
-
-            }else{
-                document.getElementById('cb-all').indeterminate = true;
-            }
-
-            cbListAction();
-        });
-
-        $('#list-btn-delete').click(function(e){
+        $('.btn-delete').click(function(e){
             e.preventDefault();
             $('#modal-confirm-hapus').modal('show');
         });
