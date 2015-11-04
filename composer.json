@@ -26,5 +26,10 @@
             "Timenz\\Crud\\": "src/"
         }
     },
+    "extra": {
+        "branch-alias": {
+            "dev-ok": "1.0.dev"
+        }
+    },
     "minimum-stability": "stable"
 }
