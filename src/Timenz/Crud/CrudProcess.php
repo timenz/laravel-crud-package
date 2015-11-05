@@ -24,6 +24,12 @@ class CrudProcess{
         $columns = array();
         $allColumns = array();
 
+        if(count($schema) < 1){
+            $this->entity->abort = true;
+            $this->entity->errorText = 'Base table '.$this->entity->table.' not found';
+            return false;
+        }
+
 
         $this->populateField($schema);
 

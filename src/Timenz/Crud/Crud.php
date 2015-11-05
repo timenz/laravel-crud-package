@@ -42,7 +42,11 @@ class Crud extends Controller{
         $process = new CrudProcess($this->entity);
 
 
-        $process->setDefaultColumn();
+        $status = $process->setDefaultColumn();
+
+        if($status === false){
+            return false;
+        }
 
         switch($this->entity->action){
             case 'index':
@@ -228,6 +232,11 @@ class Crud extends Controller{
                 $response = array_merge($response, $readResponse);
                 break;
 
+            case 'error':
+                $response['error_text'] = $this->entity->errorText;
+                $response['master_blade'] = $this->entity->masterBlade;
+                break;
+
             case 'prepare_export':
 
 
@@ -395,6 +404,10 @@ class Crud extends Controller{
     }
 
     /* ##################################### START PROTECTED METHOD ################################################ */
+
+    protected function run(){
+        return false;
+    }
 
 
     /**
@@ -810,11 +823,6 @@ class Crud extends Controller{
         return $this->entity->action;
     }
 
-
-    protected function run(){
-        return false;
-    }
-
     protected function afterRun(){
 
     }
@@ -860,8 +868,22 @@ class Crud extends Controller{
 
     }
 
+    protected function setErrorMsg($msg){
+        $msg = (string)$msg;
+
+        $this->entity->errorText = $msg;
+    }
+
     /* ##################################### END PROTECTED METHOD ################################################ */
 
+
+    private function error($silent = false){
+        if($silent){
+            return Response::make($this->entity->errorText);
+        }
+        $this->entity->action = 'error';
+        return View::make($this->view_path.'error', $this->getResponse());
+    }
 
     public function index(){
 
@@ -879,26 +901,25 @@ class Crud extends Controller{
 
         $run = $this->run();
 
-        if($run !== true){
+        if($run !== true and $run !== false){
             return $run;
         }
 
-
-        if($this->entity->errorText !== null){
-            return $this->entity->errorText;
+        if($run === false){
+            if($this->entity->errorText === null){
+                $this->entity->errorText = 'no message';
+            }
+            return $this->error();
         }
 
-        $status = $this->execute();
+        $this->execute();
 
-        if($status !== true){
-            return $status;
+        if($this->entity->abort === true){
+
+            return $this->error();
         }
 
         $data = $this->getResponse();
-
-
-        $this->afterRun();
-
         return View::make($this->view_path.'index', $data);
 
     }
@@ -914,25 +935,28 @@ class Crud extends Controller{
         $this->entity->action = 'create';
 
 
-        $status = $this->run();
+        $run = $this->run();
 
-        if($status !== true){
-            return $status;
+        if($run !== true and $run !== false){
+            return $run;
         }
 
-        if($this->entity->errorText !== null){
-            return $this->entity->errorText;
+        if($run === false){
+            if($this->entity->errorText === null){
+                $this->entity->errorText = 'no message';
+            }
+            return $this->error();
         }
 
-        $status = $this->execute();
+        $this->execute();
 
-        if($status !== true){
-            return $status;
+        if($this->entity->abort === true){
+
+            return $this->error();
         }
 
 
         $data = $this->getResponse();
-        $this->afterRun();
         return View::make($this->view_path.'create', $data);
     }
 
@@ -941,25 +965,27 @@ class Crud extends Controller{
         $this->entity->uri = $uri;
         $this->entity->action = 'create';
 
-        $status = $this->run();
+        $run = $this->run();
 
-        if($status !== true){
-            return $status;
+        if($run !== true and $run !== false){
+            return $run;
         }
 
-        if($this->entity->errorText  !== null){
-            return $this->entity->errorText;
+        if($run === false){
+            if($this->entity->errorText === null){
+                $this->entity->errorText = 'no message';
+            }
+            return $this->error();
         }
 
-        $status = $this->execute();
+        $this->execute();
 
-        if($status !== true){
-            return $status;
+        if($this->entity->abort === true){
+
+            return $this->error();
         }
 
         $data = $this->getResponse();
-        //return 'ok';
-        $this->afterRun();
 
         if($data['crud']['status'] === false){
 
@@ -995,24 +1021,28 @@ class Crud extends Controller{
         $this->entity->action = 'read';
         $this->entity->ids = $id;
 
-        $status = $this->run();
+        $run = $this->run();
 
-        if($status !== true){
-            return $status;
+        if($run !== true and $run !== false){
+            return $run;
         }
 
-        if($this->entity->errorText !== null){
-            return $this->entity->errorText;
+        if($run === false){
+            if($this->entity->errorText === null){
+                $this->entity->errorText = 'no message';
+            }
+            return $this->error();
         }
 
-        $status = $this->execute();
+        $this->execute();
 
-        if($status !== true){
-            return $status;
+        if($this->entity->abort === true){
+
+            return $this->error();
         }
 
-        $this->afterRun();
-        return View::make($this->view_path.'read', $this->getResponse());
+        $response = $this->getResponse();
+        return View::make($this->view_path.'read', $response);
     }
 
 
@@ -1029,23 +1059,25 @@ class Crud extends Controller{
         $this->entity->action = 'edit';
         $this->entity->ids = $id;
 
-        $status = $this->run();
+        $run = $this->run();
 
-        if($status !== true){
-            return $status;
+        if($run !== true and $run !== false){
+            return $run;
         }
 
-        if($this->entity->errorText !== null){
-            return $this->entity->errorText;
+        if($run === false){
+            if($this->entity->errorText === null){
+                $this->entity->errorText = 'no message';
+            }
+            return $this->error();
         }
 
-        $status = $this->execute();
+        $this->execute();
 
-        if($status !== true){
-            return $status;
+        if($this->entity->abort === true){
+
+            return $this->error();
         }
-
-        $this->afterRun();
         return View::make($this->view_path.'edit', $this->getResponse());
     }
 
@@ -1065,25 +1097,27 @@ class Crud extends Controller{
         $this->entity->action = 'update';
         $this->entity->ids = $id;
 
-        $status = $this->run();
+        $run = $this->run();
 
-        if($status !== true){
-            return $status;
+        if($run !== true and $run !== false){
+            return $run;
         }
 
-        if($this->entity->errorText !== null){
-            return $this->entity->errorText;
+        if($run === false){
+            if($this->entity->errorText === null){
+                $this->entity->errorText = 'no message';
+            }
+            return $this->error();
         }
 
-        $status = $this->execute();
+        $this->execute();
 
-        if($status !== true){
-            return $status;
+        if($this->entity->abort === true){
+
+            return $this->error();
         }
 
         $data = $this->getResponse();
-        //return 'ok';
-        $this->afterRun();
 
         if($data['crud']['status'] === false){
 
@@ -1108,31 +1142,31 @@ class Crud extends Controller{
 
         $uri = join('/', $xuri);
 
-//        $id = str_replace($uri.'/', '', $uri1);
-
         $this->entity->uri = $uri;
         $this->entity->action = 'delete';
         $this->entity->ids = $id;
 
-        $status = $this->run();
+        $run = $this->run();
 
-        if($status !== true){
-            return $status;
+        if($run !== true and $run !== false){
+            return $run;
         }
 
-        if($this->entity->errorText !== null){
-            return $this->entity->errorText;
+        if($run === false){
+            if($this->entity->errorText === null){
+                $this->entity->errorText = 'no message';
+            }
+            return $this->error();
         }
 
-        $status = $this->execute();
+        $this->execute();
 
-        if($status !== true){
-            return $status;
+        if($this->entity->abort === true){
+
+            return $this->error();
         }
 
         $this->getResponse();
-
-        $this->afterRun();
         return Redirect::back()->with('message', 'Data berhasil di hapus.');
     }
 

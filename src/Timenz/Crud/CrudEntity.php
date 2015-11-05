@@ -31,6 +31,7 @@ class CrudEntity{
     public $subTitleEdit = 'Ubah';
     public $errorText;
     public $log;
+    public $abort = false;
 
     public $orderBy;
     public $dataType = array();
