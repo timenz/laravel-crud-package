@@ -22,8 +22,8 @@
             "src/migrations",
             "src/controllers"
         ],
-        "psr-0": {
-            "Timenz\\Crud\\": "src/"
+        "psr-4": {
+            "Timenz\\Crud\\": "src"
         }
     },
     "extra": {

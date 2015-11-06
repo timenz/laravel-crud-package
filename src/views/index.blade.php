@@ -232,7 +232,7 @@ $load_datepicker = false;
                         </table>
                     </div>
 
-                    <div>{{ $crud['paging_links'] }}</div>
+                    <div>{!! $crud['paging_links'] !!}</div>
 
                 </div>
             </div>
