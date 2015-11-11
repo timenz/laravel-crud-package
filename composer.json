@@ -18,17 +18,8 @@
         "illuminate/support": "~5.1"
     },
     "autoload": {
-        "classmap": [
-            "src/migrations",
-            "src/controllers"
-        ],
         "psr-4": {
             "Timenz\\Crud\\": "src"
-        }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0.dev"
         }
     },
     "minimum-stability": "stable"
