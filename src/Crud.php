@@ -411,9 +411,11 @@ class Crud extends Controller{
 
 
     /**
-     * @param $table
+     * @param string $table
+     * @param string $masterBlade
+     * @param string $masterData
      */
-    protected function init($table, $masterBlade = null, $masterData = null){
+    protected function init($table, $masterBlade = '', $masterData = ''){
         $this->entity->table = $table;
         $this->entity->masterBlade = $masterBlade;
         $this->entity->masterData = $masterData;
@@ -586,9 +588,9 @@ class Crud extends Controller{
 
 
     /**
-     * @param $field
-     * @param $joinTable
-     * @param $joinField
+     * @param string $field
+     * @param string $joinTable
+     * @param string $joinField
      * @param array $arrayWhere
      */
     protected function setJoin($field, $joinTable, $joinField, $arrayWhere = array()){
@@ -609,10 +611,22 @@ class Crud extends Controller{
         $this->entity->changeType[$field] = $newType;
     }
 
+    /**
+     * @param array $arrNN
+     */
 
-    protected function setVisibleNN($arrNN){
+    protected function setVisibleNN(array $arrNN){
         $this->entity->joinNNColumnTitle = $arrNN;
     }
+
+    /**
+     * @param string $columnName
+     * @param string $joinField
+     * @param string $joinTable
+     * @param string $relationTable
+     * @param string $fieldRel
+     * @param string $joinFieldRel
+     */
 
     protected function setJoinNN($columnName, $joinField, $joinTable, $relationTable, $fieldRel, $joinFieldRel){
 
@@ -630,44 +644,44 @@ class Crud extends Controller{
 
 
     /**
-     * @param $columns
+     * @param array $columns
      */
-    protected function columns($columns){
+    protected function columns(array $columns){
         $this->entity->columns = $columns;
     }
 
     /**
-     * @param $fields
+     * @param array $fields
      */
-    protected function fields($fields){
+    protected function fields(array $fields){
         $this->entity->fields = $fields;
     }
 
     /**
-     * @param $createFields
+     * @param array $createFields
      */
-    protected function createFields($createFields){
+    protected function createFields(array $createFields){
         $this->entity->createFields = $createFields;
     }
 
     /**
-     * @param $editFields
+     * @param array $editFields
      */
-    protected function editFields($editFields){
+    protected function editFields(array $editFields){
         $this->entity->editFields = $editFields;
     }
 
     /**
-     * @param $readFields
+     * @param array $readFields
      */
-    protected function readFields($readFields){
+    protected function readFields(array $readFields){
         $this->entity->readFields = $readFields;
     }
 
     /**
-     * @param $rules
+     * @param array $rules
      */
-    protected function validateRules($rules){
+    protected function validateRules(array $rules){
         if(is_array($rules)){
             $this->entity->validateRules = $rules;
         }
@@ -675,10 +689,10 @@ class Crud extends Controller{
     }
 
     /**
-     * @param $callback
+     * @param callable $callback
      * @return bool
      */
-    protected function callbackBeforeUpdate($callback){
+    protected function callbackBeforeUpdate(callable $callback){
         if($this->entity->action != 'update'){
             return false;
         }
@@ -692,7 +706,12 @@ class Crud extends Controller{
         return false;
     }
 
-    protected function callbackBeforeSave($callback){
+    /**
+     * @param callable $callback
+     * @return bool
+     */
+
+    protected function callbackBeforeSave(callable $callback){
         if($this->entity->action != 'save'){
             return false;
         }
@@ -707,14 +726,14 @@ class Crud extends Controller{
     }
 
     /**
-     * @param $masterData
+     * @param array $masterData
      */
-    protected function setMasterData($masterData){
+    protected function setMasterData(array $masterData){
         $this->entity->masterData = $masterData;
     }
 
     /**
-     * @param $masterBlade
+     * @param string $masterBlade
      */
     protected function setMasterBlade($masterBlade){
         $this->entity->masterBlade = $masterBlade;
@@ -782,13 +801,18 @@ class Crud extends Controller{
 
 
     /**
-     * @param $field
-     * @param $condition
-     * @param $value
+     * @param string $field
+     * @param string $condition
+     * @param string $value
      */
     protected function where($field, $condition, $value){
         $this->entity->arrWhere[] = array($field, $condition, $value);
     }
+
+    /**
+     * @param string $field
+     * @param string $direction
+     */
 
     protected function orderBy($field, $direction = 'asc'){
         $this->entity->orderBy = array($field, $direction);
@@ -798,23 +822,40 @@ class Crud extends Controller{
         return $this->entity->dataType;
     }
 
-    protected function callbackColumn($columnName, $callback){
+    /**
+     * @param string $columnName
+     * @param callable $callback
+     */
+
+    protected function callbackColumn($columnName, callable $callback){
         $this->entity->customColumns[$columnName] = array(
             'callback' => $callback
         );
     }
 
+    /**
+     * @param string $columnName
+     * @param string $displayAs
+     */
+
     protected function displayAs($columnName, $displayAs){
         $this->entity->columnDisplay[$columnName] = $displayAs;
     }
 
+    /**
+     * @param array $fields
+     */
 
 
-    protected function readonlyFields($fields){
+    protected function readonlyFields(array $fields){
         $this->entity->readonlyFields = $fields;
     }
 
-    protected function setExportFilter($field){
+    /**
+     * @param array $field
+     */
+
+    protected function setExportFilter(array $field){
         $this->entity->allowExport = true;
         $this->entity->exportFilter = $field;
     }
@@ -868,10 +909,26 @@ class Crud extends Controller{
 
     }
 
+    /**
+     * @param string $msg
+     */
+
     protected function setErrorMsg($msg){
         $msg = (string)$msg;
 
         $this->entity->errorText = $msg;
+    }
+
+    /**
+     * method setTitle
+     *
+     * @param string $title
+     */
+
+    protected function setTitle($title){
+        $title = (string)$title;
+
+        $this->entity->title = $title;
     }
 
     /* ##################################### END PROTECTED METHOD ################################################ */

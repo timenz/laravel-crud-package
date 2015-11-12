@@ -131,7 +131,7 @@
                                             <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select"
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
                                             </div>
 
                                     @endif
@@ -151,7 +151,7 @@
                                             <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select"
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
                                             </div>
 
                                     @endif
@@ -171,7 +171,7 @@
                                             <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select"
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
                                             </div>
 
                                     @endif
@@ -196,7 +196,7 @@
                                             <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}[]"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select" multiple
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
                                             </div>
 
                                     @endif
@@ -206,7 +206,7 @@
                                         <textarea
                                                 name="{{ $item['column_name'] }}"
                                                 class=" cl-{{ $item['column_name'] }} form-control"
-                                                id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
+                                                id="id-{{ $item['column_name'] }}" >{!! $value !!}</textarea>
                                     </div>
                                     @endif
 
@@ -216,7 +216,7 @@
                                         <textarea
                                                 name="{{ $item['column_name'] }}"
                                                 class=" cl-{{ $item['column_name'] }} form-control richarea"
-                                                id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
+                                                id="id-{{ $item['column_name'] }}" >{!! $value !!}</textarea>
                                             </div>
                                     @endif
 

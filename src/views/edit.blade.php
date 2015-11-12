@@ -201,7 +201,7 @@
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control chosen-select"
                                                id="id-{{ $item['column_name'] }}"
-                                               value="{{ $value }}" >{{ $option }}</select>
+                                               value="{{ $value }}" >{!! $option !!}</select>
                                     @endif
 
                                     @if($item['input_type'] == 'select')
@@ -220,7 +220,7 @@
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control chosen-select"
                                                id="id-{{ $item['column_name'] }}"
-                                               value="{{ $value }}" >{{ $option }}</select>
+                                               value="{{ $value }}" >{!! $option !!}</select>
                                     @endif
 
                                     @if($item['input_type'] == 'join')
@@ -236,7 +236,7 @@
                                         ?>
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select"
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
 
                                     @endif
 
@@ -259,7 +259,7 @@
                                         ?>
                                         <select name="{{ $item['column_name'] }}[]"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select" multiple
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
 
                                     @endif
 
@@ -269,14 +269,14 @@
                                         <textarea
                                                 name="{{ $item['column_name'] }}"
                                                 class=" cl-{{ $item['column_name'] }} form-control"
-                                                id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
+                                                id="id-{{ $item['column_name'] }}" >{!! $value !!}</textarea>
                                     @endif
 
                                     @if($item['input_type'] == 'richarea')
                                         <textarea
                                                 name="{{ $item['column_name'] }}"
                                                 class=" cl-{{ $item['column_name'] }} form-control richarea"
-                                                id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
+                                                id="id-{{ $item['column_name'] }}" >{!! $value !!}</textarea>
                                     @endif
 
                                     @if(isset($crud['errors'][$key]))
