@@ -16,8 +16,8 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/support": "~5.1",
-        "timenz/filemanager-laravel": "dev-l5.1",
-        "timenz/image":"dev-l5.1"
+        "timenz/filemanager-laravel": "dev-master",
+        "timenz/image":"dev-master"
     },
     "autoload": {
         "psr-4": {
