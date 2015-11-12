@@ -210,7 +210,7 @@ $load_datepicker = false;
                                                     <li><a href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}">{{ ucwords($crud['list_edit_text']) }}</a></li>
                                                 @endif
                                                 @if($crud['allow_delete'])
-                                                    <li><a href="#" class="btn-delete">{{ ucwords($crud['list_delete_text']) }}</a></li>
+                                                    <li><a href="#" data-href="{{ url($crud['uri'].'/'.$item['id']) }}" class="btn-delete">{{ ucwords($crud['list_delete_text']) }}</a></li>
                                                 @endif
 
 
@@ -387,13 +387,7 @@ $load_datepicker = false;
 
 @section('js')
 <script>
-    var allowMultipleSelect = @if($crud['allow_multiple_select']) true @else() false @endif;
     $(function(){
-        if(allowMultipleSelect == false){
-            $('#cb-all').hide();
-        }
-
-        cbListAction();
 
         $('#modal-confirm-hapus').modal({
             show: false,
@@ -407,6 +401,7 @@ $load_datepicker = false;
 
         $('.btn-delete').click(function(e){
             e.preventDefault();
+            $('#form-delete').attr('action', $(this).attr('data-href'));
             $('#modal-confirm-hapus').modal('show');
         });
 
@@ -460,54 +455,7 @@ $load_datepicker = false;
             format: 'yyyy-mm-dd'
         });
 
-        function cbListAction(){
 
-            var checked = $('.cb-list:checked');
-            var id = checked.attr('data-id');
-            var act_lists = $('#action-' + id).html();
-
-
-            $('#action_lists').html('');
-            $('#action_lists').hide();
-            $('.sel-one').hide();
-
-            if(checked.length == 1){
-
-
-                $('#list-btn-read').attr('href', '{{ url($crud['uri'].'/') }}/' + id);
-                $('#list-btn-edit').attr('href', '{{ url($crud['uri'].'/') }}/' + id + '/edit');
-                $('#form-delete').attr('action', '{{ url($crud['uri'].'/') }}/' + id);
-
-                if(typeof act_lists !== undefined && act_lists != ''){
-                    act_lists = JSON.parse(act_lists);
-
-                    if(act_lists.length > 0){
-                        var str = '';
-                        for(i in act_lists){
-                            var row = act_lists[i];
-
-                            str += '<a href="'+row.url+'" class="'+row.class+'">'+row.title+'</a>';
-                        }
-                        $('#action_lists').html(str);
-                    }
-                }
-
-
-                $('.sel-one').fadeIn();
-                $('#action_lists').fadeIn();
-            }else{
-                $('.sel-one').hide();
-                $('#list-btn-read').attr('href', '#');
-                $('#list-btn-edit').attr('href', '#');
-                $('#list-btn-delete').attr('href', '#');
-            }
-
-            if(checked.length > 0){
-                $('.sel-many').show();
-            }else{
-                $('.sel-many').hide();
-            }
-        }
     });
 </script>
 @endsection

@@ -337,8 +337,8 @@
 @section('js')
     @if($crud['action'] == 'create' or $crud['action'] == 'edit')
         @if($crud['is_load_mce_libs'])
-            <script type="text/javascript" src="{{ asset('packages/pqb/filemanager-laravel/tinymce/tinymce.min.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('packages/timenz/crud/js/tinymce_editor.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce.min.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce_editor.js') }}"></script>
             <script type="text/javascript">
                 editor_config.selector = "textarea.richarea";
                 tinymce.init(editor_config);

@@ -49,13 +49,7 @@ class CrudProcess{
         if(count($this->entity->columns) < 1){
             $this->entity->columns = $columns;
         }
-//        else{
-//            foreach($this->columns as $item){
-//                if(!isset($dataType[$item])){
-//
-//                }
-//            }
-//        }
+
     }
 
     private function populateField($schema){
@@ -101,6 +95,19 @@ class CrudProcess{
                     }
 
                     break;
+
+                case 'text':
+                    $dataColumn['input_type'] = 'textarea';
+                    break;
+
+                case 'mediumtext':
+                    $dataColumn['input_type'] = 'textarea';
+                    break;
+
+                case 'longtext':
+                    $dataColumn['input_type'] = 'textarea';
+                    break;
+
                 case 'decimal':
                     $dataColumn['max_length'] = (int)$item->numeric_precision;
                     $dataColumn['input_type'] = 'decimal';

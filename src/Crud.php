@@ -253,7 +253,7 @@ class Crud extends Controller{
 
         }
 
-//        \Debugbar::info($response['action_lists']);
+        \Debugbar::info($response);
 
         $this->entity->masterData['crud'] = $response;
 
@@ -433,7 +433,7 @@ class Crud extends Controller{
      * @param array $option
      * @param bool $renewOnUpdate
      */
-    protected function changeType($field, $newType, $option = array(), $renewOnUpdate = false){
+    protected function changeType($field, $newType, $option = array()){
         $changeType = $this->entity->changeType;
 
         switch($newType){
@@ -451,11 +451,12 @@ class Crud extends Controller{
                 break;
 
             case 'image':
-                if(is_array($option) or $option == ''){
-                    break;
+                if(!isset($option['target_dir'])){
+                    Log::alert('Could not change-type to IMAGE for field "'.$field.'" option TARGET_DIR not defined');
+                    return false;
                 }
 
-                $path = public_path($option);
+                $path = public_path($option['target_dir']);
 
                 $createDir = false;
 
@@ -477,12 +478,12 @@ class Crud extends Controller{
                 }
 
                 if(!is_writable($path)){
-                    Log::warning('apply new type for '.$field.' failed . Directory '.$option.' is not exist and or not writeable.');
+                    Log::warning('apply new type for '.$field.' failed . Directory '.$option['target_dir'].' is not exist and or not writeable.');
                     break;
                 }
                 $changeType[$field] = array(
                     'new_type' => $newType,
-                    'target_dir' => $option
+                    'target_dir' => $option['target_dir']
                 );
                 break;
 
@@ -557,9 +558,16 @@ class Crud extends Controller{
 
             case 'hidden':
                 $value = '';
-                if(!is_array($option)){
-                    $value = $option;
+                $renewOnUpdate = false;
+
+                if(isset($option['value'])){
+                    $value = $option['value'];
                 }
+
+                if(isset($option['allow_update'])){
+                    $renewOnUpdate = $option['allow_update'];
+                }
+
 
                 $changeType[$field] = array(
                     'new_type' => $newType,
@@ -570,8 +578,14 @@ class Crud extends Controller{
 
             case 'text':
                 $value = '';
-                if(!is_array($option)){
-                    $value = $option;
+                $renewOnUpdate = false;
+
+                if(isset($option['value'])){
+                    $value = $option['value'];
+                }
+
+                if(isset($option['allow_update'])){
+                    $renewOnUpdate = $option['allow_update'];
                 }
 
                 $changeType[$field] = array(

@@ -11,7 +11,8 @@ abstract class ChangeType{
     const DATETIME = 'datetime';
     const ENUM = 'enum';
     const SELECT = 'select';
-    const TEXT = 'text';
+    const TEXTAREA = 'textarea';
+    const RICHAREA = 'richarea';
     const IMAGE = 'image';
     const FILE = 'file';
     const MONEY = 'money';
