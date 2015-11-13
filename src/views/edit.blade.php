@@ -134,31 +134,36 @@
                                     @endif
 
                                     @if($item['input_type'] == 'image')
+                                        <input type="hidden"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control col-md-6"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $item['value'] }}" />
+                                        <button class="btn btn-sm btn-primary file-update" data-id="id-{{ $item['column_name'] }}">Ganti</button>
                                         <p class="form-control-static">
                                             @if($item['value'] == null or $item['value'] == '' or !file_exists(public_path($item['target_dir'].'/'.$item['value']))) <p><em>null</em></p> @else
                                             <p>Download : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
-                                            <img src="{{ ImageSrc::path('/'.$item['target_dir'].'/'.$item['value'], 'resize', 400) }}" /></p>
+                                            <img class="img-responsive" src="{{ ImageSrc::path('/'.$item['target_dir'].'/'.$item['value'], 'resize', 1000) }}" /></p>
                                             @endif
+
+                                    @endif
+
+                                    @if($item['input_type'] == 'file')
                                         <input type="file"
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control col-md-6"
                                                id="id-{{ $item['column_name'] }}"
                                                value="" />
-                                    @endif
+                                        <button class="btn btn-sm btn-primary file-update" data-id="id-{{ $item['column_name'] }}">Ganti</button>
 
-                                    @if($item['input_type'] == 'file')
-                                        <p class="form-control-static">
+                                            <p class="form-control-static">
                                         @if(file_exists(public_path($item['target_dir'].'/'.$item['value'])))
                                             <p>Download : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
                                             @else
                                             <p>File <strong>{{ $item['value'] }}</strong> doesn't exist.</p>
                                             @endif
 
-                                        <input type="file"
-                                               name="{{ $item['column_name'] }}"
-                                               class="cl-{{ $item['column_name'] }} form-control col-md-6"
-                                               id="id-{{ $item['column_name'] }}"
-                                               value="" />
+
                                     @endif
 
                                     @if($item['input_type'] == 'decimal')
@@ -351,6 +356,14 @@
             $('.field-date').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true
+            });
+
+            $('.file-update').click(function(e){
+                e.preventDefault();
+                var id = $(this).attr('data-id');
+                $('#' + id).attr('type', 'file');
+                $('#' + id).attr('value', '');
+                $(this).hide();
             });
         });
 

@@ -767,13 +767,13 @@ class CrudProcess{
                 if($type['new_type'] == 'image'){
 
                     $val = $this->uploadFile($item, $type['target_dir'], 'update');
-                    if(!$val){continue;}else{$value = $val;}
+                    if(!$val){}else{$value = $val;}
                 }
 
                 if($type['new_type'] == 'file'){
 
                     $val = $this->uploadFile($item, $type['target_dir'], 'update', 'file');
-                    if(!$val){continue;}else{$value = $val;}
+                    if(!$val){}else{$value = $val;}
                 }
             }
 

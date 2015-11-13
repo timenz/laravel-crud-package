@@ -155,7 +155,7 @@ $load_datepicker = false;
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'image')
                                                 <td><img class="image-thumb"
-                                                    data-full="{{ ImageSrc::path('/'.$crud['data_type'][$column]['target_dir'].'/'.$item[$column], 'resize', 400) }}"
+                                                    data-full="{{ ImageSrc::path('/'.$crud['data_type'][$column]['target_dir'].'/'.$item[$column], 'resize', 1000) }}"
                                                     src="{{ ImageSrc::path('/'.$crud['data_type'][$column]['target_dir'].'/'.$item[$column], 'resizeCrop', 40, 30) }}"
                                                     /></td>
 
@@ -322,11 +322,15 @@ $load_datepicker = false;
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
     <div class="modal fade" id="modal-image-full" >
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Image Preview</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <img style="display: inline;" class="image-full img-responsive" />
 
-                <div class="modal-body">
-                    <div class="text-center"><img class="image-full" /></div>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->

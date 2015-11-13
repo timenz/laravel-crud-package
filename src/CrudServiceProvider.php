@@ -21,7 +21,6 @@ class CrudServiceProvider extends ServiceProvider {
 
 		$this->publishes([
 			__DIR__.'/views' => base_path('resources/views/vendor/timenz/crud'),
-			__DIR__.'/public' => base_path('public/vendor/timenz/crud'),
 		]);
 
 	}
