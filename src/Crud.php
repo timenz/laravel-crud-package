@@ -253,7 +253,7 @@ class Crud extends Controller{
 
         }
 
-        \Debugbar::info($response);
+//        \Debugbar::info($response);
 
         $this->entity->masterData['crud'] = $response;
 
@@ -1034,7 +1034,7 @@ class Crud extends Controller{
     public function store(){
         $uri = \Request::decodedPath();
         $this->entity->uri = $uri;
-        $this->entity->action = 'create';
+        $this->entity->action = 'save';
 
         $run = $this->run();
 

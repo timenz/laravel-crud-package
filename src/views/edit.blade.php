@@ -182,6 +182,15 @@
                                                value="{{ $value }}" />
                                     @endif
 
+                                    @if($item['input_type'] == 'readonly')
+                                        <input type="hidden"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control col-md-6 money"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $value }}" />
+                                        <p class="form-control-static">{{ $value }}</p>
+                                    @endif
+
                                     @if($item['input_type'] == 'date')
                                         <input type="text"
                                                name="{{ $item['column_name'] }}"

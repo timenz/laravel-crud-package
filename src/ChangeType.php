@@ -16,4 +16,5 @@ abstract class ChangeType{
     const IMAGE = 'image';
     const FILE = 'file';
     const MONEY = 'money';
+    const READONLY = 'readonly';
 }

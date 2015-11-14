@@ -446,12 +446,14 @@ class CrudProcess{
      */
     private function initReadFields(){
 
-        $readFields = array();
-
-        if(count($this->entity->readFields) < 1 and count($this->entity->fields) > 0){
+        $readFields = $this->entity->allColumns;
+        
+        if(count($this->entity->fields) > 0){
             $readFields = $this->entity->fields;
-        }else if(count($this->entity->readFields) < 1){
-            $readFields = $this->entity->allColumns;
+        }
+
+        if(count($this->entity->readFields) > 0){
+            $readFields = $this->entity->readFields;
         }
         $dataType = $this->entity->dataType;
 

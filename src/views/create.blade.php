@@ -66,6 +66,16 @@
                                     </div>
                                     @endif
 
+                                    @if($item['input_type'] == 'readonly')
+                                    <div class="col-lg-10">
+                                        <input type="text"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $value }}" />
+                                    </div>
+                                    @endif
+
                                     @if($item['input_type'] == 'numeric')
                                     <div class="col-lg-10">
                                         <input type="text"
@@ -287,8 +297,8 @@
 @section('js')
     @if($crud['action'] == 'create' or $crud['action'] == 'edit')
         @if($crud['is_load_mce_libs'])
-            <script type="text/javascript" src="{{ asset('packages/pqb/filemanager-laravel/tinymce/tinymce.min.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('packages/timenz/crud/js/tinymce_editor.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce.min.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce_editor.js') }}"></script>
             <script type="text/javascript">
                 editor_config.selector = "textarea.richarea";
                 tinymce.init(editor_config);
