@@ -476,7 +476,7 @@ $load_datepicker = false;
 
             var val = $(this).val();
             var id = $(this).attr('data-id');
-            if(val == 'date-between'){
+            if(val == 'date-between' || val == 'between' ){
                 $('#' + id).removeClass('hidden');
             }else{
 

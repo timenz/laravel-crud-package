@@ -365,23 +365,27 @@ class CrudProcess{
                         break;
 
                     case 'contain':
-                        $lists->where('t0.'.$key, 'LIKE', '%'.$item[1].'%');
+                        $lists->where('t0.'.$key, 'like', '%'.$item[1].'%');
                         break;
 
                     case 'date-equal':
-                        $lists->whereRaw("DATE(`t0`.`$key`) = ?", [$item[1]]);
+                        $lists->whereRaw("date(`t0`.`$key`) = ?", [$item[1]]);
                         break;
 
                     case 'date-greater-than':
-                        $lists->whereRaw("DATE(`t0`.`$key`) > ?", [$item[1]]);
+                        $lists->whereRaw("date(`t0`.`$key`) > ?", [$item[1]]);
                         break;
 
                     case 'date-less-than':
-                        $lists->whereRaw("DATE(`t0`.`$key`) < ?", [$item[1]]);
+                        $lists->whereRaw("date(`t0`.`$key`) < ?", [$item[1]]);
                         break;
 
                     case 'date-between':
-                        $lists->whereRaw("DATE(`t0`.`$key`) BETWEEN ? AND ?", [$item[1], $item[2]]);
+                        $lists->whereRaw("date(`t0`.`$key`) between ? and ?", [$item[1], $item[2]]);
+                        break;
+
+                    case 'between':
+                        $lists->whereBetween('t0.'.$key, [$item[1], $item[2]]);
                         break;
 
                 }
