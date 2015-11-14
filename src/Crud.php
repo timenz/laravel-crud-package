@@ -253,7 +253,7 @@ class Crud extends Controller{
 
         }
 
-//        \Debugbar::info($response);
+        \Debugbar::info($response);
 
         $this->entity->masterData['crud'] = $response;
 
@@ -292,7 +292,7 @@ class Crud extends Controller{
             if($action == 'set_order'){
                 $session['order'] = array(Input::get('sort_field'), Input::get('direction'));
 
-                Session::set('crud-'.$uri, $session);
+                Session::put('crud-'.$uri, $session);
                 return Redirect::back();
 
             }
@@ -302,13 +302,13 @@ class Crud extends Controller{
                     $filter = array();
                     foreach(Input::get('search') as $key=>$item){
                         if($item['value'] == ''){continue;}
-                        $filter[$key] = array($item['filter'], $item['value']);
+                        $filter[$key] = array($item['filter'], $item['value'], $item['value_2']);
                     }
 
                     if(count($filter) > 0){
                         $this->entity->filter = $filter;
                         $session['filter'] = $filter;
-                        Session::set('crud-'.$uri, $session);
+                        Session::put('crud-'.$uri, $session);
                     }
                 }
                 return Redirect::back();
@@ -320,7 +320,7 @@ class Crud extends Controller{
                     unset($session['order']);
                 }
 
-                Session::set('crud-'.$uri, $session);
+                Session::put('crud-'.$uri, $session);
                 return Redirect::back();
 
             }
@@ -330,7 +330,7 @@ class Crud extends Controller{
                     unset($session['filter']);
                 }
 
-                Session::set('crud-'.$uri, $session);
+                Session::put('crud-'.$uri, $session);
                 return Redirect::back();
 
             }
@@ -339,7 +339,7 @@ class Crud extends Controller{
                 $session['export-from'] = Input::get('from');
                 $session['export-to'] = Input::get('to');
 
-                Session::set('crud-'.$uri, $session);
+                Session::put('crud-'.$uri, $session);
                 return Redirect::back()->with('show-modal-export', true);
 
             }
@@ -437,12 +437,6 @@ class Crud extends Controller{
         $changeType = $this->entity->changeType;
 
         switch($newType){
-            case 'readonly':
-                $changeType[$field] = array(
-                    'new_type' => $newType,
-                    'is_readonly' => true
-                );
-                break;
 
             case 'money':
                 $changeType[$field] = array(

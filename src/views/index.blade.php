@@ -346,26 +346,39 @@ $load_datepicker = false;
                 </div>
                 <div class="modal-body">
                     <table class="table table-hover">
+
                     @foreach($crud['columns'] as $item)
                         <?php
                             $x = $crud['data_type'][$item];
-                            if(!($x['input_type'] == 'text' or $x['input_type'] == 'numeric' or $x['input_type'] == 'money')){
+                            if(!$x['allow_search']){
                                 continue;
                             }
-                            $contain = array('contain');
+                            $condition = $x['search_condition'];
+                            $date_class = '';
+                            if(in_array('date-equal', $condition)){
+                                $date_class = 'input-date';
+                            }
                             $value = '';
+                            $value2 = '';
+                            $cond = '';
                             if(isset($session['filter'])){
                                 if(isset($session['filter'][$x['column_name']])){
+                                    $cond = $session['filter'][$x['column_name']][0];
                                     $value = $session['filter'][$x['column_name']][1];
+                                    $value2 = $session['filter'][$x['column_name']][2];
                                 }
                             }
                         ?>
                         <tr>
                             <td><label>{{ $x['column_text'] }}</label></td>
-                            <td><select name="search[{{ $x['column_name'].'][filter]' }}" class="form-control">
-                                    @foreach($contain as $ct)<option value="{{ $ct }}">{{ $ct }}</option>@endforeach
+                            <td><select name="search[{{ $x['column_name'].'][filter]' }}" data-id="search-{{ $x['column_name'] }}" class="form-control condition-select">
+                                    @foreach($condition as $ct)<option @if($cond == $ct) selected @endif value="{{ $ct }}">{{ $ct }}</option>@endforeach
                                 </select></td>
-                            <td><input name="search[{{ $x['column_name'].'][value]' }}" value="{{ $value }}" class="form-control"></td>
+                            <td>
+                                <input name="search[{{ $x['column_name'].'][value]' }}" value="{{ $value }}" class="form-control {{ $date_class }}">
+                                <input name="search[{{ $x['column_name'].'][value_2]' }}" value="{{ $value2 }}" id="search-{{ $x['column_name'] }}"
+                                       class="form-control @if(!($cond == 'between' or $cond == 'date-between')) hidden @endif {{ $date_class }}" style="margin-top:3px;">
+                            </td>
                         </tr>
 
                         </th>
@@ -457,6 +470,18 @@ $load_datepicker = false;
         $('.input-date').datepicker({
             autoclose: true,
             format: 'yyyy-mm-dd'
+        });
+
+        $('.condition-select').change(function(){
+
+            var val = $(this).val();
+            var id = $(this).attr('data-id');
+            if(val == 'date-between'){
+                $('#' + id).removeClass('hidden');
+            }else{
+
+                $('#' + id).addClass('hidden');
+            }
         });
 
 

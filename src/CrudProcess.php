@@ -88,33 +88,51 @@ class CrudProcess{
                 case 'int':
                     $dataColumn['max_length'] = (int)$item->numeric_precision;
                     $dataColumn['input_type'] = 'numeric';
+                    $dataColumn['allow_search'] = true;
+                    $dataColumn['search_condition'] = ['equal','greater-than', 'less-than', 'between', 'contain'];
                     break;
                 case 'varchar':
-                    if($dataColumn['max_length'] == 255){
-                        //$dataColumn['input_type'] = 'textarea';
-                    }
+                    $dataColumn['allow_search'] = true;
+                    $dataColumn['search_condition'] = ['contain', 'equal'];
 
                     break;
 
                 case 'text':
+                    $dataColumn['allow_search'] = true;
+                    $dataColumn['search_condition'] = ['contain'];
                     $dataColumn['input_type'] = 'textarea';
                     break;
 
                 case 'mediumtext':
                     $dataColumn['input_type'] = 'textarea';
+                    $dataColumn['allow_search'] = true;
+                    $dataColumn['search_condition'] = ['contain'];
                     break;
 
                 case 'longtext':
                     $dataColumn['input_type'] = 'textarea';
+                    $dataColumn['allow_search'] = true;
+                    $dataColumn['search_condition'] = ['contain'];
                     break;
 
                 case 'decimal':
                     $dataColumn['max_length'] = (int)$item->numeric_precision;
                     $dataColumn['input_type'] = 'decimal';
+                    $dataColumn['allow_search'] = true;
+                    $dataColumn['search_condition'] = ['equal','greater-than', 'less-than', 'between', 'contain'];
                     break;
                 case 'date':
                     $dataColumn['input_type'] = 'date';
+                    $dataColumn['allow_search'] = true;
+                    $dataColumn['search_condition'] = ['date-equal','date-greater-than', 'date-less-than', 'date-between', 'contain'];
                     break;
+
+                case 'datetime':
+                    $dataColumn['input_type'] = 'datetime';
+                    $dataColumn['allow_search'] = true;
+                    $dataColumn['search_condition'] = ['date-equal','date-greater-than', 'date-less-than', 'date-between', 'contain'];
+                    break;
+
                 case 'enum':
                     $options = array();
                     $xstr = explode(',', substr($item->column_type, 5, -1));
@@ -129,6 +147,8 @@ class CrudProcess{
 
                     $dataColumn['input_type'] = 'enum';
                     $dataColumn['options'] = $options;
+                    $dataColumn['allow_search'] = true;
+                    $dataColumn['search_condition'] = ['contain'];
                     break;
 
 
@@ -140,6 +160,10 @@ class CrudProcess{
 
 
         }
+
+        /**
+         * give additional field that not from table a data-type
+         */
 
         foreach($columns as $item){
             if(isset($dataType[$item])){continue;}
@@ -153,7 +177,8 @@ class CrudProcess{
                 'input_type' => 'text',
                 'related_field' => '',
                 'type' => 'additional',
-                'options' => array()
+                'options' => array(),
+                'allow_search' => false,
             );
 
             $dataColumn = $this->applyNewType($item, $dataColumn);
@@ -184,26 +209,36 @@ class CrudProcess{
             case 'join':
                 $dataColumn['related_field'] = $changeType[$columnName]['related_field'];
                 $dataColumn['options'] = $changeType[$columnName]['options'];
+                $dataColumn['allow_search'] = false;
                 break;
             case 'enum':
                 $dataColumn['options'] = $changeType[$columnName]['options'];
+                $dataColumn['allow_search'] = true;
+                $dataColumn['search_condition'] = ['contain'];
                 break;
             case 'select':
                 $dataColumn['options'] = $changeType[$columnName]['options'];
+                $dataColumn['allow_search'] = false;
                 break;
             case 'text':
                 $dataColumn['default_value'] = $changeType[$columnName]['default_value'];
                 $dataColumn['renew_on_update'] = $changeType[$columnName]['renew_on_update'];
+                $dataColumn['allow_search'] = true;
+                $dataColumn['search_condition'] = ['contain'];
                 break;
             case 'image':
                 $dataColumn['target_dir'] = $changeType[$columnName]['target_dir'];
+                $dataColumn['allow_search'] = false;
                 break;
             case 'file':
                 $dataColumn['target_dir'] = $changeType[$columnName]['target_dir'];
+                $dataColumn['allow_search'] = false;
                 break;
             case 'hidden':
                 $dataColumn['default_value'] = $changeType[$columnName]['default_value'];
                 $dataColumn['renew_on_update'] = $changeType[$columnName]['renew_on_update'];
+                $dataColumn['allow_search'] = true;
+                $dataColumn['search_condition'] = ['contain'];
                 break;
         }
 
@@ -305,13 +340,8 @@ class CrudProcess{
      * @return bool
      */
     public function actionIndex(){
-        //$this->processJoin();
         $selected = array('t0.*');
-//        foreach($this->columns as $item){
-//            $selected[] = 't0.'.$item;
-//        }
-//
-//        $selected[] = 't0.id';
+
 
         $lists = DB::table($this->entity->table.' as t0');
 
@@ -321,12 +351,44 @@ class CrudProcess{
 
         if($this->entity->filter != null){
             foreach($this->entity->filter as $key=>$item){
-                if($item[0] == 'contain'){
-                    // still using t0, column from other tb not included
-                    $lists->where('t0.'.$key, 'LIKE', '%'.$item[1].'%');
+                switch($item[0]){
+                    case 'equal':
+                        $lists->where('t0.'.$key, '=', $item[1]);
+                        break;
+
+                    case 'greater-than':
+                        $lists->where('t0.'.$key, '>', $item[1]);
+                        break;
+
+                    case 'less-than':
+                        $lists->where('t0.'.$key, '<', $item[1]);
+                        break;
+
+                    case 'contain':
+                        $lists->where('t0.'.$key, 'LIKE', '%'.$item[1].'%');
+                        break;
+
+                    case 'date-equal':
+                        $lists->whereRaw("DATE(`t0`.`$key`) = ?", [$item[1]]);
+                        break;
+
+                    case 'date-greater-than':
+                        $lists->whereRaw("DATE(`t0`.`$key`) > ?", [$item[1]]);
+                        break;
+
+                    case 'date-less-than':
+                        $lists->whereRaw("DATE(`t0`.`$key`) < ?", [$item[1]]);
+                        break;
+
+                    case 'date-between':
+                        $lists->whereRaw("DATE(`t0`.`$key`) BETWEEN ? AND ?", [$item[1], $item[2]]);
+                        break;
+
                 }
             }
         }
+
+        \Debugbar::info($this->entity->filter);
 
         foreach($this->entity->setJoin as $key=>$item){
             $selected[] = $item[3].'.'.$item[1];
