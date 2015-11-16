@@ -121,6 +121,14 @@ class CrudProcess{
                     $dataColumn['allow_search'] = true;
                     $dataColumn['search_condition'] = ['equal','greater-than', 'less-than', 'between', 'contain'];
                     break;
+
+                case 'double':
+                    $dataColumn['max_length'] = (int)$item->numeric_precision;
+                    $dataColumn['input_type'] = 'decimal';
+                    $dataColumn['allow_search'] = true;
+                    $dataColumn['search_condition'] = ['equal','greater-than', 'less-than', 'between', 'contain'];
+                    break;
+
                 case 'date':
                     $dataColumn['input_type'] = 'date';
                     $dataColumn['allow_search'] = true;
@@ -392,7 +400,6 @@ class CrudProcess{
             }
         }
 
-        \Debugbar::info($this->entity->filter);
 
         foreach($this->entity->setJoin as $key=>$item){
             $selected[] = $item[3].'.'.$item[1];

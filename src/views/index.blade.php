@@ -350,6 +350,10 @@ $load_datepicker = false;
                     @foreach($crud['columns'] as $item)
                         <?php
                             $x = $crud['data_type'][$item];
+                            if(!isset($x['allow_search'])){
+                                Log::info('Field '.$item.' belum terdaftar di search field');
+                                continue;
+                            }
                             if(!$x['allow_search']){
                                 continue;
                             }
