@@ -1,7 +1,7 @@
 
 @extends($crud['master_blade'])
 
-@section('konten')
+@section('crud_konten')
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
@@ -346,9 +346,9 @@
     </div>
 
 
-@endsection
+@stop
 
-@section('js')
+@section('crud_js')
     @if($crud['action'] == 'create' or $crud['action'] == 'edit')
         @if($crud['is_load_mce_libs'])
             <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce.min.js') }}"></script>
@@ -377,4 +377,4 @@
         });
 
     </script>
-@endsection
+@stop

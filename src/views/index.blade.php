@@ -8,7 +8,7 @@ $load_datepicker = false;
 ?>
 
 
-@section('konten')
+@section('crud_konten')
     <div class="row">
         <div class="col-md-12">
 
@@ -404,9 +404,9 @@ $load_datepicker = false;
     <style>
         .datepicker{z-index:1151 !important;}
     </style>
-@endsection
+@stop
 
-@section('js')
+@section('crud_js')
 <script>
     $(function(){
 
@@ -491,4 +491,4 @@ $load_datepicker = false;
 
     });
 </script>
-@endsection
+@stop

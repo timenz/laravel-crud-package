@@ -1,6 +1,6 @@
 @extends($crud['master_blade'])
 
-@section('konten')
+@section('crud_konten')
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
@@ -129,4 +129,4 @@
     </div>
 
 
-@endsection
+@stop
