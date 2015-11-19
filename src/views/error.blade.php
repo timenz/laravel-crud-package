@@ -8,7 +8,7 @@
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Error</h3>
+                    <h3 class="panel-title">{{ trans('crud::crud.error.title') }}</h3>
                 </div>
                 <div class="panel-body">
                     <p>{{ $crud['error_text'] }}</p>

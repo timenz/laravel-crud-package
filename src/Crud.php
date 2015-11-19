@@ -151,14 +151,14 @@ class Crud extends Controller{
                     'allow_order' => $this->entity->allowOrder,
                     'allow_mass_delete' => $this->entity->allowMassDelete,
                     'message' => Session::get('message'),
-                    'list_export_text' => $this->entity->listExportText,
-                    'list_search_text' => $this->entity->listSearchText,
-                    'list_create_text' => $this->entity->listCreateText,
-                    'list_edit_text' => $this->entity->listEditText,
-                    'list_read_text' => $this->entity->listReadText,
-                    'list_delete_text' => $this->entity->listDeleteText,
-                    'list_mass_delete_text' => $this->entity->listMassDeleteText,
-                    'title' => $this->entity->subTitleIndex.' '.$this->entity->title,
+//                    'list_export_text' => $this->entity->listExportText,
+//                    'list_search_text' => $this->entity->listSearchText,
+//                    'list_create_text' => $this->entity->listCreateText,
+//                    'list_edit_text' => $this->entity->listEditText,
+//                    'list_read_text' => $this->entity->listReadText,
+//                    'list_delete_text' => $this->entity->listDeleteText,
+//                    'list_mass_delete_text' => $this->entity->listMassDeleteText,
+                    'title' => $this->entity->title,
                     'master_blade' => $this->entity->masterBlade,
                     'paging_links' => $this->entity->pagingLinks,
                     'external_link' => $this->entity->externalLink,
@@ -173,10 +173,10 @@ class Crud extends Controller{
             case 'create':
                 $createResponse = array(
                     'create_fields' => $this->entity->createFields,
-                    'create_btn_text' => $this->entity->createBtnText,
-                    'title' => $this->entity->subTitleCreate.' '.$this->entity->title,
+//                    'create_btn_text' => $this->entity->createBtnText,
+                    'title' => $this->entity->title,
                     'master_blade' => $this->entity->masterBlade,
-                    'back_btn_text' => $this->entity->backBtnText,
+//                    'back_btn_text' => $this->entity->backBtnText,
                     'external_link' => $this->entity->externalLink,
                     'is_load_mce_libs' => $this->entity->isLoadMceLibs,
                     'is_load_map_libs' => $this->entity->isLoadMapLibs,
@@ -199,11 +199,11 @@ class Crud extends Controller{
             case 'edit':
                 $editResponse = array(
                     'edit_fields' => $this->entity->editFields,
-                    'edit_btn_text' => $this->entity->editBtnText,
+//                    'edit_btn_text' => $this->entity->editBtnText,
                     'id' => $this->entity->ids,
-                    'title' => $this->entity->subTitleEdit.' '.$this->entity->title,
+                    'title' => $this->entity->title,
                     'master_blade' => $this->entity->masterBlade,
-                    'back_btn_text' => $this->entity->backBtnText,
+//                    'back_btn_text' => $this->entity->backBtnText,
                     'external_link' => $this->entity->externalLink,
                     'is_load_mce_libs' => $this->entity->isLoadMceLibs,
                     'is_load_map_libs' => $this->entity->isLoadMapLibs,
@@ -225,10 +225,10 @@ class Crud extends Controller{
             case 'read':
 
                 $readResponse = array(
-                    'title' => $this->entity->subTitleRead.' '.$this->entity->title,
+                    'title' => $this->entity->title,
                     'master_blade' => $this->entity->masterBlade,
                     'read_fields' => $this->entity->readFields,
-                    'back_btn_text' => $this->entity->backBtnText,
+//                    'back_btn_text' => $this->entity->backBtnText,
                     'external_link' => $this->entity->externalLink,
                     'is_load_map_libs' => $this->entity->isLoadMapLibs,
 
@@ -257,7 +257,7 @@ class Crud extends Controller{
 
         }
 
-        \Debugbar::info($response);
+//        \Debugbar::info($response);
 
         $this->entity->masterData['crud'] = $response;
 

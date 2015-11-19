@@ -5,7 +5,7 @@
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ $crud['title'] }}</h3>
+                    <h3 class="panel-title">{{ trans('crud::crud.read.title') }} {{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -38,17 +38,25 @@
                                     @endif
 
                                     @if($item['input_type'] == 'image')
-                                            @if($item['value'] == null or $item['value'] == '' or !file_exists(public_path($item['target_dir'].'/'.$item['value']))) <p><em>null</em></p> @else
-                                            <p>Download : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
+                                        @if($item['value'] == null or $item['value'] == '')
+                                            <p><em>null</em></p>
+                                         @elseif(!file_exists(public_path($item['target_dir'].'/'.$item['value'])))
+                                            <p><em>{{ trans('crud::crud.field.image-no-exist', ['image' => $item['value']]) }}</em></p>
+                                        @else
+                                            <p>{{ trans('crud::crud.field.dl-text') }} : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
                                             <p class="form-control-static"><img class="img-responsive" src="{{ ImageSrc::path('/'.$item['target_dir'].'/'.$item['value'], 'resize', 1000) }}" /></p>
+
                                         @endif
                                     @endif
 
                                     @if($item['input_type'] == 'file')
-                                        @if($item['value'] !== null and $item['value'] !== '' and file_exists(public_path($item['target_dir'].'/'.$item['value'])))
-                                            <p>Download : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
+                                        @if($item['value'] === null and $item['value'] === '' )
+                                            <p><em>null</em></p>
+                                        @elseif(!file_exists(public_path($item['target_dir'].'/'.$item['value'])))
+                                            <p><em>{{ trans('crud::crud.field.file-no-exist', ['file' => $item['value']]) }}</em></p>
+
                                         @else
-                                            <p>File <strong>{{ $item['value'] }}</strong> doesn't exist.</p>
+                                            <p>{{ trans('crud::crud.field.dl-text') }} : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
                                         @endif
                                     @endif
 
@@ -126,7 +134,7 @@
 
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
-                                <a href="{{ url($crud['uri']) }}" class="btn btn-default">{{ $crud['back_btn_text'] }}</a>
+                                <a href="{{ url($crud['uri']) }}" class="btn btn-default">{{ trans('crud::crud.back-btn-text') }}</a>
                             </div>
                         </div>
                     </form>

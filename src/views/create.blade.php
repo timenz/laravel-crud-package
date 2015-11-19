@@ -5,7 +5,7 @@
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ $crud['title'] }}</h3>
+                    <h3 class="panel-title">{{ trans('crud::crud.create.title') }} {{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
 
@@ -141,7 +141,7 @@
                                     @if($item['input_type'] == 'enum')
                                         <?php
                                                 $arr_option = $item['options'];
-                                                $str_option = '<option value="">Pilih</option>';
+                                                $str_option = '<option value="">'.trans('crud::crud.field.select-placeholder', ['field' => $item['column_text']]).'</option>';
                                                 foreach($arr_option as $option){
                                                     $sel = '';
                                                     if($option == $value){
@@ -161,7 +161,7 @@
                                     @if($item['input_type'] == 'select')
                                         <?php
                                                 $arr_option = $item['options'];
-                                                $str_option = '<option value="">Pilih</option>';
+                                                $str_option = '<option value="">'.trans('crud::crud.field.select-placeholder', ['field' => $item['column_text']]).'</option>';
                                                 foreach($arr_option as $key=>$option){
                                                     $sel = '';
                                                     if($key == $value){
@@ -181,7 +181,7 @@
                                     @if($item['input_type'] == 'join')
                                         <?php
                                                 $arr_option = $item['options'];
-                                                $str_option = '<option value="">Pilih</option>';
+                                                $str_option = '<option value="">'.trans('crud::crud.field.select-placeholder', ['field' => $item['column_text']]).'</option>';
                                                 foreach($arr_option as $option){
                                                     $sel = '';
                                                     if($option->id == $value){
@@ -201,7 +201,7 @@
                                     @if($item['input_type'] == 'join_nn')
                                         <?php
                                                 $arr_option = $item['options'];
-                                                $str_option = '<option value="">Pilih</option>';
+                                                $str_option = '<option value="">'.trans('crud::crud.field.select-placeholder', ['field' => $item['column_text']]).'</option>';
                                                 foreach($arr_option as $option){
                                                     $sel = '';
 
@@ -276,8 +276,8 @@
 
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
-                                <a href="{{ url($crud['uri']) }}" class="btn btn-default">{{ $crud['back_btn_text'] }}</a>
-                                <button type="submit" class="btn btn-primary">{{ $crud['create_btn_text'] }}</button>
+                                <a href="{{ url($crud['uri']) }}" class="btn btn-default">{{ trans('crud::crud.back-btn-text') }}</a>
+                                <button type="submit" class="btn btn-primary">{{ trans('crud::crud.create.save-btn') }}</button>
                             </div>
                         </div>
 

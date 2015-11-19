@@ -15,7 +15,7 @@ $load_datepicker = false;
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ $crud['title'] }}</h3>
+                    <h3 class="panel-title">{{ trans('crud::crud.index.title') }} {{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
                     @if(count($session) > 0)
@@ -44,23 +44,9 @@ $load_datepicker = false;
                     <div class="row">
                         <div class="col-xs-7">
                             @if($crud['allow_create'])
-                                <a href="{{ url($crud['uri'].'/create') }}" class="btn btn-success">{{ $crud['list_create_text'] }}</a>
+                                <a href="{{ url($crud['uri'].'/create') }}" class="btn btn-success">{{ trans('crud::crud.index.create-button') }}</a>
                             @endif
 
-                            <div class="btn-group">
-
-
-                            @if($crud['allow_read'])
-                                <a href="#" id="list-btn-read" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_read_text'] }}</a>
-                            @endif
-                            @if($crud['allow_edit'])
-                                <a href="#" id="list-btn-edit" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_edit_text'] }}</a>
-                            @endif
-                            @if($crud['allow_delete'])
-                                <a href="#" id="list-btn-delete" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_delete_text'] }}</a>
-                            @endif
-                            </div>
-                            <span  class="btn-group" id="action_lists"></span>
 
                         </div>
                         <div class="col-xs-5 text-right">
@@ -76,10 +62,10 @@ $load_datepicker = false;
 
 
                             @if($crud['allow_export'])
-                                <a href="#" id="list-btn-export" class="btn btn-success">{{ $crud['list_export_text'] }}</a>
+                                <a href="#" id="list-btn-export" class="btn btn-success">{{ trans('crud::crud.index.export-button') }}</a>
                             @endif
                             @if($crud['allow_search'])
-                                <a href="#" id="list-btn-search" class="btn btn-success">{{ $crud['list_search_text'] }}</a>
+                                <a href="#" id="list-btn-search" class="btn btn-success">{{ trans('crud::crud.index.search-button') }}</a>
                             @endif
                         </div>
                     </div>
@@ -102,15 +88,15 @@ $load_datepicker = false;
                                                 @if($order[0] == $item)
                                                     <a href="{{ $link }}@if($order[1] == 'asc'){{ 'desc' }}@else{{ 'asc' }}@endif"
                                                        class="glyphicon glyphicon-arrow-@if($order[1] == 'asc'){{ 'down' }}@else{{ 'up' }}@endif" aria-hidden="true" data-toggle="tooltip"
-                                                       data-placement="top" title="Sort by {{ $crud['data_type'][$item]['column_text'] }} @if($order[1] == 'asc'){{ 'Descending' }}@else{{ 'Ascending' }}@endif"></a>
+                                                       data-placement="top" title="@if($order[1] == 'asc'){{ trans('crud::crud.index.sort-desc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}@else{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}@endif"></a>
                                                 @else
                                                     <a href="{{ $link }}asc" class="glyphicon glyphicon-arrow-up text-muted" aria-hidden="true" data-toggle="tooltip"
-                                                       data-placement="top" title="Sort by {{ $crud['data_type'][$item]['column_text'] }} Ascending"></a>
+                                                       data-placement="top" title="{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}"></a>
                                                 @endif
 
                                             @else
                                                 <a href="{{ $link }}asc" class="glyphicon glyphicon-arrow-up text-muted" aria-hidden="true" data-toggle="tooltip"
-                                                   data-placement="top" title="Sort by {{ $crud['data_type'][$item]['column_text'] }} Ascending"></a>
+                                                   data-placement="top" title="{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}"></a>
                                             @endif
                                         </div>
                                         @endif
@@ -163,7 +149,7 @@ $load_datepicker = false;
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'location')
                                                 <td>@if($item[$column] == '')<em>null</em>@else<a href="#" class="map-link"data-toggle="tooltip"
-                                                          data-placement="top" title="Tampilkan Lokasi">{{ $item[$column] }}</a>@endif</td>
+                                                          data-placement="top" title="{{ trans('crud::crud.index.field-location-tt') }}">{{ $item[$column] }}</a>@endif</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'file')
                                                 @if(file_exists(public_path($crud['data_type'][$column]['target_dir'].'/'.$item[$column])))
@@ -216,18 +202,18 @@ $load_datepicker = false;
                                     <td class="text-right">
                                         <div class="btn-group">
                                             <a href="#" class="dropdown-toggle action-link" data-toggle="dropdown">
-                                                Action <span class="caret"></span>
+                                                {{ trans('crud::crud.index.action') }} <span class="caret"></span>
                                                 <span class="sr-only">Toggle Dropdown</span>
                                             </a>
                                             <ul class="dropdown-menu pull-right" role="menu">
                                                 @if($crud['allow_read'])
-                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id']) }}">{{ ucwords($crud['list_read_text']) }}</a></li>
+                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id']) }}">{{ trans('crud::crud.index.action-show') }}</a></li>
                                                 @endif
                                                 @if($crud['allow_edit'])
-                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}">{{ ucwords($crud['list_edit_text']) }}</a></li>
+                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}">{{ trans('crud::crud.index.action-edit') }}</a></li>
                                                 @endif
                                                 @if($crud['allow_delete'])
-                                                    <li><a href="#" data-href="{{ url($crud['uri'].'/'.$item['id']) }}" class="btn-delete">{{ ucwords($crud['list_delete_text']) }}</a></li>
+                                                    <li><a href="#" data-href="{{ url($crud['uri'].'/'.$item['id']) }}" class="btn-delete">{{ trans('crud::crud.index.action-delete') }}</a></li>
                                                 @endif
 
 
@@ -262,18 +248,18 @@ $load_datepicker = false;
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Konfirmasi Hapus Data</h4>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-del-title') }}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Yakin untuk menghapus data yang telah dipilih ?</p>
+                    <p>{{ trans('crud::crud.index.modal-del-body') }}</p>
                 </div>
                 <div class="modal-footer">
 
                     <form method="post" action="#" id="form-delete" accept-charset="UTF-8">
                         <input name="_method" type="hidden" value="DELETE">
                         <input name="_token" type="hidden" value="{{ csrf_token() }}">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-                        <input type="submit" class="btn btn-primary" value="Hapus" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('crud::crud.modal-close-button') }}</button>
+                        <input type="submit" class="btn btn-primary" value="{{ trans('crud::crud.index.modal-del-button') }}" />
                     </form>
 
                 </div>
@@ -287,7 +273,7 @@ $load_datepicker = false;
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Export Data</h4>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-export-title') }}</h4>
                 </div>
                 <div class="modal-body">
 
@@ -307,19 +293,19 @@ $load_datepicker = false;
                                        value="@if(isset($session['export-to'])){{ $session['export-to'] }}@endif">
                             </div>
                             <input type="hidden" value="limit_export" name="action">
-                            <button type="submit" class="btn btn-default">Update Filter</button>
+                            <button type="submit" class="btn btn-default">{{ trans('crud::crud.index.modal-export-update-btn') }}</button>
                         </form>
                     @endif
 
                     <nav>
                         <ul class="pagination"></ul>
                     </nav>
-                    <p>Limit : <strong>{{ number_format($crud['export_max_limit']) }}</strong> rows/export.</p>
-                    <p>Total : <strong class="total">0</strong> rows.</p>
-                    <p>* klik paging to export.</p>
+                    <p>{{ trans('crud::crud.index.modal-export-limit-text') }} : <strong>{{ number_format($crud['export_max_limit']) }}</strong> {{ trans('crud::crud.index.modal-export-limit-text-2') }}.</p>
+                    <p>{{ trans('crud::crud.index.export-total-text') }} : <strong class="total">0</strong> {{ trans('crud::crud.index.export-total-text-2') }}.</p>
+                    <p>* {{ trans('crud::crud.index.modal-export-help') }}.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('crud::crud.modal-close-button') }}</button>
 
                 </div>
             </div><!-- /.modal-content -->
@@ -330,10 +316,10 @@ $load_datepicker = false;
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Mohon Ditunggu</h4>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-wait-title') }}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Proses data, silakan tunggu.</p>
+                    <p>{{ trans('crud::crud.index.modal-wait-body') }}.</p>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -344,7 +330,7 @@ $load_datepicker = false;
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Image Preview</h4>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-image-preview') }}</h4>
                 </div>
                 <div class="modal-body text-center">
                     <img style="display: inline;" class="image-full img-responsive" />
@@ -359,7 +345,7 @@ $load_datepicker = false;
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Map Preview</h4>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-map-title') }}</h4>
                 </div>
                 <div class="modal-body text-center">
                     <div id="map-preview" style="height: 400px;"></div>
@@ -374,7 +360,7 @@ $load_datepicker = false;
             <div class="modal-content">
                 <form method="get" action="{{ url($crud['uri']) }}">
                 <div class="modal-header">
-                    <h4 class="modal-title">Filter Data</h4>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-search-title') }}</h4>
                 </div>
                 <div class="modal-body">
                     <table class="table table-hover">
@@ -383,7 +369,7 @@ $load_datepicker = false;
                         <?php
                             $x = $crud['data_type'][$item];
                             if(!isset($x['allow_search'])){
-                                Log::info('Field '.$item.' belum terdaftar di search field');
+                                Log::info('Field '.$item.' not yet registered in search fields');
                                 continue;
                             }
                             if(!$x['allow_search']){
@@ -423,8 +409,8 @@ $load_datepicker = false;
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" name="action" value="search">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('crud::crud.modal-close-button') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ trans('crud::crud.index.modal-search-btn') }}</button>
 
                 </div>
                 </form>
