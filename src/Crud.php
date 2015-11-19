@@ -164,7 +164,8 @@ class Crud extends Controller{
                     'external_link' => $this->entity->externalLink,
                     'allow_multiple_select' => $this->entity->allowMultipleSelect,
                     'join_nn_column' => $this->entity->joinNNColumn,
-                    'join_nn_column_title' => $this->entity->joinNNColumnTitle
+                    'join_nn_column_title' => $this->entity->joinNNColumnTitle,
+                    'is_load_map_libs' => $this->entity->isLoadMapLibs,
 
                 );
                 $response = array_merge($response, $indexResponse);
@@ -178,6 +179,7 @@ class Crud extends Controller{
                     'back_btn_text' => $this->entity->backBtnText,
                     'external_link' => $this->entity->externalLink,
                     'is_load_mce_libs' => $this->entity->isLoadMceLibs,
+                    'is_load_map_libs' => $this->entity->isLoadMapLibs,
                     //'join_nn' => $this->joinNN,
                     //'join_nn_option' => $this->joinNNOption,
                     'errors' => Session::get('validate_errors')
@@ -204,6 +206,7 @@ class Crud extends Controller{
                     'back_btn_text' => $this->entity->backBtnText,
                     'external_link' => $this->entity->externalLink,
                     'is_load_mce_libs' => $this->entity->isLoadMceLibs,
+                    'is_load_map_libs' => $this->entity->isLoadMapLibs,
                     'errors' => Session::get('validate_errors')
 
                 );
@@ -227,6 +230,7 @@ class Crud extends Controller{
                     'read_fields' => $this->entity->readFields,
                     'back_btn_text' => $this->entity->backBtnText,
                     'external_link' => $this->entity->externalLink,
+                    'is_load_map_libs' => $this->entity->isLoadMapLibs,
 
                 );
                 $response = array_merge($response, $readResponse);
@@ -528,6 +532,13 @@ class Crud extends Controller{
                     'new_type' => $newType
                 );
                 $this->entity->isLoadMceLibs = true;
+                break;
+
+            case 'location':
+                $changeType[$field] = array(
+                    'new_type' => $newType
+                );
+                $this->entity->isLoadMapLibs = true;
                 break;
 
             case 'select':
@@ -1079,7 +1090,11 @@ class Crud extends Controller{
 
         $uri = join('/', $xuri);
 
-//        $id = str_replace($uri.'/', '', $uri1);
+        /**
+         * fix bug when crud inside crud url
+         */
+
+        $id = str_replace($uri.'/', '', $uri1);
 
 
         $this->entity->uri = $uri;
@@ -1118,7 +1133,7 @@ class Crud extends Controller{
 
         $uri = join('/', $xuri);
 
-//        $id = str_replace($uri.'/', '', $uri1);
+        $id = str_replace($uri.'/', '', $uri1);
 
         $this->entity->uri = $uri;
         $this->entity->action = 'edit';
@@ -1155,7 +1170,7 @@ class Crud extends Controller{
 
         $uri = join('/', $xuri);
 
-//        $id = str_replace($uri.'/', '', $uri1);
+        $id = str_replace($uri.'/', '', $uri1);
 
 
         $this->entity->uri = $uri;
@@ -1206,6 +1221,8 @@ class Crud extends Controller{
         $xuri = explode('/', $uri1, -1);
 
         $uri = join('/', $xuri);
+
+        $id = str_replace($uri.'/', '', $uri1);
 
         $this->entity->uri = $uri;
         $this->entity->action = 'delete';

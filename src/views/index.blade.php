@@ -97,8 +97,21 @@ $load_datepicker = false;
                                         @if($crud['allow_order'])
                                         <div class="pull-right">
                                             <?php $link = url($crud['uri'].'?action=set_order&sort_field='.$crud['data_type'][$item]['column_name'].'&direction='); ?>
-                                            <a href="{{ $link }}asc" class="glyphicon glyphicon-arrow-up text-muted" aria-hidden="true"></a>
-                                            <a href="{{ $link }}desc" href="#" class="glyphicon glyphicon-arrow-down" aria-hidden="true"></a>
+                                            @if(isset($crud['index_session']['order']))
+                                                <?php $order = $crud['index_session']['order']; ?>
+                                                @if($order[0] == $item)
+                                                    <a href="{{ $link }}@if($order[1] == 'asc'){{ 'desc' }}@else{{ 'asc' }}@endif"
+                                                       class="glyphicon glyphicon-arrow-@if($order[1] == 'asc'){{ 'down' }}@else{{ 'up' }}@endif" aria-hidden="true" data-toggle="tooltip"
+                                                       data-placement="top" title="Sort by {{ $crud['data_type'][$item]['column_text'] }} @if($order[1] == 'asc'){{ 'Descending' }}@else{{ 'Ascending' }}@endif"></a>
+                                                @else
+                                                    <a href="{{ $link }}asc" class="glyphicon glyphicon-arrow-up text-muted" aria-hidden="true" data-toggle="tooltip"
+                                                       data-placement="top" title="Sort by {{ $crud['data_type'][$item]['column_text'] }} Ascending"></a>
+                                                @endif
+
+                                            @else
+                                                <a href="{{ $link }}asc" class="glyphicon glyphicon-arrow-up text-muted" aria-hidden="true" data-toggle="tooltip"
+                                                   data-placement="top" title="Sort by {{ $crud['data_type'][$item]['column_text'] }} Ascending"></a>
+                                            @endif
                                         </div>
                                         @endif
                                     </th>
@@ -147,6 +160,10 @@ $load_datepicker = false;
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'textarea')
                                                 <td>{{ substr(strip_tags($item[$column]), 0, 40) }} ...</td>
+
+                                            @elseif($crud['data_type'][$column]['input_type'] == 'location')
+                                                <td>@if($item[$column] == '')<em>null</em>@else<a href="#" class="map-link"data-toggle="tooltip"
+                                                          data-placement="top" title="Tampilkan Lokasi">{{ $item[$column] }}</a>@endif</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'file')
                                                 @if(file_exists(public_path($crud['data_type'][$column]['target_dir'].'/'.$item[$column])))
@@ -321,6 +338,7 @@ $load_datepicker = false;
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
+
     <div class="modal fade" id="modal-image-full" >
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -331,6 +349,20 @@ $load_datepicker = false;
                 <div class="modal-body text-center">
                     <img style="display: inline;" class="image-full img-responsive" />
 
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="modal-map" data-map="">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Map Preview</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="map-preview" style="height: 400px;"></div>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -407,6 +439,17 @@ $load_datepicker = false;
 @stop
 
 @section('crud_js')
+    <script src="{{ asset('vendor/timenz/crud/js/crud.js') }}"></script>
+
+@if($crud['is_load_map_libs'])
+    <script src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.7"></script>
+    <script type="text/javascript" src="{{ asset('vendor/timenz/crud/js/maplace.min.js') }}"></script>
+
+    <script>
+        var place = null;
+
+    </script>
+@endif
 <script>
     $(function(){
 
@@ -488,6 +531,58 @@ $load_datepicker = false;
             }
         });
 
+        $('.map-link').click(function(e){
+            e.preventDefault();
+            var val = $(this).html();
+
+            $('#map-preview').html('');
+            $('#modal-map').modal();
+            $('#modal-map').attr('data-map', val);
+
+
+        });
+
+        $('#modal-map').on('shown.bs.modal', function (e) {
+            // do something...
+            var loc = $(this).attr('data-map');
+
+            var lat = 0, lon = 0;
+
+            if(loc.isValidLocation()){
+                loc = loc.split(',');
+                lat = loc[0];
+                lon = loc[1];
+
+
+                var place = new Maplace({
+                    map_options: {
+                        zoom: 10,
+                        scrollwheel: false
+                    },
+                    map_div: '#map-preview',
+                    controls_on_map: true,
+                    listeners: {
+                        click: function(map, event) {
+
+                            console.log(map);
+                            console.log(event.latLng);
+                        }
+                    }
+                });
+
+                place.SetLocations([{
+                    lat: lat,
+                    lon: lon
+                }]);
+
+                place.Load();
+            }else{
+                $('#map-preview').html('<p>Maaf Lokasi tidak valid</p>');
+            }
+
+
+
+        })
 
     });
 </script>

@@ -101,12 +101,21 @@
                                         <p class="form-control-static">{{ $item['value'] }}</p>
                                     @endif
 
+                                    @if($item['input_type'] == 'datetime')
+                                        <p class="form-control-static">{{ date('d F Y H:i:s', strtotime($item['value'])) }}</p>
+                                    @endif
+
                                     @if($item['input_type'] == 'richarea')
                                         <p class="form-control-static">{{ $item['value'] }}</p>
                                     @endif
 
                                     @if($item['input_type'] == 'hidden')
                                         <p class="form-control-static">{{ $item['value'] }}</p>
+                                    @endif
+
+                                    @if($item['input_type'] == 'location')
+                                        <p class="form-control-static">{{ $item['value'] }}</p>
+                                        <div class="map-field" id="map-{{ $item['column_name'] }}" data-location="{{ $item['value'] }}" style="height: 300px;"></div>
                                     @endif
 
                                 </div>
@@ -130,3 +139,43 @@
 
 
 @stop
+
+@section('crud_js')
+    <script src="{{ asset('vendor/timenz/crud/js/crud.js') }}"></script>
+
+    @if($crud['is_load_map_libs'])
+        <script src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.7"></script>
+        <script type="text/javascript" src="{{ asset('vendor/timenz/crud/js/maplace.min.js') }}"></script>
+
+        <script>
+            $(function(){
+                $('.map-field').each(function(){
+                    var id = $(this).attr('id');
+                    var loc = $(this).attr('data-location');
+
+                    var lat = 0, lon = 0;
+                    if(loc.isValidLocation()){
+                        loc = loc.split(',');
+                        lat = loc[0];
+                        lon = loc[1];
+                    }
+
+                    new Maplace({
+                        map_options: {
+                            zoom: 10,
+                            scrollwheel: false
+                        },
+                        locations: [{
+                            lat: lat,
+                            lon: lon
+                        }],
+                        map_div: '#' + id,
+                        controls_on_map: false
+                    }).Load();
+                });
+            });
+
+        </script>
+    @endif
+
+@endsection

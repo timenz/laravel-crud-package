@@ -141,6 +141,12 @@ class CrudProcess{
                     $dataColumn['search_condition'] = ['date-equal','date-greater-than', 'date-less-than', 'date-between', 'contain'];
                     break;
 
+                case 'timestamp':
+                    $dataColumn['input_type'] = 'datetime';
+                    $dataColumn['allow_search'] = true;
+                    $dataColumn['search_condition'] = ['date-equal','date-greater-than', 'date-less-than', 'date-between', 'contain'];
+                    break;
+
                 case 'enum':
                     $options = array();
                     $xstr = explode(',', substr($item->column_type, 5, -1));
@@ -247,6 +253,10 @@ class CrudProcess{
                 $dataColumn['renew_on_update'] = $changeType[$columnName]['renew_on_update'];
                 $dataColumn['allow_search'] = true;
                 $dataColumn['search_condition'] = ['contain'];
+                break;
+            case 'location':
+                $dataColumn['allow_search'] = false;
+                $dataColumn['search_condition'] = [];
                 break;
         }
 

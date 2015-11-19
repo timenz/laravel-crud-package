@@ -124,6 +124,17 @@
                                                value="{{ $value }}" />
                                     @endif
 
+                                    @if($item['input_type'] == 'location')
+
+                                        <input type="text"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $value }}" />
+                                        <div class="map-field" id="map-{{ $item['column_name'] }}" data-location="{{ $value }}" style="height: 300px;"></div>
+
+                                        @endif
+
 
                                     @if($item['input_type'] == 'numeric')
                                         <input type="text"
@@ -349,16 +360,96 @@
 @stop
 
 @section('crud_js')
-    @if($crud['action'] == 'create' or $crud['action'] == 'edit')
-        @if($crud['is_load_mce_libs'])
-            <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce.min.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce_editor.js') }}"></script>
-            <script type="text/javascript">
-                editor_config.selector = "textarea.richarea";
-                tinymce.init(editor_config);
-            </script>
-        @endif
+    <script src="{{ asset('vendor/timenz/crud/js/crud.js') }}"></script>
+    @if($crud['is_load_map_libs'])
+        <script src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.7"></script>
+        <script type="text/javascript" src="{{ asset('vendor/timenz/crud/js/maplace.min.js') }}"></script>
+
+        <script>
+            $(function(){
+                $('.map-field').each(function(){
+                    var id = $(this).attr('id');
+                    var input  = id.replace('map-', 'id-');
+                    var loc = $(this).attr('data-location');
+                    var lat = 0, lon = 0;
+                    if(loc.isValidLocation()){
+                        loc = loc.split(',');
+                        lat = loc[0];
+                        lon = loc[1];
+                    }
+
+                    var place = new Maplace({
+                        map_options: {
+                            zoom: 10,
+                            scrollwheel: false
+                        },
+                        locations: [{
+                            lat: lat,
+                            lon: lon
+                        }],
+                        map_div: '#' + id,
+                        controls_on_map: false,
+                        listeners: {
+                            click: function(map, event) {
+
+                                var location = event.latLng.G.toFixed(6) + ', ' + event.latLng.K.toFixed(6);
+
+                                $('#' + input).val(location);
+
+
+                                place.SetLocations([{
+                                    lat: event.latLng.G,
+                                    lon: event.latLng.K
+                                }]);
+                                place.Load();
+                            }
+                        }
+                    });
+                    place.Load();
+
+                    $('#' + input).keyup(function(){
+
+                        var val0 = $(this).val();
+
+                        setTimeout(function(){
+                            var val = $('#' + input).val();
+
+                            if(val0 != val){
+                                return false;
+                            }
+
+                            if(!val.isValidLocation()){
+                                return false;
+                            }
+                            loc = val.split(',');
+
+                            place.SetLocations([{
+                                lat: loc[0],
+                                lon: loc[1]
+                            }]);
+                            place.Load();
+                        }, 2000);
+
+
+                    });
+
+
+                });
+
+            });
+
+        </script>
     @endif
+
+    @if($crud['is_load_mce_libs'])
+        <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce_editor.js') }}"></script>
+        <script type="text/javascript">
+            editor_config.selector = "textarea.richarea";
+            tinymce.init(editor_config);
+        </script>
+    @endif
+
     <script>
         $(function(){
             $('.chosen-select').chosen();

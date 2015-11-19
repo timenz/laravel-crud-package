@@ -74,6 +74,7 @@ class CrudEntity{
     public $filter;
     public $exportFilter;
     public $isLoadMceLibs = false;
+    public $isLoadMapLibs = false;
 
 
     public $joinNN;
