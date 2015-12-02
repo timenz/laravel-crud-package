@@ -66,6 +66,21 @@
                                     </div>
                                     @endif
 
+                                    @if($item['input_type'] == 'datetime')
+                                        <div class="col-sm-6">
+                                            <div class="input-group field-datetime">
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                                <input type="text"
+                                                       name="{{ $item['column_name'] }}"
+                                                       class="cl-{{ $item['column_name'] }} form-control"
+                                                       id="id-{{ $item['column_name'] }}"
+                                                       value="{{ $value }}" />
+                                            </div>
+                                        </div>
+                                    @endif
+
                                     @if($item['input_type'] == 'location')
                                     <div class="col-lg-10">
                                         <input type="text"
@@ -306,7 +321,14 @@
 
 @stop
 
+@section('crud_css')
+
+    <link href="{{ asset('vendor/timenz/crud/css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet">
+@endsection
+
 @section('crud_js')
+    <script src="{{ asset('vendor/timenz/crud/js/moment.min.js') }}"></script>
+    <script src="{{ asset('vendor/timenz/crud/js/bootstrap-datetimepicker.min.js') }}"></script>
     <script src="{{ asset('vendor/timenz/crud/js/crud.js') }}"></script>
     @if($crud['is_load_map_libs'])
         <script src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.7"></script>
@@ -402,6 +424,10 @@
         $('.field-date').datepicker({
             format: 'yyyy-mm-dd',
             autoclose: true
+        });
+
+        $('.field-datetime').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm:ss'
         });
     });
 
