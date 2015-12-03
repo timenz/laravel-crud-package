@@ -291,8 +291,8 @@
 
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
-                                <a href="{{ url($crud['uri']) }}" class="btn btn-default">{{ trans('crud::crud.back-btn-text') }}</a>
-                                <button type="submit" class="btn btn-primary">{{ trans('crud::crud.create.save-btn') }}</button>
+                                <a href="{{ url($crud['uri']) }}" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i> {{ trans('crud::crud.back-btn-text') }}</a>
+                                <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-floppy-disk"></i> {{ trans('crud::crud.create.save-btn') }}</button>
                             </div>
                         </div>
 

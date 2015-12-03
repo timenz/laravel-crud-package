@@ -134,7 +134,7 @@
 
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
-                                <a href="{{ url($crud['uri']) }}" class="btn btn-default">{{ trans('crud::crud.back-btn-text') }}</a>
+                                <a href="{{ url($crud['uri']) }}" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i> {{ trans('crud::crud.back-btn-text') }}</a>
                             </div>
                         </div>
                     </form>

@@ -44,7 +44,7 @@ $load_datepicker = false;
                     <div class="row">
                         <div class="col-xs-7">
                             @if($crud['allow_create'])
-                                <a href="{{ url($crud['uri'].'/create') }}" class="btn btn-success">{{ trans('crud::crud.index.create-button') }}</a>
+                                <a href="{{ url($crud['uri'].'/create') }}" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> {{ trans('crud::crud.index.create-button') }}</a>
                             @endif
 
 
@@ -65,7 +65,7 @@ $load_datepicker = false;
                                 <a href="#" id="list-btn-export" class="btn btn-success">{{ trans('crud::crud.index.export-button') }}</a>
                             @endif
                             @if($crud['allow_search'])
-                                <a href="#" id="list-btn-search" class="btn btn-success">{{ trans('crud::crud.index.search-button') }}</a>
+                                <a href="#" id="list-btn-search" class="btn btn-success"><i class="glyphicon glyphicon-search"></i> {{ trans('crud::crud.index.search-button') }}</a>
                             @endif
                         </div>
                     </div>
@@ -73,32 +73,40 @@ $load_datepicker = false;
                     <div class="clearfix" style="height: 10px;"></div>
 
                     <div class="list-table ">
-                        <table class="table table-striped">
+                        <table class="table table-striped table-hover">
                             <thead>
 
                             <tr>
+
                                 {{--<th><input type="checkbox" class="" name="cb-all" id="cb-all"></th>--}}
                                 @foreach($crud['columns'] as $item)
-                                    <th>{{ $crud['data_type'][$item]['column_text'] }}
+                                    <th>
+
                                         @if($crud['allow_order'])
-                                        <div class="pull-right">
                                             <?php $link = url($crud['uri'].'?action=set_order&sort_field='.$crud['data_type'][$item]['column_name'].'&direction='); ?>
                                             @if(isset($crud['index_session']['order']))
                                                 <?php $order = $crud['index_session']['order']; ?>
                                                 @if($order[0] == $item)
                                                     <a href="{{ $link }}@if($order[1] == 'asc'){{ 'desc' }}@else{{ 'asc' }}@endif"
-                                                       class="glyphicon glyphicon-arrow-@if($order[1] == 'asc'){{ 'down' }}@else{{ 'up' }}@endif" aria-hidden="true" data-toggle="tooltip"
-                                                       data-placement="top" title="@if($order[1] == 'asc'){{ trans('crud::crud.index.sort-desc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}@else{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}@endif"></a>
+                                                        aria-hidden="true" data-toggle="tooltip" class="text-success"
+                                                       data-placement="top" title="@if($order[1] == 'asc'){{ trans('crud::crud.index.sort-desc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}@else{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}@endif">
+                                                        <i class="glyphicon glyphicon-arrow-@if($order[1] == 'asc'){{ 'down' }}@else{{ 'up' }}@endif "></i> {{ $crud['data_type'][$item]['column_text'] }}
+                                                    </a>
                                                 @else
-                                                    <a href="{{ $link }}asc" class="glyphicon glyphicon-arrow-up text-muted" aria-hidden="true" data-toggle="tooltip"
-                                                       data-placement="top" title="{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}"></a>
+                                                    <a href="{{ $link }}asc" aria-hidden="true" data-toggle="tooltip"
+                                                       data-placement="top" title="{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}">
+                                                        <i class="glyphicon glyphicon-arrow-up"></i> {{ $crud['data_type'][$item]['column_text'] }}
+                                                    </a>
                                                 @endif
 
                                             @else
-                                                <a href="{{ $link }}asc" class="glyphicon glyphicon-arrow-up text-muted" aria-hidden="true" data-toggle="tooltip"
-                                                   data-placement="top" title="{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}"></a>
+                                                <a href="{{ $link }}asc" aria-hidden="true" data-toggle="tooltip"
+                                                   data-placement="top" title="{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}">
+                                                    <i class="glyphicon glyphicon-arrow-up"></i> {{ $crud['data_type'][$item]['column_text'] }}
+                                                </a>
                                             @endif
-                                        </div>
+                                        @else
+                                            {{ $crud['data_type'][$item]['column_text'] }}
                                         @endif
                                     </th>
                                 @endforeach
@@ -107,8 +115,8 @@ $load_datepicker = false;
                                 <th>{{ ucwords(str_replace('_', ' ', $item)) }}</th>
                                 @endforeach
 
-                                <th></th>
 
+                                <th>#</th>
 
                                 {{--@if($allow_create or $allow_edit or $allow_delete)--}}
                                     {{--<th>Action</th>--}}
@@ -120,9 +128,7 @@ $load_datepicker = false;
 
                                 <?php $item = (array)$item; ?>
                                 <tr>
-                                    <span style="display: none" id="action-{{ $item['id'] }}">@if(isset($crud['action_lists'][$item['id']]))
-                                            {{ json_encode($crud['action_lists'][$item['id']]) }}@endif</span>
-                                    </td>
+
                                     <?php $x++; ?>
 
                                     @foreach($crud['columns'] as $column)
@@ -199,35 +205,63 @@ $load_datepicker = false;
                                         <td>{{ $nnVal }}</td>
                                     @endforeach
 
-                                    <td class="text-right">
+                                    <td>
                                         <div class="btn-group">
-                                            <a href="#" class="dropdown-toggle action-link" data-toggle="dropdown">
-                                                {{ trans('crud::crud.index.action') }} <span class="caret"></span>
-                                                <span class="sr-only">Toggle Dropdown</span>
-                                            </a>
                                             <ul class="dropdown-menu pull-right" role="menu">
                                                 @if($crud['allow_read'])
-                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id']) }}">{{ trans('crud::crud.index.action-show') }}</a></li>
+                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id']) }}"><i class="glyphicon glyphicon-eye-open"></i> {{ trans('crud::crud.index.action-show') }}</a></li>
                                                 @endif
                                                 @if($crud['allow_edit'])
-                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}">{{ trans('crud::crud.index.action-edit') }}</a></li>
+                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}"><i class="glyphicon glyphicon-pencil"></i> {{ trans('crud::crud.index.action-edit') }}</a></li>
                                                 @endif
                                                 @if($crud['allow_delete'])
-                                                    <li><a href="#" data-href="{{ url($crud['uri'].'/'.$item['id']) }}" class="btn-delete">{{ trans('crud::crud.index.action-delete') }}</a></li>
+                                                    <li><a data-toggle="modal" href="#modal-del{{ $item['id'] }}"><i class="glyphicon glyphicon-remove"></i> {{ trans('crud::crud.index.action-delete') }}</a></li>
                                                 @endif
 
 
                                                 @if(isset($crud['action_lists'][$item['id']]))
 
                                                     <li class="divider"></li>
-                                                @foreach($crud['action_lists'][$item['id']] as $action)
-                                                    <li><a href="{{ $action['url'] }}">{{ $action['title'] }}</a></li>
-                                                @endforeach
+                                                    @foreach($crud['action_lists'][$item['id']] as $action)
+                                                        <li><a href="{{ $action['url'] }}"><i class="glyphicon glyphicon-ok"></i> {{ $action['title'] }}</a></li>
+                                                    @endforeach
 
                                                 @endif
                                             </ul>
+                                            <a href="#" class="dropdown-toggle action-link" data-toggle="dropdown">
+                                                {{--{{ trans('crud::crud.index.action') }}--}} <i class="glyphicon glyphicon-align-justify"></i>
+                                                <span class="sr-only"></span>
+                                            </a>
+
                                         </div>
+
+                                        @if($crud['allow_delete'])
+                                            <div class="modal fade" id="modal-del{{ $item['id'] }}" >
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                            <h4 class="modal-title">{{ trans('crud::crud.index.modal-del-title') }}</h4>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>{{ trans('crud::crud.index.modal-del-body') }}</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+
+                                                            <form method="post" action="{{ url($crud['uri'].'/'.$item['id']) }}" id="form-delete" accept-charset="UTF-8">
+                                                                <input name="_method" type="hidden" value="DELETE">
+                                                                <input name="_token" type="hidden" value="{{ csrf_token() }}">
+                                                                <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('crud::crud.modal-close-button') }}</button>
+                                                                <input type="submit" class="btn btn-primary" value="{{ trans('crud::crud.index.modal-del-button') }}" />
+                                                            </form>
+
+                                                        </div>
+                                                    </div><!-- /.modal-content -->
+                                                </div><!-- /.modal-dialog -->
+                                            </div><!-- /.modal -->
+                                        @endif
                                     </td>
+
                                 </tr>
                             @endforeach
 
@@ -242,30 +276,6 @@ $load_datepicker = false;
         </div>
     </div>
 
-
-    <div class="modal fade" id="modal-confirm-hapus" >
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-del-title') }}</h4>
-                </div>
-                <div class="modal-body">
-                    <p>{{ trans('crud::crud.index.modal-del-body') }}</p>
-                </div>
-                <div class="modal-footer">
-
-                    <form method="post" action="#" id="form-delete" accept-charset="UTF-8">
-                        <input name="_method" type="hidden" value="DELETE">
-                        <input name="_token" type="hidden" value="{{ csrf_token() }}">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('crud::crud.modal-close-button') }}</button>
-                        <input type="submit" class="btn btn-primary" value="{{ trans('crud::crud.index.modal-del-button') }}" />
-                    </form>
-
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
 
 
     <div class="modal fade" id="modal-confirm-export" >

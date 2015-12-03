@@ -892,8 +892,8 @@ class Crud extends Controller{
      * @param string $permission
      */
 
-    protected function disAllow($permission = 'LCREDSX'){
-        $list = ['L', 'C', 'R', 'E', 'D', 'S', 'X'];
+    protected function disAllow($permission = 'LCREDSXO'){
+        $list = ['L', 'C', 'R', 'E', 'D', 'S', 'X', 'O'];
         foreach($list as $item){
             if(strpos($permission, $item) > -1){
                 switch($item){
@@ -919,6 +919,10 @@ class Crud extends Controller{
 
                     case 'S':
                         $this->entity->allowSearch = false;
+                        break;
+
+                    case 'O':
+                        $this->entity->allowOrder = false;
                         break;
 
 
