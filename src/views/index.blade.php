@@ -473,12 +473,15 @@ $load_datepicker = false;
                 $('#modal-confirm-wait').modal('hide');
                 if(data.status){
                     var str = '', max_limit = {{ $crud['export_max_limit'] }};
-                    var pagingNum = data.total/max_limit;
-                    for(var i = 1; i <= pagingNum ; i++){
-                        str += '<li><a href="{{ url($crud['uri'].'?action=export&page=') }}' + i + '">' + i + '</a></li>';
-                    }
-                    if(str == ''){
-                        str = '<li><a href="{{ url($crud['uri'].'?action=export') }}">' + 1 + '</a></li>';
+                    if(data.total > 0) {
+
+                        var pagingNum = data.total / max_limit;
+                        for (var i = 1; i <= pagingNum; i++) {
+                            str += '<li><a href="{{ url($crud['uri'].'?action=export&page=') }}' + i + '">' + i + '</a></li>';
+                        }
+                        if (str == '') {
+                            str = '<li><a href="{{ url($crud['uri'].'?action=export') }}">' + 1 + '</a></li>';
+                        }
                     }
 
                     $('#modal-confirm-export').modal('show');
