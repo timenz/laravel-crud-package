@@ -950,6 +950,10 @@ class Crud extends Controller{
         $this->entity->exportFields = $fields;
     }
 
+    protected function setLimit($limit){
+        $this->entity->perPage = $limit;
+    }
+
     /* ##################################### END PROTECTED METHOD ################################################ */
 
 

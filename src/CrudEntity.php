@@ -40,7 +40,7 @@ class CrudEntity{
     public $validateErrors = array();
     public $lists = array();
 //    public $crudField;
-    public $perPage = 20;
+    public $perPage = 30;
     public $ids = 0;
     public $response = array();
     public $row = array();

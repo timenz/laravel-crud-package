@@ -31,7 +31,7 @@ return [
         'modal-image-title' => 'Image Preview',
         'modal-map-title' => 'Map Preview',
         'modal-search-title' => 'Filter Data',
-        'modal-search-btn' => 'Apply',
+        'modal-search-btn' => 'Search',
     ],
 
     'create' => [

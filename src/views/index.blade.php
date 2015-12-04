@@ -62,7 +62,7 @@ $load_datepicker = false;
 
 
                             @if($crud['allow_export'])
-                                <a href="#" id="list-btn-export" class="btn btn-success">{{ trans('crud::crud.index.export-button') }}</a>
+                                <a href="#" id="list-btn-export" class="btn btn-success"><i class="glyphicon glyphicon-export"></i> {{ trans('crud::crud.index.export-button') }}</a>
                             @endif
                             @if($crud['allow_search'])
                                 <a href="#" id="list-btn-search" class="btn btn-success"><i class="glyphicon glyphicon-search"></i> {{ trans('crud::crud.index.search-button') }}</a>
@@ -207,15 +207,15 @@ $load_datepicker = false;
 
                                     <td>
                                         <div class="btn-group">
-                                            <ul class="dropdown-menu pull-right" role="menu">
+                                            <ul class="dropdown-menu pull-right row-menu" role="menu">
                                                 @if($crud['allow_read'])
-                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id']) }}"><i class="glyphicon glyphicon-eye-open"></i> {{ trans('crud::crud.index.action-show') }}</a></li>
+                                                    <li class="link"><a href="{{ url($crud['uri'].'/'.$item['id']) }}"><i class="glyphicon glyphicon-eye-open"></i> {{ trans('crud::crud.index.action-show') }}</a></li>
                                                 @endif
                                                 @if($crud['allow_edit'])
-                                                    <li><a href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}"><i class="glyphicon glyphicon-pencil"></i> {{ trans('crud::crud.index.action-edit') }}</a></li>
+                                                    <li class="link"><a href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}"><i class="glyphicon glyphicon-pencil"></i> {{ trans('crud::crud.index.action-edit') }}</a></li>
                                                 @endif
                                                 @if($crud['allow_delete'])
-                                                    <li><a data-toggle="modal" href="#modal-del{{ $item['id'] }}"><i class="glyphicon glyphicon-remove"></i> {{ trans('crud::crud.index.action-delete') }}</a></li>
+                                                    <li class="link"><a data-toggle="modal" href="#modal-del{{ $item['id'] }}"><i class="glyphicon glyphicon-remove"></i> {{ trans('crud::crud.index.action-delete') }}</a></li>
                                                 @endif
 
 
@@ -223,13 +223,13 @@ $load_datepicker = false;
 
                                                     <li class="divider"></li>
                                                     @foreach($crud['action_lists'][$item['id']] as $action)
-                                                        <li><a href="{{ $action['url'] }}"><i class="glyphicon glyphicon-ok"></i> {{ $action['title'] }}</a></li>
+                                                        <li class="link"><a href="{{ $action['url'] }}"><i class="glyphicon glyphicon-ok"></i> {{ $action['title'] }}</a></li>
                                                     @endforeach
 
                                                 @endif
                                             </ul>
                                             <a href="#" class="dropdown-toggle action-link" data-toggle="dropdown">
-                                                {{--{{ trans('crud::crud.index.action') }}--}} <i class="glyphicon glyphicon-align-justify"></i>
+                                                {{--{{ trans('crud::crud.index.action') }}--}}  <i class="glyphicon glyphicon-align-justify"></i>
                                                 <span class="sr-only"></span>
                                             </a>
 
@@ -251,7 +251,7 @@ $load_datepicker = false;
                                                             <form method="post" action="{{ url($crud['uri'].'/'.$item['id']) }}" id="form-delete" accept-charset="UTF-8">
                                                                 <input name="_method" type="hidden" value="DELETE">
                                                                 <input name="_token" type="hidden" value="{{ csrf_token() }}">
-                                                                <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('crud::crud.modal-close-button') }}</button>
+                                                                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> {{ trans('crud::crud.modal-close-button') }}</button>
                                                                 <input type="submit" class="btn btn-primary" value="{{ trans('crud::crud.index.modal-del-button') }}" />
                                                             </form>
 
@@ -315,7 +315,7 @@ $load_datepicker = false;
                     <p>* {{ trans('crud::crud.index.modal-export-help') }}.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('crud::crud.modal-close-button') }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> {{ trans('crud::crud.modal-close-button') }}</button>
 
                 </div>
             </div><!-- /.modal-content -->
@@ -419,8 +419,8 @@ $load_datepicker = false;
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" name="action" value="search">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('crud::crud.modal-close-button') }}</button>
-                    <button type="submit" class="btn btn-primary">{{ trans('crud::crud.index.modal-search-btn') }}</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> {{ trans('crud::crud.modal-close-button') }}</button>
+                    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i> {{ trans('crud::crud.index.modal-search-btn') }}</button>
 
                 </div>
                 </form>
@@ -516,6 +516,14 @@ $load_datepicker = false;
         $('.input-date').datepicker({
             autoclose: true,
             format: 'yyyy-mm-dd'
+        });
+
+        $('.row-menu').each(function(){
+            var count = $(this).children('.link').length;
+
+            if(count < 1){
+                $(this).next().hide();
+            }
         });
 
         $('.condition-select').change(function(){
