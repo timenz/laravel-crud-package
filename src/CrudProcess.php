@@ -357,7 +357,7 @@ class CrudProcess{
     /**
      * @return bool
      */
-    public function actionIndex(){
+    public function actionIndex($action = 'index'){
         $selected = array('t0.*');
 
 
@@ -426,6 +426,16 @@ class CrudProcess{
         if($this->entity->orderByCustom != null){
             $order = $this->entity->orderByCustom;
             $lists->orderBy($order[0], $order[1]);
+        }
+
+        if($action == 'export'){
+            $page = Input::get('page');
+            $this->entity->csv = $lists->limit($this->entity->exportMaxLimit)->offset($page)->get();
+            return false;
+        }
+
+        if($action == 'prepare_export'){
+            return $lists->count();
         }
 
         $lists = $lists->paginate($this->entity->perPage);
@@ -1087,23 +1097,25 @@ class CrudProcess{
 
     public function actionPrepareExport(){
 
-        $row = DB::table($this->entity->table)->selectRaw("count(*) as aggregate");
+//        $row = DB::table($this->entity->table)->selectRaw("count(*) as aggregate");
+//
+//        if(Session::has('crud-'.$this->entity->uri)){
+//            $session = Session::get('crud-'.$this->entity->uri);
+//
+//            if(isset($session['export-from']) and isset($session['export-to']) and $this->entity->exportFilter != null){
+//                $row->whereBetween($this->entity->exportFilter, array($session['export-from'], $session['export-to']));
+//            }
+//        }
+//
+//        $row = $row->first();
+//
+//        $total = $row->aggregate * 1;
 
-        if(Session::has('crud-'.$this->entity->uri)){
-            $session = Session::get('crud-'.$this->entity->uri);
-
-            if(isset($session['export-from']) and isset($session['export-to']) and $this->entity->exportFilter != null){
-                $row->whereBetween($this->entity->exportFilter, array($session['export-from'], $session['export-to']));
-            }
-        }
-
-        $row = $row->first();
-
-        $total = $row->aggregate * 1;
+        $total = $this->actionIndex('prepare_export');
 
         $paging = true;
 
-        if($total > 1000){
+        if($total > $this->entity->exportMaxLimit){
             $paging = true;
         }
 
@@ -1114,10 +1126,50 @@ class CrudProcess{
     }
 
     public function actionExport(){
-        $csv = DB::table('booked_ticket_his')->orderBy('id', 'desc')->limit(10)->get();
 
-        $this->entity->csv = $csv;
+        $this->actionIndex('export');
+
+        $rows = $this->entity->csv;
+
+        $fields = $this->entity->exportFields;
+
+        if($fields === null){
+            $fields = $this->entity->columns;
+        }
+
+        \Log::alert('field', $fields);
+
+        $out = [];
+
+        foreach($rows as $item){
+            $data = [];
+
+            foreach($fields as $field){
+                if(isset($item->$field)){
+                    $data[$field] = $this->parseExportField($field, $item);
+                }
+            }
+
+            $out[] = $data;
+        }
+
+        $this->entity->csv = $out;
+
         $this->entity->responseType = 'csv';
+    }
+
+    private function parseExportField($field, $item){
+        if(!isset($this->entity->dataType[$field])){
+            return $item->$field;
+        }
+
+        $type = $this->entity->dataType[$field];
+
+        if($type['input_type'] == 'join'){
+            return $item->{$type['related_field']};
+        }
+
+        return $item->$field;
     }
 
     private function uploadFile($item, $targetDir, $action = 'insert', $type = 'image'){

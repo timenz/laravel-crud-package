@@ -151,13 +151,6 @@ class Crud extends Controller{
                     'allow_order' => $this->entity->allowOrder,
                     'allow_mass_delete' => $this->entity->allowMassDelete,
                     'message' => Session::get('message'),
-//                    'list_export_text' => $this->entity->listExportText,
-//                    'list_search_text' => $this->entity->listSearchText,
-//                    'list_create_text' => $this->entity->listCreateText,
-//                    'list_edit_text' => $this->entity->listEditText,
-//                    'list_read_text' => $this->entity->listReadText,
-//                    'list_delete_text' => $this->entity->listDeleteText,
-//                    'list_mass_delete_text' => $this->entity->listMassDeleteText,
                     'title' => $this->entity->title,
                     'master_blade' => $this->entity->masterBlade,
                     'paging_links' => $this->entity->pagingLinks,
@@ -173,15 +166,11 @@ class Crud extends Controller{
             case 'create':
                 $createResponse = array(
                     'create_fields' => $this->entity->createFields,
-//                    'create_btn_text' => $this->entity->createBtnText,
                     'title' => $this->entity->title,
                     'master_blade' => $this->entity->masterBlade,
-//                    'back_btn_text' => $this->entity->backBtnText,
                     'external_link' => $this->entity->externalLink,
                     'is_load_mce_libs' => $this->entity->isLoadMceLibs,
                     'is_load_map_libs' => $this->entity->isLoadMapLibs,
-                    //'join_nn' => $this->joinNN,
-                    //'join_nn_option' => $this->joinNNOption,
                     'errors' => Session::get('validate_errors')
 
                 );
@@ -199,11 +188,9 @@ class Crud extends Controller{
             case 'edit':
                 $editResponse = array(
                     'edit_fields' => $this->entity->editFields,
-//                    'edit_btn_text' => $this->entity->editBtnText,
                     'id' => $this->entity->ids,
                     'title' => $this->entity->title,
                     'master_blade' => $this->entity->masterBlade,
-//                    'back_btn_text' => $this->entity->backBtnText,
                     'external_link' => $this->entity->externalLink,
                     'is_load_mce_libs' => $this->entity->isLoadMceLibs,
                     'is_load_map_libs' => $this->entity->isLoadMapLibs,
@@ -257,7 +244,7 @@ class Crud extends Controller{
 
         }
 
-//        \Debugbar::info($response);
+//        \Debugbar::info($this->entity->dataType);
 
         $this->entity->masterData['crud'] = $response;
 
@@ -370,7 +357,7 @@ class Crud extends Controller{
                 $headers = [
                     'Content-type'        => 'application/csv',
                     'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
-                    'Content-Disposition' => 'attachment; filename='.$this->uri.'-'.time().'.csv',
+                    'Content-Disposition' => 'attachment; filename='.$this->entity->uri.'-'.time().'.csv',
                     'Expires'             => '0',
                     'Pragma'              => 'public'
                 ];
@@ -870,14 +857,9 @@ class Crud extends Controller{
         $this->entity->readonlyFields = $fields;
     }
 
-    /**
-     * @param array $field
-     */
-
-    protected function setExportFilter(array $field){
-        $this->entity->allowExport = true;
-        $this->entity->exportFilter = $field;
-    }
+//    protected function setExportFilter( $field){
+//        $this->entity->exportFilter = $field;
+//    }
 
     protected function getAction(){
         return $this->entity->action;
@@ -952,6 +934,20 @@ class Crud extends Controller{
         $title = (string)$title;
 
         $this->entity->title = $title;
+    }
+
+    /**
+     * set max export limit
+     *
+     * @param int $limit
+     */
+
+    protected function setExportLimit($limit){
+        $this->entity->exportMaxLimit  = $limit;
+    }
+
+    protected function setExportFields($fields){
+        $this->entity->exportFields = $fields;
     }
 
     /* ##################################### END PROTECTED METHOD ################################################ */

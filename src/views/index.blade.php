@@ -311,7 +311,7 @@ $load_datepicker = false;
                         <ul class="pagination"></ul>
                     </nav>
                     <p>{{ trans('crud::crud.index.modal-export-limit-text') }} : <strong>{{ number_format($crud['export_max_limit']) }}</strong> {{ trans('crud::crud.index.modal-export-limit-text-2') }}.</p>
-                    <p>{{ trans('crud::crud.index.export-total-text') }} : <strong class="total">0</strong> {{ trans('crud::crud.index.export-total-text-2') }}.</p>
+                    <p>{{ trans('crud::crud.index.modal-export-total-text') }} : <strong class="total">0</strong> {{ trans('crud::crud.index.modal-export-total-text-2') }}.</p>
                     <p>* {{ trans('crud::crud.index.modal-export-help') }}.</p>
                 </div>
                 <div class="modal-footer">
