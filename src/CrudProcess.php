@@ -1137,8 +1137,6 @@ class CrudProcess{
             $fields = $this->entity->columns;
         }
 
-        \Log::alert('field', $fields);
-
         $out = [];
 
         foreach($rows as $item){
