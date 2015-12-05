@@ -114,7 +114,7 @@
                                     @endif
 
                                     @if($item['input_type'] == 'richarea')
-                                        <p class="form-control-static">{{ $item['value'] }}</p>
+                                        <p class="form-control-static">{!! $item['value'] !!}</p>
                                     @endif
 
                                     @if($item['input_type'] == 'hidden')
