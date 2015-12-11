@@ -206,33 +206,28 @@ $load_datepicker = false;
                                     @endforeach
 
                                     <td>
-                                        <div class="btn-group">
-                                            <ul class="dropdown-menu pull-right row-menu" role="menu">
-                                                @if($crud['allow_read'])
-                                                    <li class="link"><a href="{{ url($crud['uri'].'/'.$item['id']) }}"><i class="glyphicon glyphicon-eye-open"></i> {{ trans('crud::crud.index.action-show') }}</a></li>
-                                                @endif
-                                                @if($crud['allow_edit'])
-                                                    <li class="link"><a href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}"><i class="glyphicon glyphicon-pencil"></i> {{ trans('crud::crud.index.action-edit') }}</a></li>
-                                                @endif
-                                                @if($crud['allow_delete'])
-                                                    <li class="link"><a data-toggle="modal" href="#modal-del{{ $item['id'] }}"><i class="glyphicon glyphicon-remove"></i> {{ trans('crud::crud.index.action-delete') }}</a></li>
-                                                @endif
+                                        <div class="btn-group" role="group">
+                                        @if($crud['allow_read'])
+                                            <a class="link btn btn-primary btn-xs" href="{{ url($crud['uri'].'/'.$item['id']) }}"
+                                               data-toggle="tooltip" data-placement="top" title="{{ trans('crud::crud.index.action-show') }}"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        @endif
+                                        @if($crud['allow_edit'])
+                                            <a class="link btn btn-warning btn-xs" href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}"
+                                               data-toggle="tooltip" data-placement="top" title="{{ trans('crud::crud.index.action-edit') }}"><i class="glyphicon glyphicon-pencil"></i></a>
+                                        @endif
+                                        @if($crud['allow_delete'])
+                                            <a class="link btn btn-danger btn-xs" data-toggle="modal" href="#modal-del{{ $item['id'] }}"
+                                               data-toggle="tooltip" data-placement="top" title="{{ trans('crud::crud.index.action-delete') }}"><i class="glyphicon glyphicon-remove"></i></a>
+                                        @endif
 
 
-                                                @if(isset($crud['action_lists'][$item['id']]))
+                                        @if(isset($crud['action_lists'][$item['id']]))
 
-                                                    <li class="divider"></li>
-                                                    @foreach($crud['action_lists'][$item['id']] as $action)
-                                                        <li class="link"><a href="{{ $action['url'] }}"><i class="glyphicon glyphicon-ok"></i> {{ $action['title'] }}</a></li>
-                                                    @endforeach
+                                            @foreach($crud['action_lists'][$item['id']] as $action)
+                                                <a class="link btn btn-xs {{ $action['class'] }}" href="{{ $action['url'] }}">{{ $action['title'] }}</a>
+                                            @endforeach
 
-                                                @endif
-                                            </ul>
-                                            <a href="#" class="dropdown-toggle action-link" data-toggle="dropdown">
-                                                {{--{{ trans('crud::crud.index.action') }}--}}  <i class="glyphicon glyphicon-align-justify"></i>
-                                                <span class="sr-only"></span>
-                                            </a>
-
+                                        @endif
                                         </div>
 
                                         @if($crud['allow_delete'])
