@@ -72,20 +72,28 @@ $load_datepicker = false;
 
                     <div class="clearfix" style="height: 10px;"></div>
 
-                    <div class="list-table ">
+                    <div class="list-table table-responsive">
                         <table class="table table-striped table-hover">
                             <thead>
 
                             <tr>
 
                                 {{--<th><input type="checkbox" class="" name="cb-all" id="cb-all"></th>--}}
+                                <?php
+                                    $order = null;
+                                    $orderColumn = null;
+                                    if(isset($crud['index_session']['order'])){
+                                        $order = $crud['index_session']['order'];
+                                        $orderColumn = $order[0];
+                                    }
+                                 ?>
                                 @foreach($crud['columns'] as $item)
-                                    <th>
+                                    <th class="@if($order[0] == $item) success @endif">
 
                                         @if($crud['allow_order'])
                                             <?php $link = url($crud['uri'].'?action=set_order&sort_field='.$crud['data_type'][$item]['column_name'].'&direction='); ?>
-                                            @if(isset($crud['index_session']['order']))
-                                                <?php $order = $crud['index_session']['order']; ?>
+                                            @if($order !== null)
+
                                                 @if($order[0] == $item)
                                                     <a href="{{ $link }}@if($order[1] == 'asc'){{ 'desc' }}@else{{ 'asc' }}@endif"
                                                         aria-hidden="true" data-toggle="tooltip" class="text-success"
@@ -116,7 +124,7 @@ $load_datepicker = false;
                                 @endforeach
 
 
-                                <th>#</th>
+                                <th class="info">#</th>
 
                                 {{--@if($allow_create or $allow_edit or $allow_delete)--}}
                                     {{--<th>Action</th>--}}
@@ -126,7 +134,7 @@ $load_datepicker = false;
                             <tbody>
                             @foreach($crud['lists']['data'] as $item)
 
-                                <?php $item = (array)$item; ?>
+                                <?php $item = (array)$item;?>
                                 <tr>
 
                                     <?php $x++; ?>
@@ -142,28 +150,28 @@ $load_datepicker = false;
 
 
                                             @if($crud['data_type'][$column]['input_type'] == 'money')
-                                                <td class="text-right">{{ number_format((float)$item[$column], 2) }}</td>
+                                                <td class="text-right text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ number_format((float)$item[$column], 2) }}</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'join')
-                                                <td>{{ $item[$crud['data_type'][$column]['related_field']] }}</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ $item[$crud['data_type'][$column]['related_field']] }}</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'richarea')
-                                                <td>{{ substr(strip_tags($item[$column]), 0, 100) }} ...</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ substr(strip_tags($item[$column]), 0, 100) }} ...</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'textarea')
-                                                <td>{{ substr(strip_tags($item[$column]), 0, 40) }} ...</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ substr(strip_tags($item[$column]), 0, 40) }} ...</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'location')
-                                                <td>@if($item[$column] == '')<em>null</em>@else<a href="#" class="map-link"data-toggle="tooltip"
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">@if($item[$column] == '')<em>null</em>@else<a href="#" class="map-link"data-toggle="tooltip"
                                                           data-placement="top" title="{{ trans('crud::crud.index.field-location-tt') }}">{{ $item[$column] }}</a>@endif</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'file')
                                                 @if(file_exists(public_path($crud['data_type'][$column]['target_dir'].'/'.$item[$column])))
-                                                <td><a target="_blank" href="{{ asset($crud['data_type'][$column]['target_dir'].'/'.$item[$column]) }}">{{ $item[$column] }}</a></td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif"><a target="_blank" href="{{ asset($crud['data_type'][$column]['target_dir'].'/'.$item[$column]) }}">{{ $item[$column] }}</a></td>
                                                 @else <td>{{ $item[$column] }}</td> @endif
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'image')
-                                                <td><img class="image-thumb"
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif"><img class="image-thumb"
                                                     data-full="{{ ImageSrc::path('/'.$crud['data_type'][$column]['target_dir'].'/'.$item[$column], 'resize', 1000) }}"
                                                     src="{{ ImageSrc::path('/'.$crud['data_type'][$column]['target_dir'].'/'.$item[$column], 'resizeCrop', 40, 30) }}"
                                                     /></td>
@@ -179,13 +187,13 @@ $load_datepicker = false;
                                                     }
                                                 }
                                                 ?>
-                                                <td>{{ $value }}</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ $value }}</td>
 
                                             @else
-                                                <td>{{ $item[$column] }}</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ $item[$column] }}</td>
                                             @endif
                                         @else
-                                            <td><em>null</em></td>
+                                            <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif"><em>null</em></td>
                                         @endif
                                     @endforeach
 
@@ -205,8 +213,7 @@ $load_datepicker = false;
                                         <td>{{ $nnVal }}</td>
                                     @endforeach
 
-                                    <td>
-                                        <div class="btn-group" role="group">
+                                    <td class="info text-nowrap">
                                         @if($crud['allow_read'])
                                             <a class="link btn btn-primary btn-xs" href="{{ url($crud['uri'].'/'.$item['id']) }}"
                                                data-toggle="tooltip" data-placement="top" title="{{ trans('crud::crud.index.action-show') }}"><i class="glyphicon glyphicon-eye-open"></i></a>
@@ -228,7 +235,6 @@ $load_datepicker = false;
                                             @endforeach
 
                                         @endif
-                                        </div>
 
                                         @if($crud['allow_delete'])
                                             <div class="modal fade" id="modal-del{{ $item['id'] }}" >
