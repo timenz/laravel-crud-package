@@ -88,7 +88,7 @@ $load_datepicker = false;
                                     }
                                  ?>
                                 @foreach($crud['columns'] as $item)
-                                    <th class="@if($order[0] == $item) success @endif">
+                                    <th class="@if($order[0] == $item) success @endif text-nowrap">
 
                                         @if($crud['allow_order'])
                                             <?php $link = url($crud['uri'].'?action=set_order&sort_field='.$crud['data_type'][$item]['column_name'].'&direction='); ?>
@@ -120,11 +120,11 @@ $load_datepicker = false;
                                 @endforeach
 
                                 @foreach($crud['join_nn_column_title'] as $item)
-                                <th>{{ ucwords(str_replace('_', ' ', $item)) }}</th>
+                                <th class="text-nowrap">{{ ucwords(str_replace('_', ' ', $item)) }}</th>
                                 @endforeach
 
 
-                                <th class="info">#</th>
+                                <th class="info text-nowrap">#</th>
 
                                 {{--@if($allow_create or $allow_edit or $allow_delete)--}}
                                     {{--<th>Action</th>--}}
