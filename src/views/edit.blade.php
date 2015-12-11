@@ -477,7 +477,7 @@
 
     <script>
         $(function(){
-            $('.chosen-select').chosen();
+            $('.chosen-select').chosen({width: "100%"});
             $('.field-date').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true
