@@ -143,32 +143,32 @@ $load_datepicker = false;
                                         <?php
 
                                         if(isset($crud['custom_values'][$column][$item['id']])){
-                                        ?><td>{{ $crud['custom_values'][$column][$item['id']] }}</td><?php
+                                        ?><td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $crud['custom_values'][$column][$item['id']] !!}</td><?php
                                         continue;
                                         } ?>
                                         @if(isset($item[$column]))
 
 
                                             @if($crud['data_type'][$column]['input_type'] == 'money')
-                                                <td class="text-right text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ number_format((float)$item[$column], 2) }}</td>
+                                                <td class="text-right text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!!  number_format((float)$item[$column], 2) !!}</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'join')
-                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ $item[$crud['data_type'][$column]['related_field']] }}</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $item[$crud['data_type'][$column]['related_field']] !!}</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'richarea')
-                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ substr(strip_tags($item[$column]), 0, 100) }} ...</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! substr(strip_tags($item[$column]), 0, 100) !!} ...</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'textarea')
-                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ substr(strip_tags($item[$column]), 0, 40) }} ...</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! substr(strip_tags($item[$column]), 0, 40) !!} ...</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'location')
                                                 <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">@if($item[$column] == '')<em>null</em>@else<a href="#" class="map-link"data-toggle="tooltip"
-                                                          data-placement="top" title="{{ trans('crud::crud.index.field-location-tt') }}">{{ $item[$column] }}</a>@endif</td>
+                                                          data-placement="top" title="{{ trans('crud::crud.index.field-location-tt') }}">{!! $item[$column] !!}</a>@endif</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'file')
                                                 @if(file_exists(public_path($crud['data_type'][$column]['target_dir'].'/'.$item[$column])))
-                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif"><a target="_blank" href="{{ asset($crud['data_type'][$column]['target_dir'].'/'.$item[$column]) }}">{{ $item[$column] }}</a></td>
-                                                @else <td>{{ $item[$column] }}</td> @endif
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif"><a target="_blank" href="{{ asset($crud['data_type'][$column]['target_dir'].'/'.$item[$column]) }}">{!! $item[$column] !!}</a></td>
+                                                @else <td>{!! $item[$column] !!}</td> @endif
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'image')
                                                 <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif"><img class="image-thumb"
@@ -187,10 +187,10 @@ $load_datepicker = false;
                                                     }
                                                 }
                                                 ?>
-                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ $value }}</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $value !!}</td>
 
                                             @else
-                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{{ $item[$column] }}</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $item[$column] !!}</td>
                                             @endif
                                         @else
                                             <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif"><em>null</em></td>
@@ -210,7 +210,7 @@ $load_datepicker = false;
                                                 @endforeach
                                             @endif
                                         @endforeach
-                                        <td>{{ $nnVal }}</td>
+                                        <td>{!! $nnVal !!}</td>
                                     @endforeach
 
                                     <td class="info text-nowrap">
