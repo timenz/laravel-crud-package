@@ -244,7 +244,7 @@ class Crud extends Controller{
 
         }
 
-//        debug($this->entity->dataType);
+        debug($this->entity->dataType['id_member']);
 
         $this->entity->masterData['crud'] = $response;
 
@@ -602,19 +602,21 @@ class Crud extends Controller{
     protected function setJoin($field, $joinTable, $joinField, $arrayWhere = array()){
 
         $this->entity->setJoin[$field] = array($joinTable, $joinField, $arrayWhere, 't'.$this->entity->tbCount);
-        $this->entity->tbCount++;
 
         $newType = array(
             'new_type' => 'join',
+            'related_key' => 't'.$this->entity->tbCount,
             'related_field' => $joinField,
             'options' => array()
         );
+
 
         if($this->entity->action == 'create' or $this->entity->action == 'edit'){
             $newType['options'] = DB::table($joinTable)->select(array('id', $joinField))->limit(1000)->get();
         }
 
         $this->entity->changeType[$field] = $newType;
+        $this->entity->tbCount++;
     }
 
     /**

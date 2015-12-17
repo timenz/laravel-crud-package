@@ -222,6 +222,7 @@ class CrudProcess{
         switch($changeType[$columnName]['new_type']){
             case 'join':
                 $dataColumn['related_field'] = $changeType[$columnName]['related_field'];
+                $dataColumn['related_key'] = $changeType[$columnName]['related_key'];
                 $dataColumn['options'] = $changeType[$columnName]['options'];
                 $dataColumn['allow_search'] = false;
                 break;
@@ -412,7 +413,7 @@ class CrudProcess{
 
 
         foreach($this->entity->setJoin as $key=>$item){
-            $selected[] = $item[3].'.'.$item[1];
+            $selected[] = $item[3].'.'.$item[1].' as '.$item[3].'_'.$item[1];
             $lists->leftJoin($item[0].' as '.$item[3] , 't0.'.$key, '=', $item[3].'.id');
         }
 
@@ -718,7 +719,7 @@ class CrudProcess{
         //$row = $this->find($this->ids);
         $row = DB::table($this->entity->table.' as t0')->select('t0.*');
         foreach($this->entity->setJoin as $key=>$item){
-            $selected[] = $item[3].'.'.$item[1];
+            $selected[] = $item[3].'.'.$item[1].' as '.$item[3].'_'.$item[1];
             $row->leftJoin($item[0].' as '.$item[3], 't0.'.$key, '=', $item[3].'.id');
 
         }
@@ -736,8 +737,9 @@ class CrudProcess{
 
         foreach($dataType as $key=>$item){
             if($dataType[$key]['input_type'] == 'join' and $this->entity->action != 'edit'){
+                $dataKey = $dataType[$key]['related_key'].'_'.$dataType[$key]['related_field'];
 
-                $dataType[$key]['value'] = $row[$dataType[$key]['related_field']];
+                $dataType[$key]['value'] = $row[$dataKey];
 
             }else{
                 $dataType[$key]['value'] = $row[$key];

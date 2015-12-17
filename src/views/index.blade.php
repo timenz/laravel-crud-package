@@ -134,7 +134,7 @@ $load_datepicker = false;
                             <tbody>
                             @foreach($crud['lists']['data'] as $item)
 
-                                <?php $item = (array)$item;?>
+                                <?php $item = (array)$item; debug($item);?>
                                 <tr>
 
                                     <?php $x++; ?>
@@ -146,14 +146,15 @@ $load_datepicker = false;
                                         ?><td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $crud['custom_values'][$column][$item['id']] !!}</td><?php
                                         continue;
                                         } ?>
-                                        @if(isset($item[$column]))
+                                        @if(isset($item))
 
 
                                             @if($crud['data_type'][$column]['input_type'] == 'money')
                                                 <td class="text-right text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!!  number_format((float)$item[$column], 2) !!}</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'join')
-                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $item[$crud['data_type'][$column]['related_field']] !!}</td>
+                                                <?php $joinKey =  $crud['data_type'][$column]['related_key'].'_'.$crud['data_type'][$column]['related_field']; ?>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $item[$joinKey] !!}</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'richarea')
                                                 <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! substr(strip_tags($item[$column]), 0, 100) !!} ...</td>
