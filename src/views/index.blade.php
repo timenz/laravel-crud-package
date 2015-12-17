@@ -134,7 +134,7 @@ $load_datepicker = false;
                             <tbody>
                             @foreach($crud['lists']['data'] as $item)
 
-                                <?php $item = (array)$item; debug($item);?>
+                                <?php $item = (array)$item;?>
                                 <tr>
 
                                     <?php $x++; ?>
