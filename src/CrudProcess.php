@@ -1166,7 +1166,7 @@ class CrudProcess{
         $type = $this->entity->dataType[$field];
 
         if($type['input_type'] == 'join'){
-            return $item->{$type['related_field']};
+            return $item->{$type['related_key'].'_'.$type['related_field']};
         }
 
         return $item->$field;
