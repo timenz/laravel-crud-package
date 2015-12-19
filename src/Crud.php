@@ -6,8 +6,6 @@ use DB;
 use Illuminate\Routing\Controller;
 use Input;
 use Session;
-use Validator;
-use Route;
 use View;
 use Redirect;
 use Response;
@@ -409,9 +407,6 @@ class Crud extends Controller{
         $this->entity->masterBlade = $masterBlade;
         $this->entity->masterData = $masterData;
 
-        $postData = Input::all();
-        $this->entity->postCreateData = $postData;
-        $this->entity->postUpdateData = $postData;
 
     }
 
@@ -1044,6 +1039,7 @@ class Crud extends Controller{
         $uri = \Request::decodedPath();
         $this->entity->uri = $uri;
         $this->entity->action = 'save';
+        $this->entity->postCreateData = Input::all();
 
         $run = $this->run();
 
@@ -1180,6 +1176,7 @@ class Crud extends Controller{
         $this->entity->uri = $uri;
         $this->entity->action = 'update';
         $this->entity->ids = $id;
+        $this->entity->postUpdateData = Input::all();
 
         $run = $this->run();
 

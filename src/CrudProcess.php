@@ -498,11 +498,14 @@ class CrudProcess{
     }
 
     private function initCreateFields(){
-        $createFields = array();
-        if(count($this->entity->createFields) < 1 and count($this->entity->fields) > 0){
+        $createFields = $this->entity->allColumns;
+
+        if(count($this->entity->fields) > 0){
             $createFields = $this->entity->fields;
-        }else if(count($this->entity->createFields) < 1){
-            $createFields = $this->entity->allColumns;
+        }
+
+        if(count($this->entity->createFields) > 0){
+            $createFields = $this->entity->createFields;
         }
 
         $dataType = $this->entity->dataType;
@@ -605,6 +608,8 @@ class CrudProcess{
      * @return bool
      */
     public function actionSave(){
+
+
         $this->initCreateFields();
         $createFields = $this->entity->createFields;
 
