@@ -242,6 +242,8 @@ class Crud extends Controller{
 
         }
 
+        debug($this->entity->dataType);
+
         $this->entity->masterData['crud'] = $response;
 
         $this->entity->response = $this->entity->masterData;
@@ -554,11 +556,9 @@ class Crud extends Controller{
                 }
 
 
-                $changeType[$field] = array(
-                    'new_type' => $newType,
-                    'default_value' => $value,
-                    'renew_on_update' => $renewOnUpdate
-                );
+                $changeType[$field]['new_type'] = $newType;
+                $changeType[$field]['default_value'] = $value;
+                $changeType[$field]['renew_on_update'] = $renewOnUpdate;
                 break;
 
             case 'text':
@@ -947,6 +947,12 @@ class Crud extends Controller{
 
     protected function setLimit($limit){
         $this->entity->perPage = $limit;
+    }
+
+    protected function fieldOption($field, array $option){
+        if(isset($option['display'])){
+            $this->entity->columnDisplay[$field] = $option['display'];
+        }
     }
 
     /* ##################################### END PROTECTED METHOD ################################################ */

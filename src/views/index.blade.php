@@ -152,7 +152,7 @@ $load_datepicker = false;
                                             @if($crud['data_type'][$column]['input_type'] == 'money')
                                                 <td class="text-right text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!!  number_format((float)$item[$column], 2) !!}</td>
 
-                                            @elseif($crud['data_type'][$column]['input_type'] == 'join')
+                                            @elseif($crud['data_type'][$column]['input_type'] == 'join' or isset($crud['data_type'][$column]['related_key']))
                                                 <?php $joinKey =  $crud['data_type'][$column]['related_key'].'_'.$crud['data_type'][$column]['related_field']; ?>
                                                 <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $item[$joinKey] !!}</td>
 

@@ -254,6 +254,14 @@ class CrudProcess{
                 $dataColumn['renew_on_update'] = $changeType[$columnName]['renew_on_update'];
                 $dataColumn['allow_search'] = true;
                 $dataColumn['search_condition'] = ['contain'];
+
+                if(isset($changeType[$columnName]['related_field'])){
+
+                    $dataColumn['related_field'] = $changeType[$columnName]['related_field'];
+                    $dataColumn['related_key'] = $changeType[$columnName]['related_key'];
+                    $dataColumn['options'] = $changeType[$columnName]['options'];
+                    $dataColumn['allow_search'] = false;
+                }
                 break;
             case 'location':
                 $dataColumn['allow_search'] = false;
@@ -741,7 +749,7 @@ class CrudProcess{
         $dataType = $this->entity->dataType;
 
         foreach($dataType as $key=>$item){
-            if($dataType[$key]['input_type'] == 'join' and $this->entity->action != 'edit'){
+            if(isset($dataType[$key]['related_key']) and $this->entity->action != 'edit'){
                 $dataKey = $dataType[$key]['related_key'].'_'.$dataType[$key]['related_field'];
 
                 $dataType[$key]['value'] = $row[$dataKey];
