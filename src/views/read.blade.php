@@ -96,6 +96,11 @@
 
                                     @endif
 
+                                    @if($item['input_type'] == 'money')
+                                        <p class="form-control-static">{{ number_format($item['value'], 2) }}</p>
+
+                                    @endif
+
                                     @if($item['input_type'] == 'text')
                                         <p class="form-control-static">{{ $item['value'] }}</p>
 
