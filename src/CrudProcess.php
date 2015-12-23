@@ -224,7 +224,8 @@ class CrudProcess{
                 $dataColumn['related_field'] = $changeType[$columnName]['related_field'];
                 $dataColumn['related_key'] = $changeType[$columnName]['related_key'];
                 $dataColumn['options'] = $changeType[$columnName]['options'];
-                $dataColumn['allow_search'] = false;
+                $dataColumn['search_condition'] = ['contain'];
+                $dataColumn['allow_search'] = true;
                 break;
             case 'enum':
                 $dataColumn['options'] = $changeType[$columnName]['options'];
@@ -260,7 +261,8 @@ class CrudProcess{
                     $dataColumn['related_field'] = $changeType[$columnName]['related_field'];
                     $dataColumn['related_key'] = $changeType[$columnName]['related_key'];
                     $dataColumn['options'] = $changeType[$columnName]['options'];
-                    $dataColumn['allow_search'] = false;
+                    $dataColumn['search_condition'] = ['contain'];
+                    $dataColumn['allow_search'] = true;
                 }
                 break;
             case 'location':
@@ -378,6 +380,11 @@ class CrudProcess{
 
         if($this->entity->filter != null){
             foreach($this->entity->filter as $key=>$item){
+                $dt = $this->entity->dataType[$key];
+                if($dt['related_field'] != ''){
+                    $lists->where($dt['related_key'].'.'.$dt['related_field'], 'like', '%'.$item[1].'%');
+                    continue;
+                }
                 switch($item[0]){
                     case 'equal':
                         $lists->where('t0.'.$key, '=', $item[1]);

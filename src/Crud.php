@@ -242,7 +242,7 @@ class Crud extends Controller{
 
         }
 
-        debug($this->entity->dataType);
+//        debug($this->entity->dataType);
 
         $this->entity->masterData['crud'] = $response;
 
