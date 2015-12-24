@@ -242,7 +242,7 @@ class Crud extends Controller{
 
         }
 
-//        debug($this->entity->dataType);
+        debug($this->entity->dataType['nta_ticket']);
 
         $this->entity->masterData['crud'] = $response;
 
@@ -524,22 +524,26 @@ class Crud extends Controller{
                 break;
 
             case 'select':
-                if(!is_array($option)){
-                    break;
+                $opt = [];
+
+                if(isset($option['value'])){
+                    $opt = $option['value'];
                 }
                 $changeType[$field] = array(
                     'new_type' => $newType,
-                    'options' => $option
+                    'options' => $opt
                 );
                 break;
 
             case 'enum':
-                if(!is_array($option)){
-                    break;
+                $opt = [];
+
+                if(isset($option['value'])){
+                    $opt = $option['value'];
                 }
                 $changeType[$field] = array(
                     'new_type' => $newType,
-                    'options' => $option
+                    'options' => $opt
                 );
                 break;
 
@@ -610,6 +614,10 @@ class Crud extends Controller{
 
         $this->entity->changeType[$field] = $newType;
         $this->entity->tbCount++;
+    }
+
+    protected function join($field, $joinTable, $on, $where, $select, $display){
+        
     }
 
     /**
@@ -950,13 +958,85 @@ class Crud extends Controller{
     }
 
     protected function fieldOption($field, array $option){
+        // display, changetype,
+
         if(isset($option['display'])){
             $this->entity->columnDisplay[$field] = $option['display'];
+        }
+        if(isset($option['callback_column'])){
+
+            $this->entity->customColumns[$field] = array(
+                'callback' => $option['callback_column']
+            );
+        }
+
+        if(isset($option['type'])){
+            $opt = null;
+            if(isset($option['type_option'])){
+                $opt = $option['type_option'];
+            }
+            $this->changeType($field, $option['type'], $opt);
+        }
+
+        if(in_array($this->getAction(), ['create', 'save', 'edit', 'update'])){
+            $this->fieldOptionOnForm($field, $option);
+        }
+
+        if(in_array($this->getAction(), ['create', 'save'])){
+            $this->fieldOptionOnCreate($field, $option);
+        }
+
+        if(in_array($this->getAction(), ['edit', 'update'])){
+            $this->fieldOptionOnEdit($field, $option);
         }
     }
 
     /* ##################################### END PROTECTED METHOD ################################################ */
 
+    private function fieldOptionOnForm($field, array $option){
+        if(isset($option['type_on_form'])){
+            $opt = null;
+            if(isset($option['type_option'])){
+                $opt = $option['type_option'];
+            }
+            if(isset($option['type_on_form_option'])){
+                $opt = $option['type_on_form_option'];
+            }
+            $this->changeType($field, $option['type_on_form'], $opt);
+        }
+    }
+
+    private function fieldOptionOnCreate($field, array $option){
+        if(isset($option['type_on_create'])){
+            $opt = null;
+            if(isset($option['type_option'])){
+                $opt = $option['type_option'];
+            }
+            if(isset($option['type_on_form_option'])){
+                $opt = $option['type_on_form_option'];
+            }
+            if(isset($option['type_on_create_option'])){
+                $opt = $option['type_on_create_option'];
+            }
+            $this->changeType($field, $option['type_on_create'], $opt);
+        }
+    }
+
+    private function fieldOptionOnEdit($field, array $option){
+        if(isset($option['type_on_edit'])){
+            $opt = null;
+            if(isset($option['type_option'])){
+                $opt = $option['type_option'];
+            }
+            if(isset($option['type_on_form_option'])){
+                $opt = $option['type_on_form_option'];
+            }
+            if(isset($option['type_on_edit_option'])){
+                $opt = $option['type_on_edit_option'];
+            }
+            $this->changeType($field, $option['type_on_edit'], $opt);
+        }
+    }
 
     private function error($silent = false){
         if($silent){
