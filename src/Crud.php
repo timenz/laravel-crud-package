@@ -472,7 +472,7 @@ class Crud extends Controller{
                     break;
                 }
 
-                $path = public_path($option['dir']);
+                $path = public_path($option['target_dir']);
 
                 $createDir = false;
 
@@ -499,7 +499,7 @@ class Crud extends Controller{
                 }
                 $changeType[$field] = array(
                     'new_type' => $newType,
-                    'target_dir' => $option['dir']
+                    'target_dir' => $option['target_dir']
                 );
                 break;
 
