@@ -18,6 +18,17 @@ Add to composer.json
 		}
 	}
 
+To add support *WYSIWYG* and *image* field type add this other two repository that forked from [guillermomartinez](https://github.com/guillermomartinez/filemanager-laravel)
+ and [kevbaldwyn](https://github.com/kevbaldwyn/image), and the composer requirement become:
+
+    {
+		"require": {
+            "timenz/crud": "dev-master",
+            "timenz/filemanager-laravel": "dev-l5.1",
+            "timenz/image":"dev-l5.1"
+		}
+	}
+
 then update
 
     composer update
