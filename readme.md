@@ -205,50 +205,45 @@ Set order listing data
 
 
 ### callbackColumn
-Custom format kolom field pada list
+Set a custom column value in listing data
 	
 	
-	$this->callbackColumn('nama_field', function($row, $val){
+	$this->callbackColumn('field_name', function($row, $val){
 		return number_format($val);
 	});
 
 
 ### callbackBeforeSave
-Melakukan operasi, atau untuk mengubah input data, sebelum data disimpan, sewaktu membuat data baru
+Provide some operation before saving data
 
 	$this->callbackBeforeSave(function($post_data){
 		
-		//encript password sebelum disimpan ke db
 		$post_data['password'] = Hash::make($post_data['password']);
 		return $post_data;
 	});
           
 
 ### callbackBeforeUpdate
-Melakukan operasi, atau untuk mengubah input data, sebelum data disimpan, sewaktu meng-edit data
+Provide some operation before update data
 
 	$this->callbackBeforeUpdate(function($post_data){
 		
-		//encript password sebelum disimpan ke db
 		$post_data['password'] = Hash::make($post_data['password']);
 		return $post_data;
 	});
 
 ### addAction
-tambahan aksi selain edit, baca, delete
+Add custom action other than read, edit and delete
 	
-	// parameter => 1. judul aksi, 2. kelas link aksi, 3. url
-	// input pada callback => 1. data per row, 2. id
-	addAction('Aksi Khusus', 'btn', function($row_data, $id){
-		return url('aksi/'.$id);
+	
+	addAction('Action', 'btn btn-success', function($row_data, $id){
+		return url('action/'.$id);
 	})
 	
 ### addExternalLink
-tambahan link statis
+Add static link to crud page
 	
-	// Parameter 1. title, 2. link url, dst dibawah beserta isi defaultnya
-	//$class = 'btn btn-default', $openNewPage = false, $showAtIndex = true, $showAtRead = true, $showAtCreate = true, $showAtEdit = true
-	addExternalLink('judul', url('link'), 
+	addExternalLink('Custom Link', url('link'));
 	
 ### changeType
 
@@ -303,15 +298,3 @@ dropdown/select field type
 	);
 	$this->changeType('nama_field', 'enum', $option);
 	$this->changeType('field_name', 'enum', ['select_option' => ['yes', 'no'] ]);
-
-
-#### image
-buat field gambar
-
-	$this->changeType('nama_field', 'image', 'image/path-in-public');
-
-#### file
-buat field gambar
-
-	$this->changeType('nama_field', 'file', ['dir' => 'image/path-in-public']);
-	
