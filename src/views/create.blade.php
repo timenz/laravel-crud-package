@@ -1,11 +1,11 @@
 @extends($crud['master_blade'])
 <?php $load_mce = false; ?>
-@section('konten')
+@section('crud_konten')
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ $crud['title'] }}</h3>
+                    <h3 class="panel-title">{{ trans('crud::crud.create.title') }} {{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
 
@@ -57,6 +57,43 @@
 
 
                                     @if($item['input_type'] == 'text')
+                                    <div class="col-lg-10">
+                                        <input type="text"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $value }}" />
+                                    </div>
+                                    @endif
+
+                                    @if($item['input_type'] == 'datetime')
+                                        <div class="col-sm-6">
+                                            <div class="input-group field-datetime">
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                                <input type="text"
+                                                       name="{{ $item['column_name'] }}"
+                                                       class="cl-{{ $item['column_name'] }} form-control"
+                                                       id="id-{{ $item['column_name'] }}"
+                                                       value="{{ $value }}" />
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if($item['input_type'] == 'location')
+                                    <div class="col-lg-10">
+                                        <input type="text"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $value }}" />
+                                        <div class="map-field" id="map-{{ $item['column_name'] }}" data-location="{{ $value }}" style="height: 300px;"></div>
+
+                                    </div>
+                                    @endif
+
+                                    @if($item['input_type'] == 'readonly')
                                     <div class="col-lg-10">
                                         <input type="text"
                                                name="{{ $item['column_name'] }}"
@@ -119,7 +156,7 @@
                                     @if($item['input_type'] == 'enum')
                                         <?php
                                                 $arr_option = $item['options'];
-                                                $str_option = '<option value="">Pilih</option>';
+                                                $str_option = '<option value="">'.trans('crud::crud.field.select-placeholder', ['field' => $item['column_text']]).'</option>';
                                                 foreach($arr_option as $option){
                                                     $sel = '';
                                                     if($option == $value){
@@ -131,7 +168,7 @@
                                             <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select"
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
                                             </div>
 
                                     @endif
@@ -139,7 +176,7 @@
                                     @if($item['input_type'] == 'select')
                                         <?php
                                                 $arr_option = $item['options'];
-                                                $str_option = '<option value="">Pilih</option>';
+                                                $str_option = '<option value="">'.trans('crud::crud.field.select-placeholder', ['field' => $item['column_text']]).'</option>';
                                                 foreach($arr_option as $key=>$option){
                                                     $sel = '';
                                                     if($key == $value){
@@ -151,7 +188,7 @@
                                             <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select"
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
                                             </div>
 
                                     @endif
@@ -159,7 +196,7 @@
                                     @if($item['input_type'] == 'join')
                                         <?php
                                                 $arr_option = $item['options'];
-                                                $str_option = '<option value="">Pilih</option>';
+                                                $str_option = '<option value="">'.trans('crud::crud.field.select-placeholder', ['field' => $item['column_text']]).'</option>';
                                                 foreach($arr_option as $option){
                                                     $sel = '';
                                                     if($option->id == $value){
@@ -171,7 +208,7 @@
                                             <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select"
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
                                             </div>
 
                                     @endif
@@ -179,7 +216,7 @@
                                     @if($item['input_type'] == 'join_nn')
                                         <?php
                                                 $arr_option = $item['options'];
-                                                $str_option = '<option value="">Pilih</option>';
+                                                $str_option = '<option value="">'.trans('crud::crud.field.select-placeholder', ['field' => $item['column_text']]).'</option>';
                                                 foreach($arr_option as $option){
                                                     $sel = '';
 
@@ -196,7 +233,7 @@
                                             <div class="col-lg-10">
                                         <select name="{{ $item['column_name'] }}[]"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select" multiple
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
                                             </div>
 
                                     @endif
@@ -206,7 +243,7 @@
                                         <textarea
                                                 name="{{ $item['column_name'] }}"
                                                 class=" cl-{{ $item['column_name'] }} form-control"
-                                                id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
+                                                id="id-{{ $item['column_name'] }}" >{!! $value !!}</textarea>
                                     </div>
                                     @endif
 
@@ -216,7 +253,7 @@
                                         <textarea
                                                 name="{{ $item['column_name'] }}"
                                                 class=" cl-{{ $item['column_name'] }} form-control richarea"
-                                                id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
+                                                id="id-{{ $item['column_name'] }}" >{!! $value !!}</textarea>
                                             </div>
                                     @endif
 
@@ -254,8 +291,8 @@
 
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
-                                <a href="{{ url($crud['uri']) }}" class="btn btn-default">{{ $crud['back_btn_text'] }}</a>
-                                <button type="submit" class="btn btn-primary">{{ $crud['create_btn_text'] }}</button>
+                                <a href="{{ url($crud['uri']) }}" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i> {{ trans('crud::crud.back-btn-text') }}</a>
+                                <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-floppy-disk"></i> {{ trans('crud::crud.create.save-btn') }}</button>
                             </div>
                         </div>
 
@@ -282,29 +319,118 @@
     </div>
 
 
+@stop
+
+@section('crud_css')
+
+    <link href="{{ asset('vendor/timenz/crud/css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet">
 @endsection
 
-@section('js')
-    @if($crud['action'] == 'create' or $crud['action'] == 'edit')
-        @if($crud['is_load_mce_libs'])
-            <script type="text/javascript" src="{{ asset('packages/pqb/filemanager-laravel/tinymce/tinymce.min.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('packages/timenz/crud/js/tinymce_editor.js') }}"></script>
-            <script type="text/javascript">
-                editor_config.selector = "textarea.richarea";
-                tinymce.init(editor_config);
-            </script>
-        @endif
-    @endif
+@section('crud_js')
+    <script src="{{ asset('vendor/timenz/crud/js/moment.min.js') }}"></script>
+    <script src="{{ asset('vendor/timenz/crud/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('vendor/timenz/crud/js/crud.js') }}"></script>
+    @if($crud['is_load_map_libs'])
+        <script src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.7"></script>
+        <script type="text/javascript" src="{{ asset('vendor/timenz/crud/js/maplace.min.js') }}"></script>
 
+        <script>
+            $(function(){
+                $('.map-field').each(function(){
+                    var id = $(this).attr('id');
+                    var input  = id.replace('map-', 'id-');
+                    var loc = $(this).attr('data-location');
+                    var lat = 0, lon = 0;
+                    if(loc.isValidLocation()){
+                        loc = loc.split(',');
+                        lat = loc[0];
+                        lon = loc[1];
+                    }
+
+
+                    var place = new Maplace({
+                        map_options: {
+                            zoom: 10,
+                            scrollwheel: false
+                        },
+                        locations: [{
+                            lat: lat,
+                            lon: lon
+                        }],
+                        map_div: '#' + id,
+                        controls_on_map: false,
+                        listeners: {
+                            click: function(map, event) {
+
+                                var location = event.latLng.G.toFixed(6) + ', ' + event.latLng.K.toFixed(6);
+
+                                $('#' + input).val(location);
+
+
+                                place.SetLocations([{
+                                    lat: event.latLng.G,
+                                    lon: event.latLng.K
+                                }]);
+                                place.Load();
+                            }
+                        }
+                    });
+                    place.Load();
+
+                    $('#' + input).keyup(function(){
+
+                        var val0 = $(this).val();
+
+                        setTimeout(function(){
+                            var val = $('#' + input).val();
+
+                            if(val0 != val){
+                                return false;
+                            }
+
+                            if(!val.isValidLocation()){
+                                return false;
+                            }
+                            loc = val.split(',');
+
+                            place.SetLocations([{
+                                lat: loc[0],
+                                lon: loc[1]
+                            }]);
+                            place.Load();
+                        }, 2000);
+
+
+                    });
+
+
+                });
+
+            });
+
+        </script>
+    @endif
+    @if($crud['is_load_mce_libs'])
+        <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce_editor.js') }}"></script>
+        <script type="text/javascript">
+            editor_config.selector = "textarea.richarea";
+            tinymce.init(editor_config);
+        </script>
+    @endif
 <script>
     $(function(){
-        $('.chosen-select').chosen();
+        $('.chosen-select').chosen({width: "100%"});
         $('.field-date').datepicker({
             format: 'yyyy-mm-dd',
             autoclose: true
+        });
+
+        $('.field-datetime').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm:ss'
         });
     });
 
 
 </script>
-@endsection
+@stop

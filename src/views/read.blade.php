@@ -1,11 +1,11 @@
 @extends($crud['master_blade'])
 
-@section('konten')
+@section('crud_konten')
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ $crud['title'] }}</h3>
+                    <h3 class="panel-title">{{ trans('crud::crud.read.title') }} {{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -38,17 +38,25 @@
                                     @endif
 
                                     @if($item['input_type'] == 'image')
-                                            @if($item['value'] == null or $item['value'] == '' or !file_exists(public_path($item['target_dir'].'/'.$item['value']))) <p><em>null</em></p> @else
-                                            <p>Download : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
-                                            <p class="form-control-static"><img src="{{ ImageSrc::path('/'.$item['target_dir'].'/'.$item['value'], 'resize', 400) }}" /></p>
+                                        @if($item['value'] == null or $item['value'] == '')
+                                            <p><em>null</em></p>
+                                         @elseif(!file_exists(public_path($item['target_dir'].'/'.$item['value'])))
+                                            <p><em>{{ trans('crud::crud.field.image-no-exist', ['image' => $item['value']]) }}</em></p>
+                                        @else
+                                            <p>{{ trans('crud::crud.field.dl-text') }} : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
+                                            <p class="form-control-static"><img class="img-responsive" src="{{ ImageSrc::path('/'.$item['target_dir'].'/'.$item['value'], 'resize', 1000) }}" /></p>
+
                                         @endif
                                     @endif
 
                                     @if($item['input_type'] == 'file')
-                                        @if($item['value'] !== null and $item['value'] !== '' and file_exists(public_path($item['target_dir'].'/'.$item['value'])))
-                                            <p>Download : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
+                                        @if($item['value'] === null and $item['value'] === '' )
+                                            <p><em>null</em></p>
+                                        @elseif(!file_exists(public_path($item['target_dir'].'/'.$item['value'])))
+                                            <p><em>{{ trans('crud::crud.field.file-no-exist', ['file' => $item['value']]) }}</em></p>
+
                                         @else
-                                            <p>File <strong>{{ $item['value'] }}</strong> doesn't exist.</p>
+                                            <p>{{ trans('crud::crud.field.dl-text') }} : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
                                         @endif
                                     @endif
 
@@ -88,6 +96,11 @@
 
                                     @endif
 
+                                    @if($item['input_type'] == 'money')
+                                        <p class="form-control-static">{{ number_format($item['value'], 2) }}</p>
+
+                                    @endif
+
                                     @if($item['input_type'] == 'text')
                                         <p class="form-control-static">{{ $item['value'] }}</p>
 
@@ -101,12 +114,21 @@
                                         <p class="form-control-static">{{ $item['value'] }}</p>
                                     @endif
 
+                                    @if($item['input_type'] == 'datetime')
+                                        <p class="form-control-static">{{ date('d F Y H:i:s', strtotime($item['value'])) }}</p>
+                                    @endif
+
                                     @if($item['input_type'] == 'richarea')
-                                        <p class="form-control-static">{{ $item['value'] }}</p>
+                                        <p class="form-control-static">{!! $item['value'] !!}</p>
                                     @endif
 
                                     @if($item['input_type'] == 'hidden')
                                         <p class="form-control-static">{{ $item['value'] }}</p>
+                                    @endif
+
+                                    @if($item['input_type'] == 'location')
+                                        <p class="form-control-static">{{ $item['value'] }}</p>
+                                        <div class="map-field" id="map-{{ $item['column_name'] }}" data-location="{{ $item['value'] }}" style="height: 300px;"></div>
                                     @endif
 
                                 </div>
@@ -117,7 +139,7 @@
 
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
-                                <a href="{{ url($crud['uri']) }}" class="btn btn-default">{{ $crud['back_btn_text'] }}</a>
+                                <a href="{{ url($crud['uri']) }}" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i> {{ trans('crud::crud.back-btn-text') }}</a>
                             </div>
                         </div>
                     </form>
@@ -128,5 +150,45 @@
         </div>
     </div>
 
+
+@stop
+
+@section('crud_js')
+    <script src="{{ asset('vendor/timenz/crud/js/crud.js') }}"></script>
+
+    @if($crud['is_load_map_libs'])
+        <script src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.7"></script>
+        <script type="text/javascript" src="{{ asset('vendor/timenz/crud/js/maplace.min.js') }}"></script>
+
+        <script>
+            $(function(){
+                $('.map-field').each(function(){
+                    var id = $(this).attr('id');
+                    var loc = $(this).attr('data-location');
+
+                    var lat = 0, lon = 0;
+                    if(loc.isValidLocation()){
+                        loc = loc.split(',');
+                        lat = loc[0];
+                        lon = loc[1];
+                    }
+
+                    new Maplace({
+                        map_options: {
+                            zoom: 10,
+                            scrollwheel: false
+                        },
+                        locations: [{
+                            lat: lat,
+                            lon: lon
+                        }],
+                        map_div: '#' + id,
+                        controls_on_map: false
+                    }).Load();
+                });
+            });
+
+        </script>
+    @endif
 
 @endsection

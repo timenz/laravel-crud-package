@@ -1,273 +1,208 @@
-## Crud Library for Laravel
+## Laravel Admin Crud
 
-Adalah crud library untuk laravel, almost awesome .
+Laravel Controller extended, to easier create crud page.
+
+### Limitation and Requirement
+- Laravel 5.1
+- Mysql/Mariadb database
+- Bootstrap css framework
+- only 1 crud on one page
 
 ### Install
 
-Tambahkan variabel berikut pada composer
+Add to composer.json
 
 	{
 		"require": {
-		  	"timenz/crud": "dev-master",
-            "pqb/filemanager-laravel": "1.*" 
-		},
-	    "repositories": {
-		  	"vcs_crud": {
-			  "type": "vcs",
-			  "url": "https://bitbucket.org/timenz/laravel-crud-package.git"
-			}
-	    },
+            "timenz/crud": "dev-master"
+		}
 	}
-	
-	// follow additional library readme
-	// pqb/filemanager-laravel, use if you goin to implement richarea
 
-trus run
+then update
 
     composer update
 
 add to $app['providers']
 
-	'Timenz\Crud\CrudServiceProvider',
+    \Timenz\Crud\CrudServiceProvider::class,
+    \Pqb\FilemanagerLaravel\FilemanagerLaravelServiceProvider::class,
+    \KevBaldwyn\Image\Providers\Laravel\ImageServiceProvider::class,
 
-publish view
+publish view and asset
 
-	php artisan view:publish timenz/crud
+	php artisan vendor:publish
 
-publish view on-dev
-
-	php artisan view:publish --path="workbench/timenz/crud/src/views" timenz/crud
-	
-publish assets
-	php artisan asset:publish --path="workbench/timenz/crud/public" timenz/crud
-	
-	php artisan asset:publish timenz/crud
-	php artisan asset:publish pqb/filemanager-laravel
-	cp public/packages/timenz/crud/js/en_GB.js public/packages/pqb/filemanager-laravel/tinymce/langs/
-	cd public
-	ln -s packages/pqb/filemanager-laravel/filemanager/
-	cd packages/pqb/filemanager-laravel/filemanager/
-	ln -s ../../../../uploads/userfiles/
-	
 	
 Javascript Libs Dependency
 
 	{
     	"bootstrap": "~3.3.0",
-    	"tinymce": "~4.1",
     	"bootstrap-datepicker": "1.3.0",
         "chosen": "~1.4.2"
     }
 
+Master blade view, this view basically from bootstrap sample page.
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+    
+        <title>Crud Master Example</title>
+    
+        <link href="{{ asset('libs/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('libs/bootstrap-datepicker/css/datepicker3.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/css/bootstrap-chosen.css') }}" rel="stylesheet">
+    
+        <link href="{{ asset('assets/css/navbar-fixed-top.css') }}" rel="stylesheet">
+    
+        @yield('crud_css')
+    
+    </head>
+    
+    <body>
+    
+    
+    
+    <div class="container-fluid">
+    
+        @yield('crud_konten')
+    
+    </div>
+    
+    <script src="{{ asset('libs/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ asset('libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('libs/chosen/chosen.jquery.min.js') }}"></script>
+    <script src="{{ asset('libs/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"></script>
+    
+    @yield('crud_js')
+    </body>
+    </html>
+
+
+
 ### Mininal code example
 
 
-buat route
+create resource route
 
-	Route::resource('ok', 'TestCrud');
+	Route::resource('article', 'ArticleCrud');
 	
-code taruh sembarang asal kebaca composer
+then create controller
 
 	<?php
     
-    use \Timenz\Crud\Crud;
+    namespace App\Http\Controllers;
     
-    class TestCrud extends Crud{
+    use Timenz\Crud\Crud;
+    
+    class ArticleCrud extends Crud{
     
         protected function run(){
-            $this->init('users');
+            $this->init('article', 'crud_master', []);
     
-            $master = array('title' => 'my');
-            $this->setMasterData($master);
-            $this->setMasterBlade('admin.master');
+            return true;
         }
     }
     
-## Dokumentasi
+
+## Documentation
 
 ### init
-[wajib] Inisialisasi tabel utama
+[wajib] Main init
 	
-	// parameter => nama tabel
+	// parameter => table name, master blade and parameter for master blade
 	$this->init('users');
-
-### setMasterBlade
-[wajib]View bawaan tidak bisa langsung tampil, harus nunut ke view utama, ato kalo crudnya pengen uniq, buat aja sub-view yang bisa dicustom, sebelum extend ke view utama.
-	
-	// parameter => nama blade yang akan diextend
-	$this->setMasterBlade('admin.master');
-	
-### setMasterData
-[wajib] Karena load datanya dari crud, maka crud minta data yang dibutuhin master view, agar nanti bisa dikirim bareng.
-Note : ada reserved parameter => 'crud', jadi jangan gunakan parameter tsb, di master view nya.
-
-	$master = array('title' => 'my');
-	// parameter => array data master
-	$this->setMasterData($master);
 
 ### title
 set crud title
-
-	// default => ''
-	$this->title = 'Judul Crud';
-	$this->allowDelete = false;
-	$this->allowEdit = false;
-	$this->allowRead = false;
-	$this->allowCreate = false;
+    //parameter => crud title
+	$this->setTitle('Article Crud');
 	
-### allowCreate
-bolehin buat data baru apa enggak
-	
-	// default => true
-	$this->allowCreate = false;
-	
-### allowRead
-bolehin baca data apa enggak
-	
-	// default => true
-	$this->allowRead = false;
-	
-### allowEdit
-bolehin edit data apa enggak
-	
-	// default => true
-	$this->allowEdit = false;
-	
-### allowDelete
-bolehin hapus data apa enggak
-	
-	// default => true
-	$this->allowDelete = false;0
-	
+### disAllow
+Limit permission of crud
+    
+    //parameter L = list
+    $this->disAllow('LCREDSXO');
 
 ### columns
-Menspesifikasikan field-field yang akan ditampilkan pada list data
+Specify fields in listing at index page.
 	
-	// parameter => array column yang ingin ditampilkan di list data
+	//parameter => array of fields 
 	$this->columns(array(
-		'id_karyawan',
-		'username',
-		'id_role',
+		'title',
 	));
 
 ### validateRules
-Menspesifikasikan validasi form
+Specify validate rules, rules that used in this validation is same as default laravel validation rules 
+and you can follow reference from [laravel documentation]( https://laravel.com/docs/5.1/validation#available-validation-rules)
 	
 	$this->validateRules(array(
-		'id_karyawan' => 'required',
+		'title' => 'required',
 	));
 	
 ### fields
-Menspesifikasikan field-field yang akan tampil di form create, edit dan read
+Specify fields at create, edit dan read page
 
 	$this->fields(array(
-		'id_karyawan',
-		'username',
-		'id_role',
+		'title',
 	));
 	
 ### displayAs
-Modifikasi nama kolom
+Modify title of field
 
-	$this->displayAs('id_airlines', 'Maskapai');
+	$this->displayAs('title', 'The Title');
 	
 ### createFields
-Menspesifikasikan field-field yang akan tampil di form create saja
+Specify fields at create page
 
 	$this->createFields(array(
-		'id_karyawan',
-		'username',
-		'id_role',
+		'title',
 	));
 	
 ### editFields
-Menspesifikasikan field-field yang akan tampil di form edit saja
+Specify fields at edit page
 
 	$this->editFields(array(
-		'id_karyawan',
-		'username',
-		'id_role',
+		'title',
 	));
 	
 ### readFields
-Menspesifikasikan field-field yang akan tampil di halaman read saja
+Specify fields at  read page
 
 	$this->readFields(array(
-		'id_karyawan',
-		'username',
-		'id_role',
+		'title',
 	));
 	
 ### where
-mysql where untuk filter data utama
+Filters visible data by using sql where
 	
-	// parameter => 1. nama field, 2. kondisi ('=', '!=', '>', dst), 3. nilai
-	where('nama_field', '=', 'dia');
+	//parameter => field, condition, value
+	$this->where('id', '=', 1);
 
 ### setJoin
-join tabel utama dengan tabel lain
+Set a 1-n database relationship, this function only can be use for relation that refers to another
+table on field 'id', example field 'id_user' from initial table refers to field 'id' on target table.
 	
 	// parameter
-	// 1. nama field yang akan dijoinkan
-	// 2. join ke tabel apa
-	// 3. nama field di tabel ke dua
-	// 4. array where lainnya
-	$this->setJoin('id_karyawan', 'karyawan', 'nama');
+	// 1. field from initial table that refers to target table
+	// 2. another table that want to join to
+	// 3. field name from refered table that want to set visible on initial field
+	// 4. 'where' array to limit join data
+	$this->setJoin('id_user', 'users', 'full_name');
 
 ### orderBy
-Pengurutan pada list data
+Set order listing data
 	
-	// parameter 1. nama field 2. sort (asc/desc)
-	$this->orderBy('nama_field', 'asc');
+	//parameter 1. field name, 2. sort (asc/desc)
+	$this->orderBy('id', 'asc');
 
 
-### changeType
 
-buat ngganti tipe field dari yang standard, parameter (nama field, tipe field baru, option), berikut detail list pilihan tipe field:
-
-	
-#### money
-ngubah tipe field jadi bentuk money => 100.000,00
-	
-	// syarat yang diubah harus numeric
-	$this->changeType('nama_field', 'money');
-
-#### textarea
-ngubah jadi textarea
-
-	$this->changeType('nama_field', 'textarea');
-	
-#### enum
-ngubah jadi pilihan dropdown
-	
-	// param 3 adl pilihan dropdown-nya
-	$this->changeType('nama_field', 'enum', array('satu', 'dua'));
-	
-#### select
-Dropdown juga cuman beda bentuk array-nya
-	
-	$option = array(
-		'1' => 'satu',
-		'2' => 'dua'
-	);
-	$this->changeType('nama_field', 'enum', $option);
-
-#### hidden
-Menyembunyikan field
-	
-	// param 3 adl isian default waktu insert
-	$this->changeType('nama_field', 'hidden', 'ndelik');
-	
-
-#### image
-buat field gambar
-
-	$this->changeType('nama_field', 'image', 'image/path-in-public');
-
-#### file
-buat field gambar
-
-	$this->changeType('nama_field', 'file', ['dir' => 'image/path-in-public']);
 
 ### callbackColumn
 Custom format kolom field pada list
@@ -314,4 +249,69 @@ tambahan link statis
 	// Parameter 1. title, 2. link url, dst dibawah beserta isi defaultnya
 	//$class = 'btn btn-default', $openNewPage = false, $showAtIndex = true, $showAtRead = true, $showAtCreate = true, $showAtEdit = true
 	addExternalLink('judul', url('link'), 
+	
+### changeType
+
+By default package will set the field type by type at table definition, but we can change the field type
+to another custom field type.
+This function has 3 parameter.
+
+1. Field name
+2. Change type
+3. Change type option in array
+
+To avoid coding error, I have created two classes to specify available change type 
+and change type option parameter.
+
+#### ChangeTypeOption
+This is third parameter of changeType function, here some available ChangeType option :
+- **value** or ChangeTypeOption::VALUE, default value of field, for example you can see hidden field type
+- **allow_update**, if you are not specify this option to true, then the edit page will not
+ change this field value
+- **target_dir**, used for *image* and *file* to set directory to save the file in public directory 
+- **select_option**, list of option for *enum* and *select* type of field
+
+#### hidden
+hide the field
+	
+	$this->changeType('field_name', 'hidden', ['value' => 1]);	
+	//or
+	$this->changeType('field_name', ChangeType::HIDDEN, [ChangeTypeOption::VALUE => 1]);
+
+available option is 'value' and
+
+#### money
+field type with number formated display
+	
+	$this->changeType('field_name', 'money');
+
+#### textarea
+
+	$this->changeType('field_name', 'textarea');
+	
+#### enum
+dropdown/select field type
+	
+	$this->changeType('field_name', 'enum', ['select_option' => ['yes', 'no'] ]);
+	
+#### select
+dropdown/select field type
+	
+	$option = array(
+		'0' => 'yes',
+		'1' => 'no'
+	);
+	$this->changeType('nama_field', 'enum', $option);
+	$this->changeType('field_name', 'enum', ['select_option' => ['yes', 'no'] ]);
+
+
+#### image
+buat field gambar
+
+	$this->changeType('nama_field', 'image', 'image/path-in-public');
+
+#### file
+buat field gambar
+
+	$this->changeType('nama_field', 'file', ['dir' => 'image/path-in-public']);
 	

@@ -1,12 +1,12 @@
 
 @extends($crud['master_blade'])
 
-@section('konten')
+@section('crud_konten')
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ $crud['title'] }}</h3>
+                    <h3 class="panel-title">{{ trans('crud::crud.edit.title') }} {{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
                     <div class="row">
@@ -124,6 +124,30 @@
                                                value="{{ $value }}" />
                                     @endif
 
+                                    @if($item['input_type'] == 'datetime')
+                                            <div class="input-group field-datetime">
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-calendar"></span>
+                                                </span>
+                                                <input type="text"
+                                                       name="{{ $item['column_name'] }}"
+                                                       class="cl-{{ $item['column_name'] }} form-control"
+                                                       id="id-{{ $item['column_name'] }}"
+                                                       value="{{ $value }}" />
+                                            </div>
+                                    @endif
+
+                                    @if($item['input_type'] == 'location')
+
+                                        <input type="text"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $value }}" />
+                                        <div class="map-field" id="map-{{ $item['column_name'] }}" data-location="{{ $value }}" style="height: 300px;"></div>
+
+                                    @endif
+
 
                                     @if($item['input_type'] == 'numeric')
                                         <input type="text"
@@ -134,31 +158,41 @@
                                     @endif
 
                                     @if($item['input_type'] == 'image')
-                                        <p class="form-control-static">
-                                            @if($item['value'] == null or $item['value'] == '' or !file_exists(public_path($item['target_dir'].'/'.$item['value']))) <p><em>null</em></p> @else
-                                            <p>Download : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
-                                            <img src="{{ ImageSrc::path('/'.$item['target_dir'].'/'.$item['value'], 'resize', 400) }}" /></p>
-                                            @endif
-                                        <input type="file"
+                                        <input type="hidden"
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control col-md-6"
                                                id="id-{{ $item['column_name'] }}"
-                                               value="" />
+                                               value="{{ $item['value'] }}" />
+                                        <button class="btn btn-sm btn-primary file-update" data-id="id-{{ $item['column_name'] }}">{{ trans('crud::crud.field.change-file') }}</button>
+                                        @if($item['value'] == null or $item['value'] == '')
+                                            <p><em>null</em></p>
+                                        @elseif(!file_exists(public_path($item['target_dir'].'/'.$item['value'])))
+                                            <p><em>{{ trans('crud::crud.field.image-no-exist', ['image' => $item['value']]) }}</em></p>
+                                        @else
+                                            <p>{{ trans('crud::crud.field.dl-text') }} : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
+                                            <p class="form-control-static"><img class="img-responsive" src="{{ ImageSrc::path('/'.$item['target_dir'].'/'.$item['value'], 'resize', 1000) }}" /></p>
+
+                                        @endif
+
                                     @endif
 
                                     @if($item['input_type'] == 'file')
-                                        <p class="form-control-static">
-                                        @if(file_exists(public_path($item['target_dir'].'/'.$item['value'])))
-                                            <p>Download : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
-                                            @else
-                                            <p>File <strong>{{ $item['value'] }}</strong> doesn't exist.</p>
-                                            @endif
-
                                         <input type="file"
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control col-md-6"
                                                id="id-{{ $item['column_name'] }}"
                                                value="" />
+                                        <button class="btn btn-sm btn-primary file-update" data-id="id-{{ $item['column_name'] }}">{{ trans('crud::crud.field.change-file') }}</button>
+
+                                        @if($item['value'] === null and $item['value'] === '' )
+                                            <p><em>null</em></p>
+                                        @elseif(!file_exists(public_path($item['target_dir'].'/'.$item['value'])))
+                                            <p><em>{{ trans('crud::crud.field.file-no-exist', ['file' => $item['value']]) }}</em></p>
+
+                                        @else
+                                            <p>{{ trans('crud::crud.field.dl-text') }} : <a target="_blank" href="{{ asset($item['target_dir'].'/'.$item['value']) }}">{{ $value }}</a></p>
+                                        @endif
+
                                     @endif
 
                                     @if($item['input_type'] == 'decimal')
@@ -175,6 +209,15 @@
                                                class="cl-{{ $item['column_name'] }} form-control col-md-6 money"
                                                id="id-{{ $item['column_name'] }}"
                                                value="{{ $value }}" />
+                                    @endif
+
+                                    @if($item['input_type'] == 'readonly')
+                                        <input type="hidden"
+                                               name="{{ $item['column_name'] }}"
+                                               class="cl-{{ $item['column_name'] }} form-control col-md-6 money"
+                                               id="id-{{ $item['column_name'] }}"
+                                               value="{{ $value }}" />
+                                        <p class="form-control-static">{{ $value }}</p>
                                     @endif
 
                                     @if($item['input_type'] == 'date')
@@ -201,7 +244,7 @@
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control chosen-select"
                                                id="id-{{ $item['column_name'] }}"
-                                               value="{{ $value }}" >{{ $option }}</select>
+                                               value="{{ $value }}" >{!! $option !!}</select>
                                     @endif
 
                                     @if($item['input_type'] == 'select')
@@ -220,7 +263,7 @@
                                                name="{{ $item['column_name'] }}"
                                                class="cl-{{ $item['column_name'] }} form-control chosen-select"
                                                id="id-{{ $item['column_name'] }}"
-                                               value="{{ $value }}" >{{ $option }}</select>
+                                               value="{{ $value }}" >{!! $option !!}</select>
                                     @endif
 
                                     @if($item['input_type'] == 'join')
@@ -236,7 +279,7 @@
                                         ?>
                                         <select name="{{ $item['column_name'] }}"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select"
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
 
                                     @endif
 
@@ -259,7 +302,7 @@
                                         ?>
                                         <select name="{{ $item['column_name'] }}[]"
                                                 class="cl-{{ $item['column_name'] }} form-control chosen-select" multiple
-                                                id="id-{{ $item['column_name'] }}">{{ $str_option }}</select>
+                                                id="id-{{ $item['column_name'] }}">{!! $str_option !!}</select>
 
                                     @endif
 
@@ -269,14 +312,14 @@
                                         <textarea
                                                 name="{{ $item['column_name'] }}"
                                                 class=" cl-{{ $item['column_name'] }} form-control"
-                                                id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
+                                                id="id-{{ $item['column_name'] }}" >{!! $value !!}</textarea>
                                     @endif
 
                                     @if($item['input_type'] == 'richarea')
                                         <textarea
                                                 name="{{ $item['column_name'] }}"
                                                 class=" cl-{{ $item['column_name'] }} form-control richarea"
-                                                id="id-{{ $item['column_name'] }}" >{{ $value }}</textarea>
+                                                id="id-{{ $item['column_name'] }}" >{!! $value !!}</textarea>
                                     @endif
 
                                     @if(isset($crud['errors'][$key]))
@@ -298,8 +341,8 @@
 
                         <div class="form-group">
                             <div class="col-lg-offset-2 col-lg-10">
-                                <a href="{{ url($crud['uri']) }}" class="btn btn-default">{{ $crud['back_btn_text'] }}</a>
-                                <button type="submit" class="btn btn-primary">{{ $crud['edit_btn_text'] }}</button>
+                                <a href="{{ url($crud['uri']) }}" class="btn btn-default"><i class="glyphicon glyphicon-backward"></i> {{ trans('crud::crud.back-btn-text') }}</a>
+                                <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-edit"></i> {{ trans('crud::crud.edit.edit-btn') }}</button>
                             </div>
                         </div>
 
@@ -332,27 +375,126 @@
     </div>
 
 
+@stop
+
+@section('crud_css')
+
+    <link href="{{ asset('vendor/timenz/crud/css/bootstrap-datetimepicker.min.css') }}" rel="stylesheet">
 @endsection
 
-@section('js')
-    @if($crud['action'] == 'create' or $crud['action'] == 'edit')
-        @if($crud['is_load_mce_libs'])
-            <script type="text/javascript" src="{{ asset('packages/pqb/filemanager-laravel/tinymce/tinymce.min.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('packages/timenz/crud/js/tinymce_editor.js') }}"></script>
-            <script type="text/javascript">
-                editor_config.selector = "textarea.richarea";
-                tinymce.init(editor_config);
-            </script>
-        @endif
+@section('crud_js')
+    <script src="{{ asset('vendor/timenz/crud/js/moment.min.js') }}"></script>
+    <script src="{{ asset('vendor/timenz/crud/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('vendor/timenz/crud/js/crud.js') }}"></script>
+    @if($crud['is_load_map_libs'])
+        <script src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.7"></script>
+        <script type="text/javascript" src="{{ asset('vendor/timenz/crud/js/maplace.min.js') }}"></script>
+
+        <script>
+            $(function(){
+                $('.map-field').each(function(){
+                    var id = $(this).attr('id');
+                    var input  = id.replace('map-', 'id-');
+                    var loc = $(this).attr('data-location');
+                    var lat = 0, lon = 0;
+                    if(loc.isValidLocation()){
+                        loc = loc.split(',');
+                        lat = loc[0];
+                        lon = loc[1];
+                    }
+
+                    var place = new Maplace({
+                        map_options: {
+                            zoom: 10,
+                            scrollwheel: false
+                        },
+                        locations: [{
+                            lat: lat,
+                            lon: lon
+                        }],
+                        map_div: '#' + id,
+                        controls_on_map: false,
+                        listeners: {
+                            click: function(map, event) {
+
+                                var location = event.latLng.G.toFixed(6) + ', ' + event.latLng.K.toFixed(6);
+
+                                $('#' + input).val(location);
+
+
+                                place.SetLocations([{
+                                    lat: event.latLng.G,
+                                    lon: event.latLng.K
+                                }]);
+                                place.Load();
+                            }
+                        }
+                    });
+                    place.Load();
+
+                    $('#' + input).keyup(function(){
+
+                        var val0 = $(this).val();
+
+                        setTimeout(function(){
+                            var val = $('#' + input).val();
+
+                            if(val0 != val){
+                                return false;
+                            }
+
+                            if(!val.isValidLocation()){
+                                return false;
+                            }
+                            loc = val.split(',');
+
+                            place.SetLocations([{
+                                lat: loc[0],
+                                lon: loc[1]
+                            }]);
+                            place.Load();
+                        }, 2000);
+
+
+                    });
+
+
+                });
+
+            });
+
+        </script>
     @endif
+
+    @if($crud['is_load_mce_libs'])
+        <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('vendor/timenz/filemanager-laravel/tinymce/tinymce_editor.js') }}"></script>
+        <script type="text/javascript">
+            editor_config.selector = "textarea.richarea";
+            tinymce.init(editor_config);
+        </script>
+    @endif
+
     <script>
         $(function(){
-            $('.chosen-select').chosen();
+            $('.chosen-select').chosen({width: "100%"});
             $('.field-date').datepicker({
                 format: 'yyyy-mm-dd',
                 autoclose: true
             });
+
+            $('.field-datetime').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm:ss'
+            });
+
+            $('.file-update').click(function(e){
+                e.preventDefault();
+                var id = $(this).attr('data-id');
+                $('#' + id).attr('type', 'file');
+                $('#' + id).attr('value', '');
+                $(this).hide();
+            });
         });
 
     </script>
-@endsection
+@stop

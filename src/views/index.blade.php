@@ -8,14 +8,14 @@ $load_datepicker = false;
 ?>
 
 
-@section('konten')
+@section('crud_konten')
     <div class="row">
         <div class="col-md-12">
 
 
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ $crud['title'] }}</h3>
+                    <h3 class="panel-title">{{ trans('crud::crud.index.title') }} {{ $crud['title'] }}</h3>
                 </div>
                 <div class="panel-body">
                     @if(count($session) > 0)
@@ -44,23 +44,9 @@ $load_datepicker = false;
                     <div class="row">
                         <div class="col-xs-7">
                             @if($crud['allow_create'])
-                                <a href="{{ url($crud['uri'].'/create') }}" class="btn btn-success">{{ $crud['list_create_text'] }}</a>
+                                <a href="{{ url($crud['uri'].'/create') }}" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> {{ trans('crud::crud.index.create-button') }}</a>
                             @endif
 
-                            <div class="btn-group">
-
-
-                            @if($crud['allow_read'])
-                                <a href="#" id="list-btn-read" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_read_text'] }}</a>
-                            @endif
-                            @if($crud['allow_edit'])
-                                <a href="#" id="list-btn-edit" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_edit_text'] }}</a>
-                            @endif
-                            @if($crud['allow_delete'])
-                                <a href="#" id="list-btn-delete" class="btn btn-default sel-one" style="display: none;">{{ $crud['list_delete_text'] }}</a>
-                            @endif
-                            </div>
-                            <span  class="btn-group" id="action_lists"></span>
 
                         </div>
                         <div class="col-xs-5 text-right">
@@ -76,38 +62,69 @@ $load_datepicker = false;
 
 
                             @if($crud['allow_export'])
-                                <a href="#" id="list-btn-export" class="btn btn-success">{{ $crud['list_export_text'] }}</a>
+                                <a href="#" id="list-btn-export" class="btn btn-success"><i class="glyphicon glyphicon-export"></i> {{ trans('crud::crud.index.export-button') }}</a>
                             @endif
                             @if($crud['allow_search'])
-                                <a href="#" id="list-btn-search" class="btn btn-success">{{ $crud['list_search_text'] }}</a>
+                                <a href="#" id="list-btn-search" class="btn btn-success"><i class="glyphicon glyphicon-search"></i> {{ trans('crud::crud.index.search-button') }}</a>
                             @endif
                         </div>
                     </div>
 
                     <div class="clearfix" style="height: 10px;"></div>
 
-                    <div class="list-table ">
-                        <table class="table table-striped">
+                    <div class="list-table table-responsive">
+                        <table class="table table-striped table-hover">
                             <thead>
 
                             <tr>
-                                <th><input type="checkbox" class="" name="cb-all" id="cb-all"></th>
+
+                                {{--<th><input type="checkbox" class="" name="cb-all" id="cb-all"></th>--}}
+                                <?php
+                                    $order = null;
+                                    $orderColumn = null;
+                                    if(isset($crud['index_session']['order'])){
+                                        $order = $crud['index_session']['order'];
+                                        $orderColumn = $order[0];
+                                    }
+                                 ?>
                                 @foreach($crud['columns'] as $item)
-                                    <th>{{ $crud['data_type'][$item]['column_text'] }}
+                                    <th class="@if($order[0] == $item) success @endif text-nowrap">
+
                                         @if($crud['allow_order'])
-                                        <div class="pull-right">
                                             <?php $link = url($crud['uri'].'?action=set_order&sort_field='.$crud['data_type'][$item]['column_name'].'&direction='); ?>
-                                            <a href="{{ $link }}asc" class="glyphicon glyphicon-arrow-up text-muted" aria-hidden="true"></a>
-                                            <a href="{{ $link }}desc" href="#" class="glyphicon glyphicon-arrow-down" aria-hidden="true"></a>
-                                        </div>
+                                            @if($order !== null)
+
+                                                @if($order[0] == $item)
+                                                    <a href="{{ $link }}@if($order[1] == 'asc'){{ 'desc' }}@else{{ 'asc' }}@endif"
+                                                        aria-hidden="true" data-toggle="tooltip" class="text-success"
+                                                       data-placement="top" title="@if($order[1] == 'asc'){{ trans('crud::crud.index.sort-desc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}@else{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}@endif">
+                                                        <i class="glyphicon glyphicon-arrow-@if($order[1] == 'asc'){{ 'down' }}@else{{ 'up' }}@endif "></i> {{ $crud['data_type'][$item]['column_text'] }}
+                                                    </a>
+                                                @else
+                                                    <a href="{{ $link }}asc" aria-hidden="true" data-toggle="tooltip"
+                                                       data-placement="top" title="{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}">
+                                                        <i class="glyphicon glyphicon-arrow-up"></i> {{ $crud['data_type'][$item]['column_text'] }}
+                                                    </a>
+                                                @endif
+
+                                            @else
+                                                <a href="{{ $link }}asc" aria-hidden="true" data-toggle="tooltip"
+                                                   data-placement="top" title="{{ trans('crud::crud.index.sort-asc-tt', ['column' => $crud['data_type'][$item]['column_text']]) }}">
+                                                    <i class="glyphicon glyphicon-arrow-up"></i> {{ $crud['data_type'][$item]['column_text'] }}
+                                                </a>
+                                            @endif
+                                        @else
+                                            {{ $crud['data_type'][$item]['column_text'] }}
                                         @endif
                                     </th>
                                 @endforeach
 
                                 @foreach($crud['join_nn_column_title'] as $item)
-                                <th>{{ ucwords(str_replace('_', ' ', $item)) }}</th>
+                                <th class="text-nowrap">{{ ucwords(str_replace('_', ' ', $item)) }}</th>
                                 @endforeach
 
+
+                                <th class="info text-nowrap">#</th>
 
                                 {{--@if($allow_create or $allow_edit or $allow_delete)--}}
                                     {{--<th>Action</th>--}}
@@ -117,44 +134,46 @@ $load_datepicker = false;
                             <tbody>
                             @foreach($crud['lists']['data'] as $item)
 
-                                <?php $item = (array)$item;  ?>
+                                <?php $item = (array)$item;?>
                                 <tr>
-                                    <td><input type="checkbox" class="cb-list" name="" id="cb-list-{{ $item['id'] }}" data-id="{{ $item['id'] }}">
-                                    <span style="display: none" id="action-{{ $item['id'] }}">@if(isset($crud['action_lists'][$item['id']]))
-                                            {{ json_encode($crud['action_lists'][$item['id']]) }}@endif</span>
-                                    </td>
+
                                     <?php $x++; ?>
 
                                     @foreach($crud['columns'] as $column)
                                         <?php
 
                                         if(isset($crud['custom_values'][$column][$item['id']])){
-                                        ?><td>{{ $crud['custom_values'][$column][$item['id']] }}</td><?php
+                                        ?><td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $crud['custom_values'][$column][$item['id']] !!}</td><?php
                                         continue;
                                         } ?>
-                                        @if(isset($item[$column]))
+                                        @if(isset($item))
 
 
                                             @if($crud['data_type'][$column]['input_type'] == 'money')
-                                                <td class="text-right">{{ number_format((float)$item[$column], 2) }}</td>
+                                                <td class="text-right text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!!  number_format((float)$item[$column], 2) !!}</td>
 
-                                            @elseif($crud['data_type'][$column]['input_type'] == 'join')
-                                                <td>{{ $item[$crud['data_type'][$column]['related_field']] }}</td>
+                                            @elseif($crud['data_type'][$column]['input_type'] == 'join' or isset($crud['data_type'][$column]['related_key']))
+                                                <?php $joinKey =  $crud['data_type'][$column]['related_key'].'_'.$crud['data_type'][$column]['related_field']; ?>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $item[$joinKey] !!}</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'richarea')
-                                                <td>{{ substr(strip_tags($item[$column]), 0, 100) }} ...</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! substr(strip_tags($item[$column]), 0, 100) !!} ...</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'textarea')
-                                                <td>{{ substr(strip_tags($item[$column]), 0, 40) }} ...</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! substr(strip_tags($item[$column]), 0, 40) !!} ...</td>
+
+                                            @elseif($crud['data_type'][$column]['input_type'] == 'location')
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">@if($item[$column] == '')<em>null</em>@else<a href="#" class="map-link"data-toggle="tooltip"
+                                                          data-placement="top" title="{{ trans('crud::crud.index.field-location-tt') }}">{!! $item[$column] !!}</a>@endif</td>
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'file')
                                                 @if(file_exists(public_path($crud['data_type'][$column]['target_dir'].'/'.$item[$column])))
-                                                <td><a target="_blank" href="{{ asset($crud['data_type'][$column]['target_dir'].'/'.$item[$column]) }}">{{ $item[$column] }}</a></td>
-                                                @else <td>{{ $item[$column] }}</td> @endif
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif"><a target="_blank" href="{{ asset($crud['data_type'][$column]['target_dir'].'/'.$item[$column]) }}">{!! $item[$column] !!}</a></td>
+                                                @else <td>{!! $item[$column] !!}</td> @endif
 
                                             @elseif($crud['data_type'][$column]['input_type'] == 'image')
-                                                <td><img class="image-thumb"
-                                                    data-full="{{ ImageSrc::path('/'.$crud['data_type'][$column]['target_dir'].'/'.$item[$column], 'resize', 400) }}"
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif"><img class="image-thumb"
+                                                    data-full="{{ ImageSrc::path('/'.$crud['data_type'][$column]['target_dir'].'/'.$item[$column], 'resize', 1000) }}"
                                                     src="{{ ImageSrc::path('/'.$crud['data_type'][$column]['target_dir'].'/'.$item[$column], 'resizeCrop', 40, 30) }}"
                                                     /></td>
 
@@ -169,13 +188,13 @@ $load_datepicker = false;
                                                     }
                                                 }
                                                 ?>
-                                                <td>{{ $value }}</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $value !!}</td>
 
                                             @else
-                                                <td>{{ $item[$column] }}</td>
+                                                <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $item[$column] !!}</td>
                                             @endif
                                         @else
-                                            <td><em>null</em></td>
+                                            <td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif"><em>null</em></td>
                                         @endif
                                     @endforeach
 
@@ -192,9 +211,58 @@ $load_datepicker = false;
                                                 @endforeach
                                             @endif
                                         @endforeach
-                                        <td>{{ $nnVal }}</td>
+                                        <td>{!! $nnVal !!}</td>
                                     @endforeach
 
+                                    <td class="info text-nowrap">
+                                        @if($crud['allow_read'])
+                                            <a class="link btn btn-primary btn-xs" href="{{ url($crud['uri'].'/'.$item['id']) }}"
+                                               data-toggle="tooltip" data-placement="top" title="{{ trans('crud::crud.index.action-show') }}"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        @endif
+                                        @if($crud['allow_edit'])
+                                            <a class="link btn btn-warning btn-xs" href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}"
+                                               data-toggle="tooltip" data-placement="top" title="{{ trans('crud::crud.index.action-edit') }}"><i class="glyphicon glyphicon-pencil"></i></a>
+                                        @endif
+                                        @if($crud['allow_delete'])
+                                            <a class="link btn btn-danger btn-xs" data-toggle="modal" href="#modal-del{{ $item['id'] }}"
+                                               data-toggle="tooltip" data-placement="top" title="{{ trans('crud::crud.index.action-delete') }}"><i class="glyphicon glyphicon-remove"></i></a>
+                                        @endif
+
+
+                                        @if(isset($crud['action_lists'][$item['id']]))
+
+                                            @foreach($crud['action_lists'][$item['id']] as $action)
+                                                <a class="link btn btn-xs {{ $action['class'] }}" href="{{ $action['url'] }}">{{ $action['title'] }}</a>
+                                            @endforeach
+
+                                        @endif
+
+                                        @if($crud['allow_delete'])
+                                            <div class="modal fade" id="modal-del{{ $item['id'] }}" >
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                            <h4 class="modal-title">{{ trans('crud::crud.index.modal-del-title') }}</h4>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>{{ trans('crud::crud.index.modal-del-body') }}</p>
+                                                        </div>
+                                                        <div class="modal-footer">
+
+                                                            <form method="post" action="{{ url($crud['uri'].'/'.$item['id']) }}" id="form-delete" accept-charset="UTF-8">
+                                                                <input name="_method" type="hidden" value="DELETE">
+                                                                <input name="_token" type="hidden" value="{{ csrf_token() }}">
+                                                                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> {{ trans('crud::crud.modal-close-button') }}</button>
+                                                                <input type="submit" class="btn btn-primary" value="{{ trans('crud::crud.index.modal-del-button') }}" />
+                                                            </form>
+
+                                                        </div>
+                                                    </div><!-- /.modal-content -->
+                                                </div><!-- /.modal-dialog -->
+                                            </div><!-- /.modal -->
+                                        @endif
+                                    </td>
 
                                 </tr>
                             @endforeach
@@ -203,7 +271,7 @@ $load_datepicker = false;
                         </table>
                     </div>
 
-                    <div>{{ $crud['paging_links'] }}</div>
+                    <div>{!! $crud['paging_links'] !!}</div>
 
                 </div>
             </div>
@@ -211,37 +279,13 @@ $load_datepicker = false;
     </div>
 
 
-    <div class="modal fade" id="modal-confirm-hapus" >
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Konfirmasi Hapus Data</h4>
-                </div>
-                <div class="modal-body">
-                    <p>Yakin untuk menghapus data yang telah dipilih ?</p>
-                </div>
-                <div class="modal-footer">
-
-                    <form method="post" action="#" id="form-delete" accept-charset="UTF-8">
-                        <input name="_method" type="hidden" value="DELETE">
-                        <input name="_token" type="hidden" value="{{ csrf_token() }}">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-                        <input type="submit" class="btn btn-primary" value="Hapus" />
-                    </form>
-
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
 
     <div class="modal fade" id="modal-confirm-export" >
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Export Data</h4>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-export-title') }}</h4>
                 </div>
                 <div class="modal-body">
 
@@ -261,19 +305,19 @@ $load_datepicker = false;
                                        value="@if(isset($session['export-to'])){{ $session['export-to'] }}@endif">
                             </div>
                             <input type="hidden" value="limit_export" name="action">
-                            <button type="submit" class="btn btn-default">Update Filter</button>
+                            <button type="submit" class="btn btn-default">{{ trans('crud::crud.index.modal-export-update-btn') }}</button>
                         </form>
                     @endif
 
                     <nav>
                         <ul class="pagination"></ul>
                     </nav>
-                    <p>Limit : <strong>{{ number_format($crud['export_max_limit']) }}</strong> rows/export.</p>
-                    <p>Total : <strong class="total">0</strong> rows.</p>
-                    <p>* klik paging to export.</p>
+                    <p>{{ trans('crud::crud.index.modal-export-limit-text') }} : <strong>{{ number_format($crud['export_max_limit']) }}</strong> {{ trans('crud::crud.index.modal-export-limit-text-2') }}.</p>
+                    <p>{{ trans('crud::crud.index.modal-export-total-text') }} : <strong class="total">0</strong> {{ trans('crud::crud.index.modal-export-total-text-2') }}.</p>
+                    <p>* {{ trans('crud::crud.index.modal-export-help') }}.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> {{ trans('crud::crud.modal-close-button') }}</button>
 
                 </div>
             </div><!-- /.modal-content -->
@@ -284,20 +328,39 @@ $load_datepicker = false;
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Mohon Ditunggu</h4>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-wait-title') }}</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Proses data, silakan tunggu.</p>
+                    <p>{{ trans('crud::crud.index.modal-wait-body') }}.</p>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
-    <div class="modal fade" id="modal-image-full" >
-        <div class="modal-dialog">
-            <div class="modal-content">
 
-                <div class="modal-body">
-                    <div class="text-center"><img class="image-full" /></div>
+    <div class="modal fade" id="modal-image-full" >
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-image-title') }}</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <img style="display: inline;" class="image-full img-responsive" />
+
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal fade" id="modal-map" data-map="">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-map-title') }}</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="map-preview" style="height: 400px;"></div>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -309,30 +372,47 @@ $load_datepicker = false;
             <div class="modal-content">
                 <form method="get" action="{{ url($crud['uri']) }}">
                 <div class="modal-header">
-                    <h4 class="modal-title">Filter Data</h4>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-search-title') }}</h4>
                 </div>
                 <div class="modal-body">
                     <table class="table table-hover">
+
                     @foreach($crud['columns'] as $item)
                         <?php
                             $x = $crud['data_type'][$item];
-                            if(!($x['input_type'] == 'text' or $x['input_type'] == 'numeric' or $x['input_type'] == 'money')){
+                            if(!isset($x['allow_search'])){
+                                Log::info('Field '.$item.' not yet registered in search fields');
                                 continue;
                             }
-                            $contain = array('contain');
+                            if(!$x['allow_search']){
+                                continue;
+                            }
+                            $condition = $x['search_condition'];
+                            $date_class = '';
+                            if(in_array('date-equal', $condition)){
+                                $date_class = 'input-date';
+                            }
                             $value = '';
+                            $value2 = '';
+                            $cond = '';
                             if(isset($session['filter'])){
                                 if(isset($session['filter'][$x['column_name']])){
+                                    $cond = $session['filter'][$x['column_name']][0];
                                     $value = $session['filter'][$x['column_name']][1];
+                                    $value2 = $session['filter'][$x['column_name']][2];
                                 }
                             }
                         ?>
                         <tr>
                             <td><label>{{ $x['column_text'] }}</label></td>
-                            <td><select name="search[{{ $x['column_name'].'][filter]' }}" class="form-control">
-                                    @foreach($contain as $ct)<option value="{{ $ct }}">{{ $ct }}</option>@endforeach
+                            <td><select name="search[{{ $x['column_name'].'][filter]' }}" data-id="search-{{ $x['column_name'] }}" class="form-control condition-select">
+                                    @foreach($condition as $ct)<option @if($cond == $ct) selected @endif value="{{ $ct }}">{{ $ct }}</option>@endforeach
                                 </select></td>
-                            <td><input name="search[{{ $x['column_name'].'][value]' }}" value="{{ $value }}" class="form-control"></td>
+                            <td>
+                                <input name="search[{{ $x['column_name'].'][value]' }}" value="{{ $value }}" class="form-control {{ $date_class }}">
+                                <input name="search[{{ $x['column_name'].'][value_2]' }}" value="{{ $value2 }}" id="search-{{ $x['column_name'] }}"
+                                       class="form-control @if(!($cond == 'between' or $cond == 'date-between')) hidden @endif {{ $date_class }}" style="margin-top:3px;">
+                            </td>
                         </tr>
 
                         </th>
@@ -341,8 +421,8 @@ $load_datepicker = false;
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" name="action" value="search">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> {{ trans('crud::crud.modal-close-button') }}</button>
+                    <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-search"></i> {{ trans('crud::crud.index.modal-search-btn') }}</button>
 
                 </div>
                 </form>
@@ -354,17 +434,22 @@ $load_datepicker = false;
     <style>
         .datepicker{z-index:1151 !important;}
     </style>
-@endsection
+@stop
 
-@section('js')
+@section('crud_js')
+    <script src="{{ asset('vendor/timenz/crud/js/crud.js') }}"></script>
+
+@if($crud['is_load_map_libs'])
+    <script src="http://maps.google.com/maps/api/js?sensor=false&libraries=geometry&v=3.7"></script>
+    <script type="text/javascript" src="{{ asset('vendor/timenz/crud/js/maplace.min.js') }}"></script>
+
+    <script>
+        var place = null;
+
+    </script>
+@endif
 <script>
-    var allowMultipleSelect = @if($crud['allow_multiple_select']) true @else() false @endif;
     $(function(){
-        if(allowMultipleSelect == false){
-            $('#cb-all').hide();
-        }
-
-        cbListAction();
 
         $('#modal-confirm-hapus').modal({
             show: false,
@@ -376,40 +461,9 @@ $load_datepicker = false;
             $('#modal-image-full').modal();
         });
 
-        $('#cb-all').click(function(){
-            var prop = $(this).is(':checked');
-
-            $('.cb-list').prop("checked", prop);
-            cbListAction();
-        });
-
-        $('.cb-list').click(function(){
-            if(allowMultipleSelect == false){
-                $('.cb-list').prop("checked", false);
-                $(this).prop("checked", true);
-            }
-
-            var all = $('.cb-list').length;
-            var checked = $('.cb-list:checked').length;
-            var not_checked = all - checked;
-            document.getElementById('cb-all').indeterminate = false;
-
-
-
-            if(not_checked == all){
-                $('#cb-all').prop("checked", false);
-            }else if(all == checked){
-                $('#cb-all').prop("checked", true);
-
-            }else{
-                document.getElementById('cb-all').indeterminate = true;
-            }
-
-            cbListAction();
-        });
-
-        $('#list-btn-delete').click(function(e){
+        $('.btn-delete').click(function(e){
             e.preventDefault();
+            $('#form-delete').attr('action', $(this).attr('data-href'));
             $('#modal-confirm-hapus').modal('show');
         });
 
@@ -421,12 +475,15 @@ $load_datepicker = false;
                 $('#modal-confirm-wait').modal('hide');
                 if(data.status){
                     var str = '', max_limit = {{ $crud['export_max_limit'] }};
-                    var pagingNum = data.total/max_limit;
-                    for(var i = 1; i <= pagingNum ; i++){
-                        str += '<li><a href="{{ url($crud['uri'].'?action=export&page=') }}' + i + '">' + i + '</a></li>';
-                    }
-                    if(str == ''){
-                        str = '<li><a href="{{ url($crud['uri'].'?action=export') }}">' + 1 + '</a></li>';
+                    if(data.total > 0) {
+
+                        var pagingNum = data.total / max_limit;
+                        for (var i = 1; i <= pagingNum; i++) {
+                            str += '<li><a href="{{ url($crud['uri'].'?action=export&page=') }}' + i + '">' + i + '</a></li>';
+                        }
+                        if (str == '') {
+                            str = '<li><a href="{{ url($crud['uri'].'?action=export') }}">' + 1 + '</a></li>';
+                        }
                     }
 
                     $('#modal-confirm-export').modal('show');
@@ -463,54 +520,79 @@ $load_datepicker = false;
             format: 'yyyy-mm-dd'
         });
 
-        function cbListAction(){
+        $('.row-menu').each(function(){
+            var count = $(this).children('.link').length;
 
-            var checked = $('.cb-list:checked');
-            var id = checked.attr('data-id');
-            var act_lists = $('#action-' + id).html();
+            if(count < 1){
+                $(this).next().hide();
+            }
+        });
+
+        $('.condition-select').change(function(){
+
+            var val = $(this).val();
+            var id = $(this).attr('data-id');
+            if(val == 'date-between' || val == 'between' ){
+                $('#' + id).removeClass('hidden');
+            }else{
+
+                $('#' + id).addClass('hidden');
+            }
+        });
+
+        $('.map-link').click(function(e){
+            e.preventDefault();
+            var val = $(this).html();
+
+            $('#map-preview').html('');
+            $('#modal-map').modal();
+            $('#modal-map').attr('data-map', val);
 
 
-            $('#action_lists').html('');
-            $('#action_lists').hide();
-            $('.sel-one').hide();
+        });
 
-            if(checked.length == 1){
+        $('#modal-map').on('shown.bs.modal', function (e) {
+            // do something...
+            var loc = $(this).attr('data-map');
+
+            var lat = 0, lon = 0;
+
+            if(loc.isValidLocation()){
+                loc = loc.split(',');
+                lat = loc[0];
+                lon = loc[1];
 
 
-                $('#list-btn-read').attr('href', '{{ url($crud['uri'].'/') }}/' + id);
-                $('#list-btn-edit').attr('href', '{{ url($crud['uri'].'/') }}/' + id + '/edit');
-                $('#form-delete').attr('action', '{{ url($crud['uri'].'/') }}/' + id);
+                var place = new Maplace({
+                    map_options: {
+                        zoom: 10,
+                        scrollwheel: false
+                    },
+                    map_div: '#map-preview',
+                    controls_on_map: true,
+                    listeners: {
+                        click: function(map, event) {
 
-                if(typeof act_lists !== undefined && act_lists != ''){
-                    act_lists = JSON.parse(act_lists);
-
-                    if(act_lists.length > 0){
-                        var str = '';
-                        for(i in act_lists){
-                            var row = act_lists[i];
-
-                            str += '<a href="'+row.url+'" class="'+row.class+'">'+row.title+'</a>';
+                            console.log(map);
+                            console.log(event.latLng);
                         }
-                        $('#action_lists').html(str);
                     }
-                }
+                });
 
+                place.SetLocations([{
+                    lat: lat,
+                    lon: lon
+                }]);
 
-                $('.sel-one').fadeIn();
-                $('#action_lists').fadeIn();
+                place.Load();
             }else{
-                $('.sel-one').hide();
-                $('#list-btn-read').attr('href', '#');
-                $('#list-btn-edit').attr('href', '#');
-                $('#list-btn-delete').attr('href', '#');
+                $('#map-preview').html('<p>Maaf Lokasi tidak valid</p>');
             }
 
-            if(checked.length > 0){
-                $('.sel-many').show();
-            }else{
-                $('.sel-many').hide();
-            }
-        }
+
+
+        })
+
     });
 </script>
-@endsection
+@stop
