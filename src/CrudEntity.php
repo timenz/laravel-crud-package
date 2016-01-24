@@ -3,6 +3,7 @@
 namespace Timenz\Crud;
 
 class CrudEntity{
+    public $allowList = true;
     public $allowCreate = true;
     public $allowRead = true;
     public $allowDelete = true;

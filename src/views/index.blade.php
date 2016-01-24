@@ -342,7 +342,7 @@ $load_datepicker = false;
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-image-preview') }}</h4>
+                    <h4 class="modal-title">{{ trans('crud::crud.index.modal-image-title') }}</h4>
                 </div>
                 <div class="modal-body text-center">
                     <img style="display: inline;" class="image-full img-responsive" />

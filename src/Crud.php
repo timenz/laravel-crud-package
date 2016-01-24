@@ -48,6 +48,13 @@ class Crud extends Controller{
 
         switch($this->entity->action){
             case 'index':
+
+                if($this->entity->allowList === false){
+                    $this->entity->abort = true;
+                    $this->entity->errorText = 'Not allow to view list data.';
+                    return false;
+                }
+
                 $status = $process->actionIndex();
                 if(!$status){
                     return false;
@@ -56,34 +63,77 @@ class Crud extends Controller{
                 break;
 
             case 'create':
+
+                if($this->entity->allowCreate === false){
+                    $this->entity->abort = true;
+                    $this->entity->errorText = 'Not allow to create new data.';
+                    return false;
+                }
+
+
                 $process->applyJoinNN();
                 $process->actionCreate();
                 break;
 
             case 'save':
+
+                if($this->entity->allowCreate === false){
+                    $this->entity->abort = true;
+                    $this->entity->errorText = 'Not allow to create new data.';
+                    return false;
+                }
+
                 $process->applyJoinNN();
                 $process->actionSave();
                 break;
 
             case 'edit':
+
+                if($this->entity->allowEdit === false){
+                    $this->entity->abort = true;
+                    $this->entity->errorText = 'Not allow to edit data.';
+                    return false;
+                }
+
                 $process->applyJoinNN();
                 $process->getOneRow();
                 $process->actionEdit();
                 break;
 
             case 'update':
+
+                if($this->entity->allowEdit === false){
+                    $this->entity->abort = true;
+                    $this->entity->errorText = 'Not allow to edit data.';
+                    return false;
+                }
+
                 $process->applyJoinNN();
                 $process->getOneRow();
                 $process->actionUpdate();
                 break;
 
             case 'read':
+
+                if($this->entity->allowRead === false){
+                    $this->entity->abort = true;
+                    $this->entity->errorText = 'Not allow to read data.';
+                    return false;
+                }
+
                 $process->applyJoinNN();
                 $process->getOneRow();
                 $process->actionRead();
                 break;
 
             case 'delete':
+
+                if($this->entity->allowDelete === false){
+                    $this->entity->abort = true;
+                    $this->entity->errorText = 'Not allow to delete data.';
+                    return false;
+                }
+
                 $process->applyJoinNN();
                 $process->getOneRow();
                 $process->actionDelete();
@@ -526,8 +576,8 @@ class Crud extends Controller{
             case 'select':
                 $opt = [];
 
-                if(isset($option['value'])){
-                    $opt = $option['value'];
+                if(isset($option['select_option'])){
+                    $opt = $option['select_option'];
                 }
                 $changeType[$field] = array(
                     'new_type' => $newType,
@@ -538,8 +588,8 @@ class Crud extends Controller{
             case 'enum':
                 $opt = [];
 
-                if(isset($option['value'])){
-                    $opt = $option['value'];
+                if(isset($option['select_option'])){
+                    $opt = $option['select_option'];
                 }
                 $changeType[$field] = array(
                     'new_type' => $newType,
@@ -882,6 +932,10 @@ class Crud extends Controller{
         foreach($list as $item){
             if(strpos($permission, $item) > -1){
                 switch($item){
+                    case 'L':
+                        $this->entity->allowList = false;
+                        break;
+
                     case 'C':
                         $this->entity->allowCreate = false;
                         break;
