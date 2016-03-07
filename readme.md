@@ -39,6 +39,10 @@ add to $app['providers']
     \Pqb\FilemanagerLaravel\FilemanagerLaravelServiceProvider::class,
     \KevBaldwyn\Image\Providers\Laravel\ImageServiceProvider::class,
 
+and to $app['aliases']
+    
+        'ImageSrc'  => \KevBaldwyn\Image\Providers\Laravel\Facades\Image::class,
+
 publish view and asset
 
 	php artisan vendor:publish
@@ -49,7 +53,8 @@ Javascript Libs Dependency
 	{
     	"bootstrap": "~3.3.0",
     	"bootstrap-datepicker": "1.3.0",
-        "chosen": "~1.4.2"
+        "chosen": "~1.4.2",
+        "eonasdan-bootstrap-datetimepicker": "~4.17.37"
     }
 
 Master blade view, this view basically from bootstrap sample page.

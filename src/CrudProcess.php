@@ -933,6 +933,7 @@ class CrudProcess{
                 $valid = false;
             }
         }
+        debug($this->entity->insertNN);
 
         if($this->entity->allowEdit and $valid){
             $insertNN = $this->entity->insertNN;
@@ -945,11 +946,10 @@ class CrudProcess{
 
                 if($insertNN != null){
 
-
-                    $bulkInsert = array();
-                    $table = '';
-
                     foreach($insertNN as $key=>$item){
+                        $bulkInsert = array();
+
+
                         $oldNNValues = $dataType[$key]['value'];
 
                         foreach($item['values'] as $val){
@@ -974,15 +974,13 @@ class CrudProcess{
 
                         }
 
-                        $table = $item['relation_table'];
-
-
+                        if(count($bulkInsert) > 0){
+                            DB::table($item['relation_table'])->insert($bulkInsert);
+                        }
                     }
 
 
-                    if(count($bulkInsert) > 0){
-                        DB::table($table)->insert($bulkInsert);
-                    }
+
 
                 }
 
