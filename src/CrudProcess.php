@@ -328,6 +328,9 @@ class CrudProcess{
                     ->get();
                 if($get != null){
                     $joinNNOption[$join['column_name']] = $get;
+                }else{
+                    $this->entity->errorText = 'Please insert at least one row in table '.$join['join_table'];
+                    $this->entity->abort = true;
                 }
             }
 
@@ -802,7 +805,7 @@ class CrudProcess{
             foreach($this->entity->joinNN as $item){
                 $editFields[] = $item['column_name'];
                 $options = array();
-                if($this->entity->action == 'edit'){
+                if($this->entity->action == 'edit' and count($this->entity->joinNNOption) > 0){
                     $options = $this->entity->joinNNOption[$item['column_name']];
                 }
 
