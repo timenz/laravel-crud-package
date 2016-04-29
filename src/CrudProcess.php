@@ -805,7 +805,7 @@ class CrudProcess{
             foreach($this->entity->joinNN as $item){
                 $editFields[] = $item['column_name'];
                 $options = array();
-                if($this->entity->action == 'edit' and count($this->entity->joinNNOption) > 0){
+                if($this->entity->action == 'edit' and isset($this->entity->joinNNOption[$item['column_name']])){
                     $options = $this->entity->joinNNOption[$item['column_name']];
                 }
 
