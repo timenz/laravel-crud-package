@@ -22,7 +22,7 @@
                     <form
                             class="form-horizontal"
                             role="form" method="post"
-                            action="{{ url($crud['uri'].'/'.$crud['id']) }}"
+                            action="{{ url($crud['uri'].'/'.$crud[$crud['primary_key']]) }}"
                             accept-charset="UTF-8"
                             enctype="multipart/form-data">
 
@@ -46,7 +46,7 @@
                                     }
                             ?>
 
-                            @if($key == 'id')
+                            @if($key == $crud['primary_key'])
                                     <?php continue; ?>
                             @endif
 

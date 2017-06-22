@@ -184,6 +184,7 @@ class Crud extends Controller{
             case 'index':
                 $indexResponse = array(
                     'lists' => $this->entity->lists->toArray(),
+                    'primary_key' => $this->entity->primaryKey,
                     'custom_values' => $this->entity->customValues,
                     'index_session' => $this->entity->indexSession,
                     'action_lists' => $this->entity->actionLists,
@@ -214,6 +215,7 @@ class Crud extends Controller{
             case 'create':
                 $createResponse = array(
                     'create_fields' => $this->entity->createFields,
+                    'primary_key' => $this->entity->primaryKey,
                     'title' => $this->entity->title,
                     'master_blade' => $this->entity->masterBlade,
                     'external_link' => $this->entity->externalLink,
@@ -236,7 +238,8 @@ class Crud extends Controller{
             case 'edit':
                 $editResponse = array(
                     'edit_fields' => $this->entity->editFields,
-                    'id' => $this->entity->ids,
+                    'primary_key' => $this->entity->primaryKey,
+                    $this->entity->primaryKey => $this->entity->ids,
                     'title' => $this->entity->title,
                     'master_blade' => $this->entity->masterBlade,
                     'external_link' => $this->entity->externalLink,
@@ -261,6 +264,7 @@ class Crud extends Controller{
 
                 $readResponse = array(
                     'title' => $this->entity->title,
+                    'primary_key' => $this->entity->primaryKey,
                     'master_blade' => $this->entity->masterBlade,
                     'read_fields' => $this->entity->readFields,
 //                    'back_btn_text' => $this->entity->backBtnText,
@@ -462,6 +466,10 @@ class Crud extends Controller{
 
     }
 
+    protected function setPrimaryKey($key){
+        $this->entity->primaryKey = $key;
+    }
+
 
     /**
      * @param $field
@@ -659,7 +667,7 @@ class Crud extends Controller{
 
 
         if($this->entity->action == 'create' or $this->entity->action == 'edit'){
-            $newType['options'] = DB::table($joinTable)->select(array('id', $joinField))->limit(1000)->get();
+            $newType['options'] = DB::table($joinTable)->select(array($this->entity->primaryKey, $joinField))->limit(1000)->get();
         }
 
         $this->entity->changeType[$field] = $newType;

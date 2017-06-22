@@ -41,7 +41,7 @@
                             }
                             ?>
 
-                            @if($key == 'id')
+                            @if($key == $crud['primary_key'])
                                     <?php continue; ?>
                             @endif
 

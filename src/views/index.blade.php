@@ -142,8 +142,8 @@ $load_datepicker = false;
                                     @foreach($crud['columns'] as $column)
                                         <?php
 
-                                        if(isset($crud['custom_values'][$column][$item['id']])){
-                                        ?><td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $crud['custom_values'][$column][$item['id']] !!}</td><?php
+                                        if(isset($crud['custom_values'][$column][$item[$crud['primary_key']]])){
+                                        ?><td class="text-nowrap @if($orderColumn == $crud['data_type'][$column]['column_name']) success @endif">{!! $crud['custom_values'][$column][$item[$crud['primary_key']]] !!}</td><?php
                                         continue;
                                         } ?>
                                         @if(isset($item))
@@ -203,7 +203,7 @@ $load_datepicker = false;
                                     @foreach($crud['join_nn_column_title'] as $nn)
                                         <?php $nnVal = '<em>null</em>'; ?>
                                         @foreach($crud['join_nn_column'] as $key=>$colNN)
-                                            @if($key == $item['id'])
+                                            @if($key == $item[$crud['primary_key']])
                                                 @foreach($colNN as $subKey=>$colN)
                                                     @if($subKey == $nn)
                                                             <?php $nnVal = $colN; ?>
@@ -216,29 +216,29 @@ $load_datepicker = false;
 
                                     <td class="info text-nowrap">
                                         @if($crud['allow_read'])
-                                            <a class="link btn btn-primary btn-xs" href="{{ url($crud['uri'].'/'.$item['id']) }}"
+                                            <a class="link btn btn-primary btn-xs" href="{{ url($crud['uri'].'/'.$item[$crud['primary_key']]) }}"
                                                data-toggle="tooltip" data-placement="top" title="{{ trans('crud::crud.index.action-show') }}"><i class="glyphicon glyphicon-eye-open"></i></a>
                                         @endif
                                         @if($crud['allow_edit'])
-                                            <a class="link btn btn-warning btn-xs" href="{{ url($crud['uri'].'/'.$item['id'].'/edit') }}"
+                                            <a class="link btn btn-warning btn-xs" href="{{ url($crud['uri'].'/'.$item[$crud['primary_key']].'/edit') }}"
                                                data-toggle="tooltip" data-placement="top" title="{{ trans('crud::crud.index.action-edit') }}"><i class="glyphicon glyphicon-pencil"></i></a>
                                         @endif
                                         @if($crud['allow_delete'])
-                                            <a class="link btn btn-danger btn-xs" data-toggle="modal" href="#modal-del{{ $item['id'] }}"
+                                            <a class="link btn btn-danger btn-xs" data-toggle="modal" href="#modal-del{{ $item[$crud['primary_key']] }}"
                                                data-toggle="tooltip" data-placement="top" title="{{ trans('crud::crud.index.action-delete') }}"><i class="glyphicon glyphicon-remove"></i></a>
                                         @endif
 
 
-                                        @if(isset($crud['action_lists'][$item['id']]))
+                                        @if(isset($crud['action_lists'][$item[$crud['primary_key']]]))
 
-                                            @foreach($crud['action_lists'][$item['id']] as $action)
+                                            @foreach($crud['action_lists'][$item[$crud['primary_key']]] as $action)
                                                 <a class="link btn btn-xs {{ $action['class'] }}" href="{{ $action['url'] }}">{{ $action['title'] }}</a>
                                             @endforeach
 
                                         @endif
 
                                         @if($crud['allow_delete'])
-                                            <div class="modal fade" id="modal-del{{ $item['id'] }}" >
+                                            <div class="modal fade" id="modal-del{{ $item[$crud['primary_key']] }}" >
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -250,7 +250,7 @@ $load_datepicker = false;
                                                         </div>
                                                         <div class="modal-footer">
 
-                                                            <form method="post" action="{{ url($crud['uri'].'/'.$item['id']) }}" id="form-delete" accept-charset="UTF-8">
+                                                            <form method="post" action="{{ url($crud['uri'].'/'.$item[$crud['primary_key']]) }}" id="form-delete" accept-charset="UTF-8">
                                                                 <input name="_method" type="hidden" value="DELETE">
                                                                 <input name="_token" type="hidden" value="{{ csrf_token() }}">
                                                                 <button type="button" class="btn btn-default" data-dismiss="modal"><i class="glyphicon glyphicon-remove"></i> {{ trans('crud::crud.modal-close-button') }}</button>
