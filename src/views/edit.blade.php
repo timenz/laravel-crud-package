@@ -273,8 +273,8 @@
 
                                         foreach($arr_option as $option){
                                             $selected = '';
-                                            if($option->id == $value){$selected = 'selected="selected"';}
-                                            $str_option .= '<option value="'.$option->id.'" '.$selected.'>'.$option->{$item['related_field']}.'</option>';
+                                            if($option->{$item['join_key']} == $value){$selected = 'selected="selected"';}
+                                            $str_option .= '<option value="'.$option->{$item['join_key']}.'" '.$selected.'>'.$option->{$item['related_field']}.'</option>';
                                         }
                                         ?>
                                         <select name="{{ $item['column_name'] }}"

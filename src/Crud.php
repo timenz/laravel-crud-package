@@ -296,8 +296,6 @@ class Crud extends Controller{
 
         }
 
-//        debug($this->entity->dataType);
-
         $this->entity->masterData['crud'] = $response;
 
         $this->entity->response = $this->entity->masterData;
@@ -662,12 +660,13 @@ class Crud extends Controller{
             'new_type' => 'join',
             'related_key' => 't'.$this->entity->tbCount,
             'related_field' => $joinField,
+            'join_key' => $joinKey,
             'options' => array()
         );
 
 
         if($this->entity->action == 'create' or $this->entity->action == 'edit'){
-            $newType['options'] = DB::table($joinTable)->select(array($this->entity->primaryKey, $joinField))->limit(1000)->get();
+            $newType['options'] = DB::table($joinTable)->select(array($joinKey, $joinField))->limit(1000)->get();
         }
 
         $this->entity->changeType[$field] = $newType;

@@ -199,10 +199,10 @@
                                                 $str_option = '<option value="">'.trans('crud::crud.field.select-placeholder', ['field' => $item['column_text']]).'</option>';
                                                 foreach($arr_option as $option){
                                                     $sel = '';
-                                                    if($option->id == $value){
+                                                    if($option->{$item['join_key']} == $value){
                                                         $sel = 'selected';
                                                     }
-                                                    $str_option .= '<option '.$sel.' value="'.$option->id.'">'.$option->{$item['related_field']}.'</option>';
+                                                    $str_option .= '<option '.$sel.' value="'.$option->{$item['join_key']}.'">'.$option->{$item['related_field']}.'</option>';
                                                 }
                                             ?>
                                             <div class="col-lg-10">

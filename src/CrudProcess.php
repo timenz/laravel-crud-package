@@ -223,6 +223,7 @@ class CrudProcess{
             case 'join':
                 $dataColumn['related_field'] = $changeType[$columnName]['related_field'];
                 $dataColumn['related_key'] = $changeType[$columnName]['related_key'];
+                $dataColumn['join_key'] = $changeType[$columnName]['join_key'];
                 $dataColumn['options'] = $changeType[$columnName]['options'];
                 $dataColumn['search_condition'] = ['contain'];
                 $dataColumn['allow_search'] = true;
@@ -936,7 +937,6 @@ class CrudProcess{
                 $valid = false;
             }
         }
-        debug($this->entity->insertNN);
 
         if($this->entity->allowEdit and $valid){
             $insertNN = $this->entity->insertNN;
@@ -1107,7 +1107,7 @@ class CrudProcess{
                     }
                 }
 
-                DB::table($this->entity->table)->delete($this->entity->ids);
+                DB::table($this->entity->table)->where($this->entity->primaryKey, '=', $this->entity->ids)->delete();
             });
 
 
