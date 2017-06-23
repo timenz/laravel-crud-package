@@ -654,9 +654,9 @@ class Crud extends Controller{
      * @param string $joinField
      * @param array $arrayWhere
      */
-    protected function setJoin($field, $joinTable, $joinField, $arrayWhere = array()){
+    protected function setJoin($field, $joinTable, $joinField, $arrayWhere = array(), $joinKey){
 
-        $this->entity->setJoin[$field] = array($joinTable, $joinField, $arrayWhere, 't'.$this->entity->tbCount);
+        $this->entity->setJoin[$field] = array($joinTable, $joinField, $arrayWhere, 't'.$this->entity->tbCount, $joinKey);
 
         $newType = array(
             'new_type' => 'join',

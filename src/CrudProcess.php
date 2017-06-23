@@ -296,7 +296,7 @@ class CrudProcess{
                     if(!isset($item->id)){continue;}
                     $get = DB::table($join['relation_table'])
                         ->selectRaw('group_concat(`'.$join['join_field'].'`) as '.$join['column_name'])
-                        ->rightJoin($join['join_table'], $join['join_table'].'.'.$this->entity->primaryKey, '=', $join['join_field_rel'])
+                        ->rightJoin($join['join_table'], $join['join_table'].'.id', '=', $join['join_field_rel'])
                         ->where($join['relation_table'].'.'.$join['field_rel'], '=', $item->id)
                         ->groupBy($join['relation_table'].'.'.$join['field_rel'])
                         ->first();
@@ -311,7 +311,7 @@ class CrudProcess{
 
                 $get = DB::table($join['relation_table'])
                     ->selectRaw('group_concat(`'.$join['join_field'].'`) as '.$join['column_name'])
-                    ->rightJoin($join['join_table'], $join['join_table'].'.'.$this->entity->primaryKey, '=', $join['join_field_rel'])
+                    ->rightJoin($join['join_table'], $join['join_table'].'.id', '=', $join['join_field_rel'])
                     ->where($join['relation_table'].'.'.$join['field_rel'], '=', $this->entity->ids)
                     ->groupBy($join['relation_table'].'.'.$join['field_rel'])
                     ->first();
@@ -323,7 +323,7 @@ class CrudProcess{
             if($action == 'edit' or $action == 'create'){
 
                 $get = DB::table($join['join_table'])
-                    ->select($this->entity->primaryKey, $join['join_field'].' as option')
+                    ->select('id', $join['join_field'].' as option')
                     ->limit(1000)
                     ->get();
                 if($get != null){
@@ -432,7 +432,7 @@ class CrudProcess{
 
         foreach($this->entity->setJoin as $key=>$item){
             $selected[] = $item[3].'.'.$item[1].' as '.$item[3].'_'.$item[1];
-            $lists->leftJoin($item[0].' as '.$item[3] , 't0.'.$key, '=', $item[3].'.'.$this->entity->primaryKey);
+            $lists->leftJoin($item[0].' as '.$item[3] , 't0.'.$key, '=', $item[3].'.'.$item[4]);
         }
 
         $lists->select($selected);
@@ -583,7 +583,7 @@ class CrudProcess{
                 $values = DB::table($item['relation_table'])
                     ->select($item['join_table'].'.'.$item['join_field'].' as value')
                     ->where($item['field_rel'], '=', $this->entity->ids)
-                    ->join($item['join_table'], $item['join_table'].'.'.$this->entity->primaryKey, '=', $item['relation_table'].'.'.$item['join_field_rel'])
+                    ->join($item['join_table'], $item['join_table'].'.id', '=', $item['relation_table'].'.'.$item['join_field_rel'])
                     ->get();
                 $value = null;
 
@@ -743,7 +743,7 @@ class CrudProcess{
         $row = DB::table($this->entity->table.' as t0')->select('t0.*');
         foreach($this->entity->setJoin as $key=>$item){
             $selected[] = $item[3].'.'.$item[1].' as '.$item[3].'_'.$item[1];
-            $row->leftJoin($item[0].' as '.$item[3], 't0.'.$key, '=', $item[3].'.'.$this->entity->primaryKey);
+            $row->leftJoin($item[0].' as '.$item[3], 't0.'.$key, '=', $item[3].'.'.$item[4]);
 
         }
         $row->select($selected);
@@ -810,9 +810,9 @@ class CrudProcess{
                 }
 
                 $values = DB::table($item['relation_table'])
-                    ->select($item['relation_table'].'.'.$item['join_field_rel'].' as '.$this->entity->primaryKey)
+                    ->select($item['relation_table'].'.'.$item['join_field_rel'].' as id')
                     ->where($item['field_rel'], '=', $this->entity->ids)
-                    ->join($item['join_table'], $item['join_table'].'.'.$this->entity->primaryKey, '=', $item['relation_table'].'.'.$item['join_field_rel'])
+                    ->join($item['join_table'], $item['join_table'].'.id', '=', $item['relation_table'].'.'.$item['join_field_rel'])
                     ->get();
                 $value = null;
 
@@ -820,7 +820,7 @@ class CrudProcess{
                     $value = array();
 
                     foreach($values as $val){
-                        $value[] = $val->{$this->entity->primaryKey};
+                        $value[] = $val->id;
                     }
                 }
 
@@ -1077,9 +1077,9 @@ class CrudProcess{
 
 
                     $x = DB::table($item['relation_table'])
-                        ->select($item['relation_table'].'.'.$this->entity->primaryKey)
+                        ->select($item['relation_table'].'.id')
                         ->where($item['field_rel'], '=', $this->entity->ids)
-                        ->join($item['join_table'], $item['join_table'].'.'.$this->entity->primaryKey, '=', $item['relation_table'].'.'.$item['join_field_rel'])
+                        ->join($item['join_table'], $item['join_table'].'.id', '=', $item['relation_table'].'.'.$item['join_field_rel'])
                         ->get();
 
                     if($x != null){
